@@ -109,17 +109,10 @@ static void TIM_PWMOUTPUT_Config(void)
   TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_HIGH;	
 	
 	/*配置PWM通道*/
-  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, TIM_CHANNEL_1);
+  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, MOTOR_PUL_CHANNEL_x);
 	/*开始输出PWM*/
-	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,TIM_CHANNEL_1);
-	
-		/*配置脉宽*/
-  TIM_OCInitStructure.Pulse = tim_per/2;//默认占空比为50%
-	/*配置PWM通道*/
-  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, TIM_CHANNEL_2);
-	/*开始输出PWM*/
-	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,TIM_CHANNEL_2);
-		
+	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
+			
 }
 
 /**

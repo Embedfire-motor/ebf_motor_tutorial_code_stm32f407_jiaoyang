@@ -17,13 +17,16 @@
 #define MOTOR_EN_GPIO_CLK_ENABLE()    	__HAL_RCC_GPIOA_CLK_ENABLE()
 	
 //Motor Âö³å
-#define GENERAL_TIM_CH1_GPIO_PORT       GPIOA
-#define GENERAL_TIM_CH1_PIN             GPIO_PIN_15
 
 #define MOTOR_PUL_TIM                   TIM2
-#define MOTOR_PUL_GPIO_AF               GPIO_AF1_TIM2
 #define MOTOR_PUL_CLK_ENABLE()  				__TIM2_CLK_ENABLE()
+
+#define GENERAL_TIM_CH1_GPIO_PORT       GPIOA
+#define GENERAL_TIM_CH1_PIN             GPIO_PIN_15
 #define MOTOR_PUL_GPIO_CLK_ENABLE()			__HAL_RCC_GPIOA_CLK_ENABLE()
+
+#define MOTOR_PUL_GPIO_AF               GPIO_AF1_TIM2
+#define MOTOR_PUL_CHANNEL_x             TIM_CHANNEL_1
 
 extern void TIMx_Configuration(void);
 extern void TIM2_SetPWM_pulse(int channel,int compare);

@@ -22,7 +22,8 @@ void TIM_SetTIMxCompare(TIM_TypeDef *TIMx,uint32_t channel,uint32_t compare);
 void TIM_SetPWM_period(TIM_TypeDef* TIMx,uint32_t TIM_period);
 
 TIM_HandleTypeDef TIM_TimeBaseStructure;
-__IO uint16_t OC_Pulse_num = 500;     //比较输出的计数值
+//__IO uint16_t OC_Pulse_num = 500;     //比较输出的计数值
+__IO uint16_t OC_Pulse_num = 200;     //比较输出的计数值
 
 
  /**
@@ -105,7 +106,7 @@ void TIM_PWMOUTPUT_Config(void)
 	TIM_TimeBaseStructure.Init.Period = TIM_PERIOD; 
 	// 通用控制定时器时钟源TIMxCLK = HCLK/2=84MHz 
 	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)=1MHz
-  TIM_TimeBaseStructure.Init.Prescaler = 168-1;                
+  TIM_TimeBaseStructure.Init.Prescaler = 84-1;                
 	
 	/*计数方式*/
   TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;            
@@ -150,7 +151,6 @@ void MOTOR_PUL_IRQHandler(void)
   HAL_TIM_IRQHandler(&TIM_TimeBaseStructure);
 }
 
-
 /**
   * @brief  定时器比较中断
   * @param  htim：定时器句柄指针
@@ -165,6 +165,7 @@ void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
   count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
 	/*计算比较数值*/
   temp_val = TIM_PERIOD & (count+OC_Pulse_num); 
+		
 	/*设置比较数值*/
   __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,temp_val);
 	
