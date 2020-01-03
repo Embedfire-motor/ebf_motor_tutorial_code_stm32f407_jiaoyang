@@ -24,6 +24,8 @@
 #include "./usart/bsp_debug_usart.h"
 
 int pulse_num=0;
+
+__IO uint16_t ChannelPulse = 0.5/20.0*PWM_PERIOD_COUNT;
 	
 void Delay(__IO uint32_t nCount)	 //简单的延时函数
 {
@@ -37,7 +39,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t ChannelPulse = 0.5/20.0*PWM_PERIOD_COUNT;
+  
   
   /* HAL 库初始化 */
   HAL_Init();
@@ -55,6 +57,8 @@ int main(void)
   TIMx_Configuration();
   
   printf("野火舵机控制实验\r\n");
+
+  show_help();
 	
 	while(1)
 	{
@@ -77,6 +81,9 @@ int main(void)
       
       set_steering_gear_angle(ChannelPulse);    // 设置占空比
     }
+    
+    /* 串口处理 */
+    deal_serial_data();
 	}
 }
 

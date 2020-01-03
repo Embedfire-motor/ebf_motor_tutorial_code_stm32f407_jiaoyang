@@ -29,6 +29,7 @@
 //#define GENERAL_TIM_CH2_PIN                 GPIO_PIN_3
 
 //#define GENERAL_TIM_CH3_GPIO_PORT           GPIOB
+
 //#define GENERAL_TIM_CH3_PIN                 GPIO_PIN_10
 
 //#define GENERAL_TIM_CH4_GPIO_PORT           GPIOB
@@ -39,6 +40,8 @@ extern TIM_HandleTypeDef  TIM_TimeBaseStructure;
 extern void TIMx_Configuration(void);
 extern void TIM2_SetPWM_pulse(uint32_t channel,int compare);
 void set_steering_gear_angle(uint16_t angle);
+void show_help(void);
+void deal_serial_data(void);
 
 #endif
 

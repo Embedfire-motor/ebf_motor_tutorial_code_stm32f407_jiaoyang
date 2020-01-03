@@ -16,6 +16,9 @@
   */
   
 #include "./tim/bsp_general_tim.h"
+#include "./usart/bsp_debug_usart.h"
+#include <math.h>
+#include <stdlib.h>
 
 void TIM_SetTIMxCompare(TIM_TypeDef *TIMx,uint32_t channel,uint32_t compare);
 void TIM_SetPWM_period(TIM_TypeDef* TIMx,uint32_t TIM_period);
@@ -134,13 +137,84 @@ void TIMx_Configuration(void)
   */
 void set_steering_gear_angle(uint16_t angle)
 {
-#if 1
-  /* 对超过范围的占空比进行边界处理 */
-  angle = 0.5/20.0*PWM_PERIOD_COUNT > angle ? 0.5/20.0*PWM_PERIOD_COUNT : angle;
-  angle = 2.5/20.0*PWM_PERIOD_COUNT < angle ? 2.5/20.0*PWM_PERIOD_COUNT : angle;
-#endif
+  #if 1
+  {
+    /* 对超过范围的占空比进行边界处理 */
+    angle = 0.5/20.0*PWM_PERIOD_COUNT > angle ? 0.5/20.0*PWM_PERIOD_COUNT : angle;
+    angle = 2.5/20.0*PWM_PERIOD_COUNT < angle ? 2.5/20.0*PWM_PERIOD_COUNT : angle;
+  }
+  #endif
   
 	TIM2_SetPWM_pulse(PWM_CHANNEL_1, angle);
+}
+
+/**
+  * @brief  打印帮助命令
+  * @param  无
+  * @retval 无
+  */
+void show_help(void)
+{
+    printf("——————————————野火舵机驱动演示程序——————————————\n\r");
+    printf("输入命令(以回车结束)：\n\r");
+    printf("< ? >     -帮助菜单\n\r");
+    printf("a[data]   -设置舵机的角度（范围：%d—%d）\n\r", 0, 180);
+}
+
+extern uint16_t ChannelPulse;
+
+/**
+  * @brief  处理串口接收到的数据
+  * @param  无
+  * @retval 无
+  */
+void deal_serial_data(void)
+{
+    static char showflag =1;
+    int dec_temp=0;
+    int angle_temp=0;
+    
+    //接收到正确的指令才为1
+    char okCmd = 0;
+
+    //检查是否接收到指令
+    if(receive_cmd == 1)
+    {
+      if(UART_RxBuffer[0] == 'a' || UART_RxBuffer[0] == 'A')
+      {
+        //设置速度
+        if(UART_RxBuffer[1] == ' ')
+        {
+          angle_temp = atoi((char const *)UART_RxBuffer+2);
+          if(angle_temp>=0 && angle_temp <= 180)
+          {
+            printf("\n\r角度: %d\n\r", angle_temp);
+            angle_temp = 0.5/20.0*PWM_PERIOD_COUNT + angle_temp / 180.0 * (2.5 - 0.5) / 20.0 * PWM_PERIOD_COUNT;
+            ChannelPulse = angle_temp;    // 同步按键控制的比较值
+            set_steering_gear_angle(angle_temp);
+//            printf("\n\r角度: %d\n\r", (uint16_t)(angle_temp/PWM_PERIOD_COUNT*20.0/(2.5-0.5)*180.0));
+            okCmd = 1;
+          }
+        }
+      }
+      else if(UART_RxBuffer[0] == '?')
+      {
+        //打印帮助命令
+        show_help();
+        okCmd = 1;
+      }
+      //如果指令有无则打印帮助命令
+      if(okCmd != 1)
+      {
+        printf("\n\r 输入有误，请重新输入...\n\r");
+        show_help();
+      }
+
+      //清空串口接收缓冲数组
+      receive_cmd = 0;
+      uart_FlushRxBuffer();
+
+    }//end if(cmd)
 }
 
 
