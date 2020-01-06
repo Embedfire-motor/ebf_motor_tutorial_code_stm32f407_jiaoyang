@@ -772,6 +772,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\key\bsp_exti.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\led\bsp_led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -39,7 +39,9 @@ int main(void)
   printf("欢迎使用野火 电机开发板 步进电机 IO口模拟控制 例程\r\n");
 	printf("按下按键1、2可修改旋转方向和使能\r\n");
 	/*按键中断初始化*/
-	EXTI_Key_Config();	
+	EXTI_Key_Config();
+	/*led初始化*/
+	LED_GPIO_Config();
 	/*步进电机初始化*/
 	stepper_Init();	
 
