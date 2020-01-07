@@ -40,8 +40,12 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
     //必须开始减速的步数(如果还没加速到达最大速度时)。
     unsigned int accel_lim;
 
-    // 根据步数的正负来判断方向
-    if(step < 0)//逆时针
+		/*根据步数和正负判断*/
+		if(step == 0)
+		{
+				return ;
+		}
+		else if(step < 0)//逆时针
     {
         srd.dir = CCW;
         step = -step;
@@ -51,7 +55,6 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
         srd.dir = CW;
     }	// 输出电机方向
 		MOTOR_DIR(srd.dir);
-	
 		    
     // 如果只移动一步
     if(step == 1)
@@ -182,8 +185,7 @@ void speed_decision()
 						// 关闭通道
 						TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);        
 						__HAL_TIM_CLEAR_FLAG(&TIM_TimeBaseStructure, STEPMOTOR_TIM_FLAG_CCx);
-						MOTOR_EN(OFF);
-
+				
 						status.running = FALSE;
 						break;
 				/*步进电机加速状态*/
@@ -209,7 +211,6 @@ void speed_decision()
 				/*步进电机最大速度运行状态*/
 				case RUN:
 
-			//      MSD_StepCounter(srd.dir);
 						step_count++;
 						new_step_delay = srd.min_delay;
 						//检查是否需要开始减速
@@ -224,7 +225,6 @@ void speed_decision()
 				/*步进电机减速状态*/
 				case DECEL:
 
-			//      MSD_StepCounter(srd.dir);
 						step_count++;
 						srd.accel_count++;
 						new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) 

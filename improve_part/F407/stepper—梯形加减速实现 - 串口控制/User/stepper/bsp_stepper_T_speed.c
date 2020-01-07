@@ -83,8 +83,12 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
     //必须开始减速的步数(如果还没加速到达最大速度时)。
     unsigned int accel_lim;
 
-    // 根据步数的正负来判断方向
-    if(step < 0)//逆时针
+		/*根据步数和正负判断*/
+		if(step == 0)
+		{
+				return ;
+		}
+		else if(step < 0)//逆时针
     {
         srd.dir = CCW;
         step = -step;
