@@ -1,15 +1,31 @@
+/**
+  ******************************************************************************
+  * @file    bsp_stepper_usart_ctl.c
+  * @author  fire
+  * @version V1.0
+  * @date    2020-xx-xx
+  * @brief   串口控制
+  ******************************************************************************
+  * @attention
+  *
+  * 实验平台:野火  STM32 F407 开发板  
+  * 论坛    :http://www.firebbs.cn
+  * 淘宝    :http://firestm32.taobao.com
+  *
+  ******************************************************************************
+  */
+
 #include "./stepper/bsp_stepper_usart_ctl.h"
 
-
 void ShowHelp(void);
-void ShowData(int position, int acceleration, int deceleration, int speed, int steps);
+void ShowData(int position, int accel_val, int decel_val, int speed, int steps);
 void MSD_demo_run(void);
 
 /*! \brief 打印帮助命令
  */
 void ShowHelp(void)
 {
-    printf("\n\r——————————————野火步进电机驱动演示程序——————————————");
+    printf("\n\r——————————————野火步进电机梯形加减速演示程序——————————————");
     printf("\n\r输入命令：");
     printf("\n\r< ? >       -帮助菜单");
     printf("\n\ra[data]     -设置步进电机的加速度（范围：71—32000）单位为：0.01rad/s^2");
@@ -25,15 +41,15 @@ void ShowHelp(void)
 }
 
 /*! \brief 打印电机参数
- *  \param acceleration 加速度
- *  \param deceleration 减速度
+ *  \param accel_val 加速度
+ *  \param decel_val 减速度
  *  \param speed        最大速度
  *  \param steps        移动步数
  */
-void ShowData(int position, int acceleration, int deceleration, int speed, int steps)
+void ShowData(int position, int accel_val, int decel_val, int speed, int steps)
 {
-  printf("\n\r加速度:%.2frad/s^2",1.0*acceleration/100);
-  printf("  减速度:%.2frad/s^2",1.0*deceleration/100);
+  printf("\n\r加速度:%.2frad/s^2",1.0*accel_val/100);
+  printf("  减速度:%.2frad/s^2",1.0*decel_val/100);
   printf("  最大速度:%.2frad/s(%.2frpm)",1.0*speed/100,9.55*speed/100);
   printf("  移动步数:%d",steps);
   printf("\n\r电机当前位置: %d\r\n",position);
@@ -51,9 +67,9 @@ void DealSerialData(void)
     //默认移动步数
     static int steps = SPR*5;
     //默认加速度
-    static int acceleration = 500;
+    static int accel_val = 500;
     //默认减速度
-    static int deceleration = 100;
+    static int decel_val = 100;
     //默认最大速度
     static int speed = 5000;
     
@@ -66,7 +82,7 @@ void DealSerialData(void)
     if(showflag)
     {
       showflag = 0;
-      ShowData(stepPosition, acceleration, deceleration, speed, steps);
+      ShowData(stepPosition, accel_val, decel_val, speed, steps);
     }
     //检查是否接收到指令
     if(status.cmd == TRUE)
@@ -78,7 +94,7 @@ void DealSerialData(void)
         {
           //从串口获取步数
           steps = atoi((char const *)UART_RxBuffer+2);
-          stepper_move_T(steps, acceleration, deceleration, speed);
+          stepper_move_T(steps, accel_val, decel_val, speed);
           okCmd = TRUE;
           printf("\n\r  ");
         }
@@ -95,14 +111,14 @@ void DealSerialData(void)
                 steps = atoi((char const *)UART_RxBuffer+5);
                 while((UART_RxBuffer[i] != ' ') && (UART_RxBuffer[i] != 13)) i++;
                 i++;
-                acceleration = atoi((char const *)UART_RxBuffer+i);
+                accel_val = atoi((char const *)UART_RxBuffer+i);
                 while((UART_RxBuffer[i] != ' ') && (UART_RxBuffer[i] != 13)) i++;
                 i++;
-                deceleration = atoi((char const *)UART_RxBuffer+i);
+                decel_val = atoi((char const *)UART_RxBuffer+i);
                 while((UART_RxBuffer[i] != ' ') && (UART_RxBuffer[i] != 13)) i++;
                 i++;
                 speed = atoi((char const *)UART_RxBuffer+i);
-                stepper_move_T(steps, acceleration, deceleration, speed);
+                stepper_move_T(steps, accel_val, decel_val, speed);
                 okCmd = TRUE;
                 printf("\n\r  ");
               }
@@ -118,8 +134,8 @@ void DealSerialData(void)
           acc_temp = atoi((char const *)UART_RxBuffer+2);
           if(acc_temp>=71 && acc_temp<=32000)
           {
-            acceleration = acc_temp;
-            printf("\n\r加速度:%.2frad/s^2",1.0*acceleration/100);
+            accel_val = acc_temp;
+            printf("\n\r加速度:%.2frad/s^2",1.0*accel_val/100);
             okCmd = TRUE;
           }
         }
@@ -132,8 +148,8 @@ void DealSerialData(void)
           dec_temp = atoi((char const *)UART_RxBuffer+2);
           if(dec_temp>=71 && dec_temp<=32000)
           {
-            deceleration = dec_temp;
-            printf("\n\r减速度:%.2frad/s^2",1.0*deceleration/100);
+            decel_val = dec_temp;
+            printf("\n\r减速度:%.2frad/s^2",1.0*decel_val/100);
             okCmd = TRUE;
           }
         }
@@ -155,7 +171,7 @@ void DealSerialData(void)
       else if(UART_RxBuffer[0] == 13)
       {
         //如果是回车键直接重复上一次运动
-        stepper_move_T(steps, acceleration, deceleration, speed);
+        stepper_move_T(steps, accel_val, decel_val, speed);
         okCmd = TRUE;
       }
       else if(UART_RxBuffer[0] == '?')
@@ -193,13 +209,13 @@ void DealSerialData(void)
         if(status.out_ena == TRUE)
         {
           printf("OK\n\r");
-          ShowData(stepPosition, acceleration, deceleration, speed, steps);  
+          ShowData(stepPosition, accel_val, decel_val, speed, steps);  
         }
 
       }
 
       
-    }//end if(cmd)
+    }
 }
 
 
@@ -212,25 +228,25 @@ void MSD_demo_run(void)
 {
     uint8_t step_cnt=0;
     int8_t step_num[10] = {2,2,-2,-2,2,2,-4,-4,4,20};
-    for(int i=0;i<200;i++)
+    for(int i=0;i<5;i++)
     {
-            if(step_cnt==11)
-                step_cnt=0;
-            while(status.running == TRUE)
-            {
-                if(status.out_ena != TRUE)
-                   break;
-            };
-            if(status.out_ena != TRUE)
-                break;
-            else
-            {
-                delay_ms(1000);
-                stepper_move_T(SPR*step_num[step_cnt], 32000, 32000, 3000);
+				if(step_cnt==11)
+						step_cnt=0;
+				while(status.running == TRUE)
+				{
+						if(status.out_ena != TRUE)
+							 break;
+				};
+				if(status.out_ena != TRUE)
+						break;
+				else
+				{
+						delay_ms(1000);
+						stepper_move_T(SPR*step_num[step_cnt], 32000, 32000, 3000);
 
-                ShowData(stepPosition, 32000, 32000, 3000, SPR*step_num[step_cnt]);
-                step_cnt++;  
-            }
+						ShowData(stepPosition, 32000, 32000, 3000, SPR*step_num[step_cnt]);
+						step_cnt++;  
+				}
     }
     step_cnt=0;
 }

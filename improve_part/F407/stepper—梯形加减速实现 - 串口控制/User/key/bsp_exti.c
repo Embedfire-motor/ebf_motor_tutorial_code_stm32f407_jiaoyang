@@ -67,8 +67,7 @@ void KEY1_IRQHandler(void)
 	{
 		/*LED1反转*/
 		LED1_TOGGLE;
-		MSD_ENA(ENABLE);
-//		MOTOR_EN(ON);
+		MSD_ENA(DISABLE);
 		//清除中断标志位
 		__HAL_GPIO_EXTI_CLEAR_IT(KEY1_INT_GPIO_PIN);     
 	}  
@@ -81,8 +80,7 @@ void KEY2_IRQHandler(void)
 	{
 		/*LED2反转*/
 		LED2_TOGGLE;
-		MSD_ENA(DISABLE);
-//		MOTOR_EN(OFF);
+		MSD_ENA(ENABLE);
 		//清除中断标志位
 		__HAL_GPIO_EXTI_CLEAR_IT(KEY2_INT_GPIO_PIN);     
 	}  

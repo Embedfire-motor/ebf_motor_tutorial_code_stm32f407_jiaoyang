@@ -25,13 +25,6 @@
 #include "./key/bsp_exti.h"
 #include "./led/bsp_led.h"
 
-//// 速度最大值由驱动器和电机决定，
-//__IO uint32_t set_speed  = 5000;         // 速度 单位为0.05rad/sec
-//// 加速度和减速度选取一般根据实际需要，值越大速度变化越快，加减速阶段比较抖动
-//// 所以加速度和减速度值一般是在实际应用中多尝试出来的结果
-//__IO uint32_t accel_val = 500;         // 加速度 单位为0.0.5rad/sec^2
-//__IO uint32_t decel_val = 100;         // 减速度 单位为0.05rad/sec^2
-
 
 /**
   * @brief  主函数
@@ -45,7 +38,6 @@ int main(void)
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
   DEBUG_USART_Config();
   printf("欢迎使用野火 电机开发板 步进电机 加减速正反选装 例程\r\n");
-
 	/*按键中断初始化*/
 	EXTI_Key_Config();	
 	/*led初始化*/

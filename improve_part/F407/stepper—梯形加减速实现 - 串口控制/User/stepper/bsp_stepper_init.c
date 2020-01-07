@@ -160,6 +160,7 @@ void stepper_Init()
   */
 void MOTOR_PUL_IRQHandler(void)
 { 
+	/*速度状态决策*/
 	speed_decision();
 }
 

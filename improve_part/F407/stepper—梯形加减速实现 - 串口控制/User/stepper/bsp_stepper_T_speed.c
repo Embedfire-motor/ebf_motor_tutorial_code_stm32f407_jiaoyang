@@ -52,7 +52,7 @@ void MSD_ENA(FunctionalState NewState)
     if(NewState)
     {
       //ENA失能，禁止驱动器输出
-      MOTOR_EN(ON);
+      MOTOR_EN(OFF);
       //紧急停止标志位为真
       status.out_ena = FALSE; 
       printf("\n\r驱动器禁止输出（脱机状态）此时电机为无保持力矩状态，可以手动旋转电机");        
@@ -60,7 +60,7 @@ void MSD_ENA(FunctionalState NewState)
     else
     {
       //ENA使能
-      MOTOR_EN(OFF);
+      MOTOR_EN(ON);
       //紧急停止标志位为假
       status.out_ena = TRUE; 
       printf("\n\r驱动器恢复运行，此时电机为保持力矩状态，此时串口指令可以正常控制电机");         
@@ -225,7 +225,6 @@ void speed_decision()
 						// 关闭通道
 						TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);        
 						__HAL_TIM_CLEAR_FLAG(&TIM_TimeBaseStructure, STEPMOTOR_TIM_FLAG_CCx);
-						MOTOR_EN(OFF);
 
 						status.running = FALSE;
 						break;
