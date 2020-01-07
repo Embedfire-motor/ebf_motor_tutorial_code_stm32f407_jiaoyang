@@ -3,7 +3,7 @@
   * @file    main.c
   * @author  fire
   * @version V1.0
-  * @date    2019-xx-xx
+  * @date    2020-xx-xx
   * @brief   梯形加减速
   ******************************************************************************
   * @attention
@@ -28,8 +28,8 @@
 __IO uint32_t set_speed  = 5000;         // 速度 单位为0.05rad/sec
 // 加速度和减速度选取一般根据实际需要，值越大速度变化越快，加减速阶段比较抖动
 // 所以加速度和减速度值一般是在实际应用中多尝试出来的结果
-__IO uint32_t step_accel = 500;         // 加速度 单位为0.0.5rad/sec^2
-__IO uint32_t step_decel = 100;         // 减速度 单位为0.05rad/sec^2
+__IO uint32_t accel_val = 500;         // 加速度 单位为0.0.5rad/sec^2
+__IO uint32_t decel_val = 100;         // 减速度 单位为0.05rad/sec^2
 
 
 /**
@@ -43,8 +43,7 @@ int main(void)
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
   DEBUG_USART_Config();
-  printf("欢迎使用野火 电机开发板 步进电机 PWM控制旋转 例程\r\n");
-	printf("按下按键1、2可修改旋转方向和使能\r\n");	
+  printf("欢迎使用野火 电机开发板 步进电机 加减速正反选装 例程\r\n");
 
 	/*按键中断初始化*/
 	EXTI_Key_Config();	
@@ -53,12 +52,23 @@ int main(void)
 	/*步进电机初始化*/
 	stepper_Init();
 	
+	int i=0,dir_val=0;
 
-	stepper_move_T(-6400*1, step_accel, step_decel, set_speed);
-    
 	while(1)
 	{     
-
+		
+		dir_val=(++i % 2) ? CLOCKWISE : ANTI_CLOCKWISE;
+		printf("dir_val =%d\r\n",dir_val);
+		if(dir_val)
+		{
+			stepper_move_T(SPR*20, accel_val, decel_val, set_speed);
+		}
+		else 
+		{
+			stepper_move_T(-SPR*20, accel_val, decel_val, set_speed);
+		}
+		
+		delay_ms(1500);//要等旋转再反向旋转
 	}
 } 	
 
