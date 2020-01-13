@@ -62,7 +62,7 @@ int main(void)
 				/*增加旋转角度*/
 				angle_val=angle_val+90;
 			}		
-			stepper_turn(2000,angle_val,2,dir_val);
+			stepper_turn(1000,angle_val,32,dir_val);
 			/*打印状态*/
 			if(dir_val)
 				printf("顺时针旋转 %d 度\r\n",angle_val);
