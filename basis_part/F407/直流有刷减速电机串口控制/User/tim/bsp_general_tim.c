@@ -43,12 +43,12 @@ static void TIMx_GPIO_Config(void)
   GPIO_InitStruct.Alternate = GENERAL_TIM_GPIO_AF;
 	
 	/*选择要控制的GPIO引脚*/	
-	GPIO_InitStruct.Pin = GENERAL_TIM_CH1_PIN;
+	GPIO_InitStruct.Pin = GENERAL_TIM_CH3_PIN;
 	/*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
-  HAL_GPIO_Init(GENERAL_TIM_CH1_GPIO_PORT, &GPIO_InitStruct);
+  HAL_GPIO_Init(GENERAL_TIM_CH3_GPIO_PORT, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = GENERAL_TIM_CH2_PIN;	
-  HAL_GPIO_Init(GENERAL_TIM_CH2_GPIO_PORT, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = GENERAL_TIM_CH4_PIN;	
+  HAL_GPIO_Init(GENERAL_TIM_CH4_GPIO_PORT, &GPIO_InitStruct);
 	
 }
 
@@ -100,12 +100,12 @@ static void TIM_PWMOUTPUT_Config(void)
 	/*开始输出PWM*/
 	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,PWM_CHANNEL_1);
 	
-//	/*配置脉宽*/
-//  TIM_OCInitStructure.Pulse = PWM_PERIOD_COUNT/2;    // 默认占空比为50%
-//	/*配置PWM通道*/
-//  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, PWM_CHANNEL_2);
-//	/*开始输出PWM*/
-//	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,PWM_CHANNEL_2);
+	/*配置脉宽*/
+  TIM_OCInitStructure.Pulse = PWM_PERIOD_COUNT/2;    // 默认占空比为50%
+	/*配置PWM通道*/
+  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, PWM_CHANNEL_2);
+	/*开始输出PWM*/
+	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,PWM_CHANNEL_2);
 }
 
 /**

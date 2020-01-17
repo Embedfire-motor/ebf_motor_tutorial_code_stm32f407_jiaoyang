@@ -8,8 +8,8 @@
 #define GENERAL_TIM_GPIO_AF                 GPIO_AF1_TIM2
 #define GENERAL_TIM_CLK_ENABLE()  					__TIM2_CLK_ENABLE()
 
-#define PWM_CHANNEL_1                       TIM_CHANNEL_1
-#define PWM_CHANNEL_2                       TIM_CHANNEL_2
+#define PWM_CHANNEL_1                       TIM_CHANNEL_3
+#define PWM_CHANNEL_2                       TIM_CHANNEL_4
 
 /* 累计 TIM_Period个后产生一个更新或者中断*/		
 /* 当定时器从0计数到PWM_PERIOD_COUNT，即为PWM_PERIOD_COUNT+1次，为一个定时周期 */

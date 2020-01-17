@@ -34,7 +34,7 @@ static void TIMx_GPIO_Config(void)
   
   /* 定时器通道功能引脚端口时钟使能 */
 	
-	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOD_CLK_ENABLE();
   
   /* 定时器通道1功能引脚IO初始化 */
 	/*设置输出类型*/
@@ -87,7 +87,7 @@ static void TIM_PWMOUTPUT_Config(void)
   HAL_TIM_Base_Init(&TIM_TimeBaseStructure);
   
 	/*PWM模式配置*/
-  TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM1;      // 配置为PWM模式1
+  TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM2;      // 配置为PWM模式1
   TIM_OCInitStructure.Pulse = 0.5/20.0*PWM_PERIOD_COUNT;    // 默认占空比
   TIM_OCInitStructure.OCFastMode = TIM_OCFAST_DISABLE;
 	/*当定时器计数值小于CCR1_Val时为高电平*/
@@ -131,21 +131,33 @@ void TIMx_Configuration(void)
 }
 
 /**
-  * @brief  设置舵机角度
+  * @brief  设置舵机占空比
   * @param  angle: 占空比，（0.5/20.0*PWM_PERIOD_COUNT 到 2.5/20.0*PWM_PERIOD_COUNT）
   * @retval 无
   */
-void set_steering_gear_angle(uint16_t angle)
+void set_steering_gear_dutyfactor(uint16_t dutyfactor)
 {
   #if 1
   {
     /* 对超过范围的占空比进行边界处理 */
-    angle = 0.5/20.0*PWM_PERIOD_COUNT > angle ? 0.5/20.0*PWM_PERIOD_COUNT : angle;
-    angle = 2.5/20.0*PWM_PERIOD_COUNT < angle ? 2.5/20.0*PWM_PERIOD_COUNT : angle;
+    dutyfactor = 0.5/20.0*PWM_PERIOD_COUNT > dutyfactor ? 0.5/20.0*PWM_PERIOD_COUNT : dutyfactor;
+    dutyfactor = 2.5/20.0*PWM_PERIOD_COUNT < dutyfactor ? 2.5/20.0*PWM_PERIOD_COUNT : dutyfactor;
   }
   #endif
   
-	TIM2_SetPWM_pulse(PWM_CHANNEL_1, angle);
+	TIM2_SetPWM_pulse(PWM_CHANNEL_1, dutyfactor);
+}
+
+/**
+  * @brief  设置舵机角度
+  * @param  angle: 角度，（0 到 180（舵机为0°-180°））
+  * @retval 无
+  */
+void set_steering_gear_angle(uint16_t angle_temp)
+{
+  angle_temp = (0.5 + angle_temp / 180.0 * (2.5 - 0.5)) / 20.0 * PWM_PERIOD_COUNT;    // 计算角度对应的占空比
+  
+  set_steering_gear_dutyfactor(angle_temp);    // 设置占空比
 }
 
 /**
@@ -170,8 +182,6 @@ extern uint16_t ChannelPulse;
   */
 void deal_serial_data(void)
 {
-    static char showflag =1;
-    int dec_temp=0;
     int angle_temp=0;
     
     //接收到正确的指令才为1
@@ -189,8 +199,7 @@ void deal_serial_data(void)
           if(angle_temp>=0 && angle_temp <= 180)
           {
             printf("\n\r角度: %d\n\r", angle_temp);
-            angle_temp = 0.5/20.0*PWM_PERIOD_COUNT + angle_temp / 180.0 * (2.5 - 0.5) / 20.0 * PWM_PERIOD_COUNT;
-            ChannelPulse = angle_temp;    // 同步按键控制的比较值
+            ChannelPulse = (0.5 + angle_temp / 180.0 * (2.5 - 0.5)) / 20.0 * PWM_PERIOD_COUNT;    // 更新按钮控制的占空比
             set_steering_gear_angle(angle_temp);
 //            printf("\n\r角度: %d\n\r", (uint16_t)(angle_temp/PWM_PERIOD_COUNT*20.0/(2.5-0.5)*180.0));
             okCmd = 1;
@@ -214,7 +223,7 @@ void deal_serial_data(void)
       receive_cmd = 0;
       uart_FlushRxBuffer();
 
-    }//end if(cmd)
+    }
 }
 
 

@@ -39,8 +39,6 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  
-  
   /* HAL 库初始化 */
   HAL_Init();
   
@@ -69,7 +67,7 @@ int main(void)
       
       ChannelPulse = 0.5/20.0*PWM_PERIOD_COUNT > ChannelPulse ? 0.5/20.0*PWM_PERIOD_COUNT : ChannelPulse;    // 检查占空比的合法性
       
-      set_steering_gear_angle(ChannelPulse);    // 设置占空比
+      set_steering_gear_dutyfactor(ChannelPulse);    // 设置占空比
     }
     
     /* 处理数据 */
@@ -79,7 +77,7 @@ int main(void)
       
       ChannelPulse = (2.5/20.0*PWM_PERIOD_COUNT) < ChannelPulse ? (2.5/20.0*PWM_PERIOD_COUNT) : ChannelPulse;    // 检查占空比的合法性
       
-      set_steering_gear_angle(ChannelPulse);    // 设置占空比
+      set_steering_gear_dutyfactor(ChannelPulse);    // 设置占空比
     }
     
     /* 串口处理 */

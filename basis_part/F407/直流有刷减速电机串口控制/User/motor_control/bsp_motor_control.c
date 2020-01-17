@@ -51,6 +51,11 @@ void set_motor_direction(motor_dir_t dir)
 {
   direction = dir;
   
+  SET_FWD_COMPAER(0);     // 设置速度为 0
+  SET_REV_COMPAER(0);     // 设置速度为 0
+  
+  HAL_Delay(200);         // 延时一会
+  
   if (direction == MOTOR_FWD)
   {
     SET_FWD_COMPAER(dutyfactor);     // 设置速度
@@ -112,11 +117,7 @@ void deal_serial_data(void)
     
     //接收到正确的指令才为1
     char okCmd = 0;
-//    if(showflag)
-//    {
-//      showflag = 0;
-//      ShowData(stepPosition, acceleration, deceleration, speed, steps);
-//    }
+
     //检查是否接收到指令
     if(receive_cmd == 1)
     {
@@ -149,13 +150,6 @@ void deal_serial_data(void)
           }
         }
       }
-//      else if(UART_RxBuffer[0] == 's')
-//      {
-//        /* 设置电机停止转动 */
-//        set_motor_disable();
-//        printf("\n\r已停止运转");
-//        okCmd = 1;
-//      }
       else if(UART_RxBuffer[0] == '?')
       {
         //打印帮助命令
@@ -173,7 +167,7 @@ void deal_serial_data(void)
       receive_cmd = 0;
       uart_FlushRxBuffer();
 
-    }//end if(cmd)
+    }
 }
 
 /*********************************************END OF FILE**********************/
