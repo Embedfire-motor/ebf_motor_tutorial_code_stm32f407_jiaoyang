@@ -81,7 +81,7 @@ TIM_HandleTypeDef  TIM_TimeBaseStructure;
 static void TIM_PWMOUTPUT_Config(void)
 {
   TIM_OC_InitTypeDef  TIM_OCInitStructure;  
-	int tim_per=2000;//定时器周期
+	int tim_per=50;//定时器周期
 	
   /*使能定时器*/
   MOTOR_PUL_CLK_ENABLE();

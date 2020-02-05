@@ -16,7 +16,7 @@
 #define MOTOR_EN_GPIO_PORT            	GPIOE                       
 #define MOTOR_EN_GPIO_CLK_ENABLE()    	__HAL_RCC_GPIOE_CLK_ENABLE()
 	
-//Motor Âö³å
+//Motor Âö³å		
 
 #define MOTOR_PUL_TIM                   TIM2
 #define MOTOR_PUL_CLK_ENABLE()  				__TIM2_CLK_ENABLE()
