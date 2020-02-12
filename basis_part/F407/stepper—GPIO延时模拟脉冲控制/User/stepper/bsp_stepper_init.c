@@ -1,11 +1,27 @@
+/**
+  ******************************************************************************
+  * @file    bsp_stepper_init.c
+  * @author  fire
+  * @version V1.0
+  * @date    2019-xx-xx
+  * @brief   初始化
+  ******************************************************************************
+  * @attention
+  *
+  * 实验平台:野火  STM32 F407 开发板 
+  * 论坛    :http://www.firebbs.cn
+  * 淘宝    :http://firestm32.taobao.com
+  *
+  ******************************************************************************
+  */
 #include "./stepper/bsp_stepper_init.h"
 #include "./delay/core_delay.h"   
 #include "stm32f4xx.h"
 /**
-  * @brief  步进电机转动
+  * @brief  步进电机旋转
   * @param  tim					方波周期 单位MS	周期越短频率越高，转速越快 细分为1时最少10ms
 	* @param  angle				需要转动的角度值
-	* @param  dir					选择正反转(取值范围：0,1)	
+	* @param  dir				选择正反转(取值范围：0,1)	
 	* @param  subdivide	 	细分值
 	*	@note 	无
   * @retval 无
@@ -34,7 +50,7 @@ void stepper_turn(int tim,float angle,float subdivide,uint8_t dir)
 		delay_us(tim/2);
 	}
 	/*关使能*/
-	//MOTOR_EN(OFF);
+	MOTOR_EN(OFF);
 }
 
 
@@ -58,7 +74,7 @@ void stepper_Init()
     /*设置引脚的输出类型为推挽输出*/
     GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;  
 	
-		GPIO_InitStruct.Pull =GPIO_PULLUP;// GPIO_PULLDOWN  GPIO_PULLUP
+	GPIO_InitStruct.Pull =GPIO_PULLUP;// GPIO_PULLDOWN  GPIO_PULLUP
 
     /*设置引脚速率为高速 */   
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
@@ -74,8 +90,8 @@ void stepper_Init()
     GPIO_InitStruct.Pin = MOTOR_EN_PIN;	
     HAL_GPIO_Init(MOTOR_EN_GPIO_PORT, &GPIO_InitStruct);	
 		
-		/*关掉使能*/
-		MOTOR_EN(OFF);
+	/*关掉使能*/
+	MOTOR_EN(OFF);
 				
 }
 
