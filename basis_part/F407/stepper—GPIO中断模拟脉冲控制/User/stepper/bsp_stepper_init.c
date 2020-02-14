@@ -34,13 +34,13 @@ static void TIM_Mode_Config(void)
 
 	GENERAL_TIM_CLK_ENABLE();
 
-  TIM_TimeBaseStructure.Instance = GENERAL_TIM;
+	TIM_TimeBaseStructure.Instance = GENERAL_TIM;
 	/* 累计 TIM_Period个后产生一个更新或者中断*/		
-  //当定时器从0计数到4999，即为5000次，为一个定时周期
-  TIM_TimeBaseStructure.Init.Period = 300-1;	
+	//当定时器从0计数到4999，即为5000次，为一个定时周期
+	TIM_TimeBaseStructure.Init.Period = 300-1;	
 	// 通用控制定时器时钟源TIMxCLK = HCLK/2=84MHz 
 	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)=1MHz
-  TIM_TimeBaseStructure.Init.Prescaler = 84-1;
+	TIM_TimeBaseStructure.Init.Prescaler = 84-1;
 	// 计数方式
 	TIM_TimeBaseStructure.Init.CounterMode=TIM_COUNTERMODE_UP;
 	// 采样时钟分频
@@ -65,82 +65,45 @@ void TIMx_Configuration(void)
 }
 
 /**
-  * @brief  步进电机转动
-  * @param  tim					方波周期 单位MS	周期越短频率越高，转速越快 细分为1时最少10ms
-	* @param  angle				需要转动的角度值
-	* @param  dir					选择正反转(取值范围：0,1)	
-	* @param  subdivide	 	细分值
-	*	@note 	无
-  * @retval 无
-  */
-void stepper_turn(int tim,float angle,float subdivide,uint8_t dir)	
-{
-//	int n,i;
-//	/*根据细分数求得步距角被分成多少个方波*/
-//	n=(int)(angle/(1.8/subdivide));
-//	if(dir==CLOCKWISE)	//顺时针
-//	{
-//		MOTOR_DIR(CLOCKWISE);
-//	}
-//	else if(dir==ANTI_CLOCKWISE)//逆时针
-//	{
-//		MOTOR_DIR(ANTI_CLOCKWISE);
-//	}
-//	/*开使能*/
-//	MOTOR_EN(ON);
-//	/*模拟方波*/
-//	for(i=0;i<n;i++)
-//	{		
-//		MOTOR_PUL(HIGH);
-//		delay_us(tim/2);
-//		MOTOR_PUL(LOW);
-//		delay_us(tim/2);
-//	}
-//	/*关使能*/
-//	//MOTOR_EN(OFF);
-}
-
-
-/**
   * @brief  引脚初始化
   * @retval 无
   */
 void stepper_Init()
 {
-    /*定义一个GPIO_InitTypeDef类型的结构体*/
-    GPIO_InitTypeDef  GPIO_InitStruct;
+	/*定义一个GPIO_InitTypeDef类型的结构体*/
+	GPIO_InitTypeDef  GPIO_InitStruct;
 
-    /*开启Motor相关的GPIO外设时钟*/
-    MOTOR_DIR_GPIO_CLK_ENABLE();
-    MOTOR_PUL_GPIO_CLK_ENABLE();
-    MOTOR_EN_GPIO_CLK_ENABLE();
-  
-    /*选择要控制的GPIO引脚*/															   
-    GPIO_InitStruct.Pin = MOTOR_DIR_PIN;	
+	/*开启Motor相关的GPIO外设时钟*/
+	MOTOR_DIR_GPIO_CLK_ENABLE();
+	MOTOR_PUL_GPIO_CLK_ENABLE();
+	MOTOR_EN_GPIO_CLK_ENABLE();
 
-    /*设置引脚的输出类型为推挽输出*/
-    GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;  
-	
-		GPIO_InitStruct.Pull =GPIO_PULLUP;
+	/*选择要控制的GPIO引脚*/															   
+	GPIO_InitStruct.Pin = MOTOR_DIR_PIN;	
 
-    /*设置引脚速率为高速 */   
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	/*设置引脚的输出类型为推挽输出*/
+	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;  
 
-    /*Motor 方向引脚 初始化*/
-    HAL_GPIO_Init(MOTOR_DIR_GPIO_PORT, &GPIO_InitStruct);	
+	GPIO_InitStruct.Pull =GPIO_PULLUP;
 
-    /*Motor 脉冲引脚 初始化*/
-    GPIO_InitStruct.Pin = MOTOR_PUL_PIN;	
-    HAL_GPIO_Init(MOTOR_PUL_GPIO_PORT, &GPIO_InitStruct);	
+	/*设置引脚速率为高速 */   
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
-    /*Motor 使能引脚 初始化*/
-    GPIO_InitStruct.Pin = MOTOR_EN_PIN;	
-    HAL_GPIO_Init(MOTOR_EN_GPIO_PORT, &GPIO_InitStruct);	
-		
-		/*关掉使能*/
-		MOTOR_EN(OFF);
-		/*初始化定时器*/
-		TIMx_Configuration();
+	/*Motor 方向引脚 初始化*/
+	HAL_GPIO_Init(MOTOR_DIR_GPIO_PORT, &GPIO_InitStruct);	
+
+	/*Motor 脉冲引脚 初始化*/
+	GPIO_InitStruct.Pin = MOTOR_PUL_PIN;	
+	HAL_GPIO_Init(MOTOR_PUL_GPIO_PORT, &GPIO_InitStruct);	
+
+	/*Motor 使能引脚 初始化*/
+	GPIO_InitStruct.Pin = MOTOR_EN_PIN;	
+	HAL_GPIO_Init(MOTOR_EN_GPIO_PORT, &GPIO_InitStruct);	
+
+	/*关掉使能*/
+	MOTOR_EN(OFF);
+	/*初始化定时器*/
+	TIMx_Configuration();
 				
 }
 
@@ -162,7 +125,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim==(&TIM_TimeBaseStructure))
     {
-				MOTOR_PUL_T();//翻转IO口达到脉冲的效果
+		MOTOR_PUL_T();//翻转IO口达到脉冲的效果
     }
 }
 

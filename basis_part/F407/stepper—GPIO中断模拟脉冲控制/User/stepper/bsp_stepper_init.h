@@ -10,11 +10,6 @@
 #define GENERAL_TIM_IRQ                  TIM2_IRQn
 #define GENERAL_TIM_INT_IRQHandler       TIM2_IRQHandler
 
-extern TIM_HandleTypeDef TIM_TimeBaseStructure;
-
-void TIMx_Configuration(void);
-
-
 //引脚定义
 /*******************************************************/
 //Motor 方向 
@@ -42,7 +37,6 @@ void TIMx_Configuration(void);
 #define CLOCKWISE 			1//顺时针
 #define ANTI_CLOCKWISE	0//逆时针
 
-
 //控制使能引脚
 /* 带参宏，可以像内联函数一样使用 */
 #define	GPIO_H(p,i)					{p->BSRR=i;}			  								//设置为高电平		
@@ -61,14 +55,14 @@ void TIMx_Configuration(void);
 
 #define MOTOR_DIR(x)				if(x)																				\
 														{GPIO_H(MOTOR_DIR_GPIO_PORT,MOTOR_DIR_PIN);}\
-                            else																				\
-                            {GPIO_L(MOTOR_DIR_GPIO_PORT,MOTOR_DIR_PIN);}	
-														
+														else																				\
+														{GPIO_L(MOTOR_DIR_GPIO_PORT,MOTOR_DIR_PIN);}														
 
 #define MOTOR_PUL_T()				GPIO_T(MOTOR_PUL_GPIO_PORT,MOTOR_PUL_PIN);
 	
 
-
+extern TIM_HandleTypeDef TIM_TimeBaseStructure;
+void TIMx_Configuration(void);
 extern void stepper_Init(void);
 extern void stepper_turn(int tim,float angle,float subdivide,uint8_t dir);
 #endif /* __STEP_MOTOR_INIT_H */

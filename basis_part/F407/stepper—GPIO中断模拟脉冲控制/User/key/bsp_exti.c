@@ -19,11 +19,11 @@
 #include "./led/bsp_led.h"   
 #include "./stepper/bsp_stepper_init.h"
 
- /**
-  * @brief  配置 PA0 为线中断口，并设置中断优先级
-  * @param  无
-  * @retval 无
-  */
+/**
+* @brief  配置 key ，并设置中断优先级
+* @param  无
+* @retval 无
+*/
 void EXTI_Key_Config(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure; 
@@ -60,6 +60,11 @@ int i=0,j=0;
 int dir_val=0;
 int en_val=0;
 
+/**
+* @brief  KEY1中断服务函数
+* @param  无
+* @retval 无
+*/
 void KEY1_IRQHandler(void)
 {
   //确保是否产生了EXTI Line中断
@@ -76,7 +81,11 @@ void KEY1_IRQHandler(void)
 		__HAL_GPIO_EXTI_CLEAR_IT(KEY1_INT_GPIO_PIN);     
 	}  
 }
-
+/**
+* @brief  KEY2中断服务函数
+* @param  无
+* @retval 无
+*/
 void KEY2_IRQHandler(void)
 {
   //确保是否产生了EXTI Line中断
