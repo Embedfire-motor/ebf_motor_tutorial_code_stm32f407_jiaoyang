@@ -45,12 +45,15 @@ int main(void)
 	{     
 		if(print_flag)
 		{
-			/* 计算S型加减速曲线的加速段速度值*/
-			CalculateSpeedTab(5,10,4);    // 从0加速到10r/min,加速时间是4s
+			/*初速度为0，末速度5，加速时间为4s*/
+			CalculateSpeedTab(0,5,5);
 			print_flag=0;
 		}
 	}
 } 	
+
+
+
 
 /**
   * @brief  System Clock Configuration
