@@ -40,7 +40,7 @@ float PID_realize(float temp_val)
 	/*传入目标值*/
 	pid.target_val = temp_val;
 	/*计算目标值与实际值的误差*/
-  pid.err=pid.target_val-pid.actual_val;
+	pid.err=pid.target_val-pid.actual_val;
 	/*PID算法实现*/
 	float increment_val = pid.Kp*(pid.err - pid.err_next) + pid.Ki*pid.err + pid.Kd*(pid.err - 2 * pid.err_next + pid.err_last);
 	/*累加*/
@@ -61,9 +61,6 @@ float set_point=0.0;
 int pid_status=0;
 void time_period_fun()
 {
-	static int num=0;
-	static int run_i=0;
-			
 	if(!pid_status)
 	{
 		float val=PID_realize(set_point);

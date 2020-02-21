@@ -62,8 +62,6 @@ float set_point=0.0;
 int pid_status=0;
 void time_period_fun()
 {
-	static int num=0;
-	static int run_i=0;
 			
 	if(!pid_status)
 	{
