@@ -40,12 +40,12 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
     //必须开始减速的步数(如果还没加速到达最大速度时)。
     unsigned int accel_lim;
 
-		/*根据步数和正负判断*/
-		if(step == 0)
-		{
-				return ;
-		}
-		else if(step < 0)//逆时针
+	/*根据步数和正负判断*/
+	if(step == 0)
+	{
+			return ;
+	}
+	else if(step < 0)//逆时针
     {
         srd.dir = CCW;
         step = -step;
@@ -72,51 +72,51 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
     // 步数不为零才移动
     else if(step != 0)
     {
-			// 设置最大速度极限, 计算得到min_delay用于定时器的计数器的值。
-			// min_delay = (alpha / tt)/ w
-			srd.min_delay = (int32_t)(A_T_x10/speed);
+		// 设置最大速度极限, 计算得到min_delay用于定时器的计数器的值。
+		// min_delay = (alpha / tt)/ w
+		srd.min_delay = (int32_t)(A_T_x10/speed);
 
-			// 通过计算第一个(c0) 的步进延时来设定加速度，其中accel单位为0.1rad/sec^2
-			// step_delay = 1/tt * sqrt(2*alpha/accel)
-			// step_delay = ( tfreq*0.676/10 )*10 * sqrt( (2*alpha*100000) / (accel*10) )/100
-			srd.step_delay = (int32_t)((T1_FREQ_148 * sqrt(A_SQ / accel))/10);
+		// 通过计算第一个(c0) 的步进延时来设定加速度，其中accel单位为0.1rad/sec^2
+		// step_delay = 1/tt * sqrt(2*alpha/accel)
+		// step_delay = ( tfreq*0.676/10 )*10 * sqrt( (2*alpha*100000) / (accel*10) )/100
+		srd.step_delay = (int32_t)((T1_FREQ_148 * sqrt(A_SQ / accel))/10);
 
-			// 计算多少步之后达到最大速度的限制
-			// max_s_lim = speed^2 / (2*alpha*accel)
-			max_s_lim = (uint32_t)(speed*speed/(A_x200*accel/10));
-			// 如果达到最大速度小于0.5步，我们将四舍五入为0
-			// 但实际我们必须移动至少一步才能达到想要的速度
-			if(max_s_lim == 0)
-			{
-					max_s_lim = 1;
-			}
+		// 计算多少步之后达到最大速度的限制
+		// max_s_lim = speed^2 / (2*alpha*accel)
+		max_s_lim = (uint32_t)(speed*speed/(A_x200*accel/10));
+		// 如果达到最大速度小于0.5步，我们将四舍五入为0
+		// 但实际我们必须移动至少一步才能达到想要的速度
+		if(max_s_lim == 0)
+		{
+				max_s_lim = 1;
+		}
 
-    // 计算多少步之后我们必须开始减速
-    // n1 = (n1+n2)decel / (accel + decel)
-    accel_lim = ((long)step*decel) / (accel+decel);
-    // 我们必须加速至少1步才能才能开始减速.
-    if(accel_lim == 0)
-    {
-        accel_lim = 1;
-    }
-    // 使用限制条件我们可以计算出第一次开始减速的位置
-    //srd.decel_val为负数
-    if(accel_lim <= max_s_lim)
-    {
-        srd.decel_val = accel_lim - step;
-    }
-    else
-    {
-        srd.decel_val = -(long)(max_s_lim*accel/decel);
-    }
-    // 当只剩下一步我们必须减速
-    if(srd.decel_val == 0)
-    {
-        srd.decel_val = -1;
-    }
+		// 计算多少步之后我们必须开始减速
+		// n1 = (n1+n2)decel / (accel + decel)
+		accel_lim = ((long)step*decel) / (accel+decel);
+		// 我们必须加速至少1步才能才能开始减速.
+		if(accel_lim == 0)
+		{
+			accel_lim = 1;
+		}
+		// 使用限制条件我们可以计算出第一次开始减速的位置
+		//srd.decel_val为负数
+		if(accel_lim <= max_s_lim)
+		{
+			srd.decel_val = accel_lim - step;
+		}
+		else
+		{
+			srd.decel_val = -(long)(max_s_lim*accel/decel);
+		}
+		// 当只剩下一步我们必须减速
+		if(srd.decel_val == 0)
+		{
+			srd.decel_val = -1;
+		}
 
-    // 计算开始减速时的步数
-    srd.decel_start = step + srd.decel_val;
+		// 计算开始减速时的步数
+		srd.decel_start = step + srd.decel_val;
 
 		// 如果最大速度很慢，我们就不需要进行加速运动
 		if(srd.step_delay <= srd.min_delay)
@@ -128,16 +128,16 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
 		{
 			srd.run_state = ACCEL;
 		}
-    // 复位加速度计数值
-    srd.accel_count = 0;
-    status.running = TRUE;
-  }
+		// 复位加速度计数值
+		srd.accel_count = 0;
+		status.running = TRUE;
+	}
 	/*获取当前计数值*/
-  int tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
+	int tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
 	/*在当前计数值基础上设置定时器比较值*/
-  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tim_count+srd.step_delay); 
+	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tim_count+srd.step_delay); 
 	/*使能定时器通道*/
-  TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);
+	TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);
 	MOTOR_EN(ON);
 }
 
@@ -161,10 +161,10 @@ void speed_decision()
   //定时器使用翻转模式，需要进入两次中断才输出一个完整脉冲
   __IO static uint8_t i=0;
   
-  if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, STEPMOTOR_TIM_IT_CCx) !=RESET)
+  if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx) !=RESET)
   {
     // 清楚定时器中断
-    __HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, STEPMOTOR_TIM_IT_CCx);
+    __HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx);
     
     // 设置比较值
     tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
@@ -184,7 +184,7 @@ void speed_decision()
 
 						// 关闭通道
 						TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);        
-						__HAL_TIM_CLEAR_FLAG(&TIM_TimeBaseStructure, STEPMOTOR_TIM_FLAG_CCx);
+						__HAL_TIM_CLEAR_FLAG(&TIM_TimeBaseStructure, MOTOR_TIM_FLAG_CCx);
 				
 						status.running = FALSE;
 						break;

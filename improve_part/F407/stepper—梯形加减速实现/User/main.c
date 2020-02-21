@@ -24,8 +24,9 @@
 #include "./key/bsp_exti.h"
 #include "./led/bsp_led.h"
 
-// 速度最大值由驱动器和电机决定，
-__IO uint32_t set_speed  = 5000;         // 速度 单位为0.05rad/sec
+
+// 硬件决定速度的上限，软件算法决定是否可以达到上限
+__IO uint32_t set_speed  = 2000;         // 速度 单位为0.05rad/sec
 // 加速度和减速度选取一般根据实际需要，值越大速度变化越快，加减速阶段比较抖动
 // 所以加速度和减速度值一般是在实际应用中多尝试出来的结果
 __IO uint32_t accel_val = 100;         // 加速度 单位为0.0.5rad/sec^2
@@ -42,16 +43,11 @@ int main(void)
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
-  DEBUG_USART_Config();
-  printf("欢迎使用野火 电机开发板 步进电机 加减速正反旋转 例程\r\n");
-
-	/*按键中断初始化*/
-	EXTI_Key_Config();	
-	/*led初始化*/
-	LED_GPIO_Config();
+	DEBUG_USART_Config();
+	printf("欢迎使用野火 电机开发板 步进电机 加减速正反旋转 例程\r\n");
 	/*步进电机初始化*/
 	stepper_Init();
-	
+
 	int i=0,dir_val=0;
 
 	while(1)
@@ -61,14 +57,14 @@ int main(void)
 		printf("dir_val =%d\r\n",dir_val);
 		if(dir_val)
 		{
-			stepper_move_T(SPR*20, accel_val, decel_val, set_speed);
+			stepper_move_T(6400*20, accel_val, decel_val, set_speed);
 		}
 		else 
 		{
-			stepper_move_T(-SPR*20, accel_val, decel_val, set_speed);
+			stepper_move_T(-6400*20, accel_val, decel_val, set_speed);
 		}
 		
-		delay_ms(5000);//要等旋转再反向旋转
+		delay_ms(3000);//要等旋转再反向旋转
 	}
 } 	
 
