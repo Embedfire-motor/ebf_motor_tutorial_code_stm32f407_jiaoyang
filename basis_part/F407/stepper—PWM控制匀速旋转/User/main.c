@@ -42,7 +42,7 @@ int main(void)
 	LED_GPIO_Config();
 	/*步进电机初始化*/
 	stepper_Init();
-
+	
 	while(1)
 	{     
 

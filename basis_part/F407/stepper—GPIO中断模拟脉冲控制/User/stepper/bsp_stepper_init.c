@@ -82,7 +82,7 @@ void stepper_Init()
 	GPIO_InitStruct.Pin = MOTOR_DIR_PIN;	
 
 	/*设置引脚的输出类型为推挽输出*/
-	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;  
+	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;  
 
 	GPIO_InitStruct.Pull =GPIO_PULLUP;
 

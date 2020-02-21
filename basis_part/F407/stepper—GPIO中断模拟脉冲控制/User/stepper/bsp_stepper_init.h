@@ -5,7 +5,7 @@
 #include "stm32f4xx_hal.h"
 
 #define GENERAL_TIM                     TIM2
-#define GENERAL_TIM_CLK_ENABLE()  			__TIM2_CLK_ENABLE()
+#define GENERAL_TIM_CLK_ENABLE()		__TIM2_CLK_ENABLE()
 
 #define GENERAL_TIM_IRQ                  TIM2_IRQn
 #define GENERAL_TIM_INT_IRQHandler       TIM2_IRQHandler
@@ -23,9 +23,9 @@
 #define MOTOR_EN_GPIO_CLK_ENABLE()    	__HAL_RCC_GPIOE_CLK_ENABLE()
 
 //Motor Âö³å
-#define MOTOR_PUL_PIN                  	GPIO_PIN_15            
-#define MOTOR_PUL_GPIO_PORT            	GPIOA
-#define MOTOR_PUL_GPIO_CLK_ENABLE()   	__HAL_RCC_GPIOA_CLK_ENABLE()	
+#define MOTOR_PUL_PIN                  	GPIO_PIN_5            
+#define MOTOR_PUL_GPIO_PORT            	GPIOI
+#define MOTOR_PUL_GPIO_CLK_ENABLE()   	__HAL_RCC_GPIOI_CLK_ENABLE()	
 
 /************************************************************/
 #define HIGH 1	//¸ßµçÆ½

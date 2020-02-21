@@ -33,22 +33,21 @@ static void Stepper_GPIO_Config(void)
 	MOTOR_DIR_GPIO_CLK_ENABLE();
 	MOTOR_PUL_GPIO_CLK_ENABLE();
 	MOTOR_EN_GPIO_CLK_ENABLE();
-
+	
 	/*选择要控制的GPIO引脚*/															   
 	GPIO_InitStruct.Pin = MOTOR_DIR_PIN;	
 	/*设置引脚的输出类型为推挽输出*/
-	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;  
+	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP; 
 	GPIO_InitStruct.Pull =GPIO_PULLUP;
 	/*设置引脚速率为高速 */   
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	/*Motor 方向引脚 初始化*/
 	HAL_GPIO_Init(MOTOR_DIR_GPIO_PORT, &GPIO_InitStruct);	
-
+	
 	/*Motor 使能引脚 初始化*/
 	GPIO_InitStruct.Pin = MOTOR_EN_PIN;	
 	HAL_GPIO_Init(MOTOR_EN_GPIO_PORT, &GPIO_InitStruct);	
-
-
+	
 	/* 定时器通道1功能引脚IO初始化 */
 	/*设置输出类型*/
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -77,11 +76,13 @@ static void Stepper_GPIO_Config(void)
  * TIM_RepetitionCounter TIMx,x[1,8]才有(高级定时器)
  *-----------------------------------------------------------------------------
  */
-TIM_HandleTypeDef  TIM_TimeBaseStructure;
+
+TIM_OC_InitTypeDef  TIM_OCInitStructure;  
+TIM_HandleTypeDef  TIM_TimeBaseStructure;	
 static void TIM_PWMOUTPUT_Config(void)
 {
-	TIM_OC_InitTypeDef  TIM_OCInitStructure;  
-	int tim_per=50;//定时器周期
+	
+	int tim_per=1000;//定时器周期
 
 	/*使能定时器*/
 	MOTOR_PUL_CLK_ENABLE();
@@ -92,7 +93,7 @@ static void TIM_PWMOUTPUT_Config(void)
 	TIM_TimeBaseStructure.Init.Period = tim_per;
 	// 通用控制定时器时钟源TIMxCLK = HCLK/2=84MHz 
 	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)=1MHz
-	TIM_TimeBaseStructure.Init.Prescaler = (84)-1;	
+	TIM_TimeBaseStructure.Init.Prescaler = 168-1;	
 
 	/*计数方式*/
 	TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -126,7 +127,7 @@ void TIM2_SetPWM_pulse(int channel,int compare)
 {
 	switch(channel)
 	{
-		case 1:  	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_1,compare);break;
+		case 1:   __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_1,compare);break;
 		case 2:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_2,compare);break;
 		case 3:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_3,compare);break;
 		case 4:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_4,compare);break;
