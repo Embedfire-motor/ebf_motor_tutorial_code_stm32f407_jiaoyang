@@ -59,7 +59,7 @@ void EXTI_Key_Config(void)
 int i=0,j=0;
 int dir_val=0;
 int en_val=0;
-extern uint16_t pwm_index;	
+
 void KEY1_IRQHandler(void)
 {
   //确保是否产生了EXTI Line中断
@@ -67,12 +67,16 @@ void KEY1_IRQHandler(void)
 	{
 		// LED2 取反		
 		LED2_TOGGLE;
-		// 根据半周期对应360，所以相当于 每个索引对应 0.5度
-		pwm_index=pwm_index+2*90;
-
+		/*关掉步进使能*/
+		MOTOR_EN(OFF);
+		/*切换方向*/
+		dir_val=(++i % 2) ? CLOCKWISE : ANTI_CLOCKWISE;
+		MOTOR_DIR(dir_val);
+				
     //清除中断标志位
 		__HAL_GPIO_EXTI_CLEAR_IT(KEY1_INT_GPIO_PIN);     
 	}  
+	
 }
 
 void KEY2_IRQHandler(void)
@@ -83,6 +87,9 @@ void KEY2_IRQHandler(void)
 		// LED1 取反		
 		LED1_TOGGLE;
 
+		/*改变使能*/
+		en_val=(++j % 2) ? ON : OFF;
+		MOTOR_EN(en_val);
 		
     //清除中断标志位
 		__HAL_GPIO_EXTI_CLEAR_IT(KEY2_INT_GPIO_PIN);     

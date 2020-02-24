@@ -21,8 +21,7 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./delay/core_delay.h"
 #include "./stepper/bsp_stepper_init.h"
-#include "./key/bsp_exti.h"
-#include "./led/bsp_led.h"  
+#include "./key/bsp_key.h" 
 
 /**
   * @brief  主函数
@@ -31,27 +30,47 @@
   */
 int main(void) 
 {
-
-	/* 初始化系统时钟为168MHz */
-	SystemClock_Config();
-	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
-  DEBUG_USART_Config();
-  printf("欢迎使用野火 电机开发板 步进电机 IO口模拟控制 例程\r\n");
-	printf("按下按键1、2可修改旋转方向和使能\r\n");
-	/*按键中断初始化*/
-	EXTI_Key_Config();
-	/*led初始化*/
-	LED_GPIO_Config();
-	/*步进电机初始化*/
-	stepper_Init();	
-
-	MOTOR_EN(0);
-
-	while(1)
-	{     
-
-	}
-} 	
+     int key_val=0;
+     int i=0;
+     int dir_val=0;
+     int angle_val=90;
+     /* 初始化系统时钟为168MHz */
+     SystemClock_Config();
+     /*初始化USART 配置模式为 115200 8-N-1，中断接收*/
+     DEBUG_USART_Config();
+     printf("欢迎使用野火 电机开发板 步进电机 IO口模拟控制 例程\r\n");
+     printf("按下按键1、2可修改旋转方向和角度\r\n");
+     /*按键初始化*/
+     Key_GPIO_Config();
+     /*步进电机初始化*/
+     stepper_Init();
+     /*开启步进电机使能*/
+     while(1)
+     {     
+        /*获取键值*/
+        key_val=ret_key_num();
+        /*有按键按下*/
+        if(key_val)
+        {
+           if(key_val==1)
+           {
+              /*改变方向*/
+              dir_val=(++i % 2) ? CLOCKWISE : ANTI_CLOCKWISE;
+           }
+           else if(key_val==2)
+           {
+              /*增加旋转角度*/
+              angle_val=angle_val+90;
+           }		
+           stepper_turn(1000,angle_val,32,dir_val);
+           /*打印状态*/
+           if(dir_val)
+              printf("顺时针旋转 %d 度\r\n",angle_val);
+           else
+              printf("逆时针旋转 %d 度\r\n",angle_val);
+        }
+     }
+}	
 
 /**
   * @brief  System Clock Configuration
