@@ -18,13 +18,7 @@
 #include "./usart/bsp_debug_usart.h"
 
 UART_HandleTypeDef UartHandle;
-
-//串口接收数组
-unsigned char UART_RxBuffer[UART_RX_BUFFER_SIZE];
-//串口接收数组指针
-unsigned char UART_RxPtr;
-/* 命令接收完成 */
-uint8_t receive_cmd = 0;
+//extern uint8_t ucTemp;  
 
  /**
   * @brief  DEBUG_USART GPIO 配置,工作模式配置。115200 8-N-1
@@ -85,11 +79,6 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
   HAL_NVIC_EnableIRQ(DEBUG_USART_IRQ );		    //使能USART1中断通道  
 }
 
-/*****************  发送字符 **********************/
-void Usart_SendByte(uint8_t str)
-{
-  HAL_UART_Transmit(&UartHandle, &str, 1, 1000);
-}
 
 /*****************  发送字符串 **********************/
 void Usart_SendString(uint8_t *str)
@@ -100,8 +89,8 @@ void Usart_SendString(uint8_t *str)
       HAL_UART_Transmit(&UartHandle,(uint8_t *)(str + k) ,1,1000);
       k++;
   } while(*(str + k)!='\0');
+  
 }
-
 ///重定向c库函数printf到串口DEBUG_USART，重定向后可使用printf函数
 int fputc(int ch, FILE *f)
 {

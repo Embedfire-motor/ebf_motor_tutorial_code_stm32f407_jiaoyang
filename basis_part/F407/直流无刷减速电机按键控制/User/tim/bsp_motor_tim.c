@@ -16,11 +16,14 @@
   */
   
 #include "./tim/bsp_motor_tim.h"
+#include "./led/bsp_led.h"
+#include "./usart/bsp_debug_usart.h"
 
-TIM_HandleTypeDef  TIM_TimeBaseStructure;
+TIM_HandleTypeDef  htimx_bldcm;
 TIM_OC_InitTypeDef TIM_OCInitStructure;
 
-__IO uint16_t ChannelPulse = 500;
+/* 霍尔传感器相关定时器初始出 */
+TIM_HandleTypeDef htimx_hall;
 
 /**
   * @brief  配置TIM复用输出PWM时用到的I/O
@@ -42,35 +45,36 @@ static void TIMx_GPIO_Config(void)
 //	ADVANCE_BKIN_GPIO_CLK_ENABLE(); 
 
 	/* 定时器功能引脚初始化 */															   
-	GPIO_InitStructure.Pin = ADVANCE_OCPWM1_PIN;	
-	GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;    
 	GPIO_InitStructure.Pull = GPIO_NOPULL;
-	GPIO_InitStructure.Speed = GPIO_SPEED_HIGH; 	
-	GPIO_InitStructure.Alternate = ADVANCE_OCPWM1_AF;
-	HAL_GPIO_Init(ADVANCE_OCPWM1_GPIO_PORT, &GPIO_InitStructure);	
+	GPIO_InitStructure.Speed = GPIO_SPEED_HIGH;
+  GPIO_InitStructure.Mode = GPIO_MODE_OUTPUT_PP;   // 推挽输出模式
+  
+  GPIO_InitStructure.Pin = ADVANCE_OCNPWM1_PIN;
+	HAL_GPIO_Init(ADVANCE_OCNPWM1_GPIO_PORT, &GPIO_InitStructure);	
 
-	GPIO_InitStructure.Pin = ADVANCE_OCNPWM1_PIN;	
-	GPIO_InitStructure.Alternate = ADVANCE_OCNPWM1_AF;	
-	HAL_GPIO_Init(ADVANCE_OCNPWM1_GPIO_PORT, &GPIO_InitStructure);
+  GPIO_InitStructure.Pin = ADVANCE_OCNPWM2_PIN;	
+	HAL_GPIO_Init(ADVANCE_OCNPWM2_GPIO_PORT, &GPIO_InitStructure);
+  
+  GPIO_InitStructure.Pin = ADVANCE_OCNPWM3_PIN;	
+	HAL_GPIO_Init(ADVANCE_OCNPWM3_GPIO_PORT, &GPIO_InitStructure);	
   
   /* 通道 2 */
+  GPIO_InitStructure.Mode = GPIO_MODE_AF_PP;  
+  
+  GPIO_InitStructure.Pin = ADVANCE_OCPWM1_PIN;
+  GPIO_InitStructure.Alternate = ADVANCE_OCPWM1_AF;	
+	HAL_GPIO_Init(ADVANCE_OCPWM1_GPIO_PORT, &GPIO_InitStructure);
+
   GPIO_InitStructure.Pin = ADVANCE_OCPWM2_PIN;	
 	GPIO_InitStructure.Alternate = ADVANCE_OCPWM2_AF;	
 	HAL_GPIO_Init(ADVANCE_OCPWM2_GPIO_PORT, &GPIO_InitStructure);
-  
-  GPIO_InitStructure.Pin = ADVANCE_OCNPWM2_PIN;	
-	GPIO_InitStructure.Alternate = ADVANCE_OCNPWM2_AF;	
-	HAL_GPIO_Init(ADVANCE_OCNPWM2_GPIO_PORT, &GPIO_InitStructure);
-  
   
   /* 通道 3 */
   GPIO_InitStructure.Pin = ADVANCE_OCPWM3_PIN;	
 	GPIO_InitStructure.Alternate = ADVANCE_OCPWM3_AF;	
 	HAL_GPIO_Init(ADVANCE_OCPWM3_GPIO_PORT, &GPIO_InitStructure);
   
-  GPIO_InitStructure.Pin = ADVANCE_OCNPWM3_PIN;	
-	GPIO_InitStructure.Alternate = ADVANCE_OCNPWM3_AF;	
-	HAL_GPIO_Init(ADVANCE_OCNPWM3_GPIO_PORT, &GPIO_InitStructure);
+  
 	
 //	GPIO_InitStructure.Pin = ADVANCE_BKIN_PIN;	
 //	GPIO_InitStructure.Alternate = ADVANCE_BKIN_AF;	
@@ -95,34 +99,34 @@ static void TIM_Mode_Config(void)
 	// 开启TIMx_CLK,x[1,8] 
 	ADVANCE_TIM_CLK_ENABLE(); 
 	/* 定义定时器的句柄即确定定时器寄存器的基地址*/
-	TIM_TimeBaseStructure.Instance = ADVANCE_TIM;
+	htimx_bldcm.Instance = ADVANCE_TIM;
 	/* 累计 TIM_Period个后产生一个更新或者中断*/		
 	//当定时器从0计数到999，即为1000次，为一个定时周期
-	TIM_TimeBaseStructure.Init.Period = PWM_PERIOD_COUNT;
+	htimx_bldcm.Init.Period = PWM_PERIOD_COUNT;
 	// 高级控制定时器时钟源TIMxCLK = HCLK=216MHz 
 	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)=1MHz
-	TIM_TimeBaseStructure.Init.Prescaler = PWM_PRESCALER_COUNT;	
+	htimx_bldcm.Init.Prescaler = PWM_PRESCALER_COUNT;	
 	// 采样时钟分频
-	TIM_TimeBaseStructure.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
+	htimx_bldcm.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
 	// 计数方式
-	TIM_TimeBaseStructure.Init.CounterMode=TIM_COUNTERMODE_UP;
+	htimx_bldcm.Init.CounterMode=TIM_COUNTERMODE_UP;
 	// 重复计数器
-	TIM_TimeBaseStructure.Init.RepetitionCounter=0;	
+	htimx_bldcm.Init.RepetitionCounter=0;	
 	// 初始化定时器TIMx, x[1,8]
-	HAL_TIM_PWM_Init(&TIM_TimeBaseStructure);
+	HAL_TIM_PWM_Init(&htimx_bldcm);
 
 	/*PWM模式配置*/
 	//配置为PWM模式1
 	TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM1;
-	TIM_OCInitStructure.Pulse = ChannelPulse;
+	TIM_OCInitStructure.Pulse = 0;
 	TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_HIGH;
 	TIM_OCInitStructure.OCNPolarity = TIM_OCNPOLARITY_HIGH;
 	TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_SET;
 	TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 	
-	HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure,&TIM_OCInitStructure,TIM_CHANNEL_1);    // 初始化通道 1 输出 PWM 
-  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure,&TIM_OCInitStructure,TIM_CHANNEL_2);    // 初始化通道 2 输出 PWM
-  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure,&TIM_OCInitStructure,TIM_CHANNEL_3);    // 初始化通道 3 输出 PWM
+	HAL_TIM_PWM_ConfigChannel(&htimx_bldcm,&TIM_OCInitStructure,TIM_CHANNEL_1);    // 初始化通道 1 输出 PWM 
+  HAL_TIM_PWM_ConfigChannel(&htimx_bldcm,&TIM_OCInitStructure,TIM_CHANNEL_2);    // 初始化通道 2 输出 PWM
+  HAL_TIM_PWM_ConfigChannel(&htimx_bldcm,&TIM_OCInitStructure,TIM_CHANNEL_3);    // 初始化通道 3 输出 PWM
 
 	/* 自动输出使能，断路、死区时间和锁定配置 */
 //	TIM_BDTRInitStructure.OffStateRunMode = TIM_OSSR_ENABLE;
@@ -135,19 +139,53 @@ static void TIM_Mode_Config(void)
 //	HAL_TIMEx_ConfigBreakDeadTime(&TIM_TimeBaseStructure, &TIM_BDTRInitStructure);
 
 	/* 关闭定时器通道1输出PWM */
-	HAL_TIM_PWM_Stop(&TIM_TimeBaseStructure,TIM_CHANNEL_1);
+	HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_1);
 	/* 关闭定时器通道1互补输出PWM */
-	HAL_TIMEx_PWMN_Stop(&TIM_TimeBaseStructure,TIM_CHANNEL_1);
+	HAL_TIMEx_PWMN_Stop(&htimx_bldcm,TIM_CHANNEL_1);
   
   /* 关闭定时器通道2输出PWM */
-	HAL_TIM_PWM_Stop(&TIM_TimeBaseStructure,TIM_CHANNEL_2);
+	HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_2);
 	/* 关闭定时器通道2互补输出PWM */
-	HAL_TIMEx_PWMN_Stop(&TIM_TimeBaseStructure,TIM_CHANNEL_2);
+	HAL_TIMEx_PWMN_Stop(&htimx_bldcm,TIM_CHANNEL_2);
   
   /* 关闭定时器通道3输出PWM */
-	HAL_TIM_PWM_Stop(&TIM_TimeBaseStructure,TIM_CHANNEL_3);
+	HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_3);
 	/* 关闭定时器通道3互补输出PWM */
-	HAL_TIMEx_PWMN_Stop(&TIM_TimeBaseStructure,TIM_CHANNEL_3);
+	HAL_TIMEx_PWMN_Stop(&htimx_bldcm,TIM_CHANNEL_3);
+}
+
+/**
+  * @brief  停止pwm输出
+  * @param  无
+  * @retval 无
+  */
+void stop_pwm_output(void)
+{
+  /* 关闭定时器通道1输出PWM */
+	HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_1);
+
+  /* 关闭定时器通道2输出PWM */
+	HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_2);
+  
+  /* 关闭定时器通道3输出PWM */
+	HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_3);
+  
+  HAL_GPIO_WritePin(ADVANCE_OCNPWM1_GPIO_PORT, ADVANCE_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+  HAL_GPIO_WritePin(ADVANCE_OCNPWM2_GPIO_PORT, ADVANCE_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+  HAL_GPIO_WritePin(ADVANCE_OCNPWM3_GPIO_PORT, ADVANCE_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+}
+
+/**
+  * @brief  设置pwm输出的占空比
+  * @param  pulse:要设置的占空比
+  * @retval 无
+  */
+void set_pwm_pulse(uint16_t pulse)
+{
+  /* 设置定时器通道输出 PWM 的占空比 */
+	__HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_1,pulse);
+  __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_2,pulse);
+  __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_3,pulse);
 }
 
 /**
@@ -160,9 +198,6 @@ void TIMx_Configuration(void)
 	TIMx_GPIO_Config();
 	TIM_Mode_Config();
 }
-
-/* 霍尔传感器相关定时器初始出 */
-TIM_HandleTypeDef htimx_hall;
 
 /**
   * 函数功能: 定时器霍尔传感器接口硬件初始化配置
@@ -224,6 +259,62 @@ static void hall_tim_init(void)
 }
 
 /**
+  * @brief  使能霍尔传感器
+  * @param  无
+  * @retval 无
+  */
+void hall_enable(void)
+{
+  /* 使能霍尔传感器接口 */
+  __HAL_TIM_ENABLE_IT(&htimx_hall, TIM_IT_TRIGGER);
+  __HAL_TIM_ENABLE_IT(&htimx_hall, TIM_IT_UPDATE);
+  
+  HAL_TIMEx_HallSensor_Start(&htimx_hall);
+
+  LED1_OFF;
+  
+  HAL_TIM_TriggerCallback(&htimx_hall);   // 执行一次换相
+}
+
+/**
+  * @brief  禁用霍尔传感器
+  * @param  无
+  * @retval 无
+  */
+void hall_disable(void)
+{
+  /* 禁用霍尔传感器接口 */
+  __HAL_TIM_DISABLE_IT(&htimx_hall, TIM_IT_TRIGGER);
+  __HAL_TIM_DISABLE_IT(&htimx_hall, TIM_IT_UPDATE);
+  HAL_TIMEx_HallSensor_Stop(&htimx_hall);
+}
+
+uint8_t get_hall_state(void)
+{
+  uint8_t state = 0;
+  
+  /* 读取霍尔传感器 1 的状态 */
+  if(HAL_GPIO_ReadPin(HALL_INPUT1_GPIO_PORT,HALL_INPUT1_PIN) != GPIO_PIN_RESET)
+  {
+    state |= 0x01U;
+  }
+  
+  /* 读取霍尔传感器 2 的状态 */
+  if(HAL_GPIO_ReadPin(HALL_INPUT2_GPIO_PORT,HALL_INPUT2_PIN) != GPIO_PIN_RESET)  //霍尔传感器状态获取
+  {
+    state |= 0x02U;
+  }
+  
+  /* 读取霍尔传感器 3 的状态 */
+  if(HAL_GPIO_ReadPin(HALL_INPUT3_GPIO_PORT,HALL_INPUT3_PIN) != GPIO_PIN_RESET)  //霍尔传感器状态获取
+  {
+    state |= 0x04U;
+  }
+  
+  return state;    // 返回传感器状态
+}
+
+/**
   * @brief  初始化霍尔传感器定时器
   * @param  无
   * @retval 无
@@ -232,6 +323,123 @@ void hall_tim_config(void)
 {
 	hall_gpio_init();	    // 初始化引脚
 	hall_tim_init();      // 初始化定时器
+}
+
+int update = 0;     // 定时器更新计数
+
+/**
+  * @brief  霍尔传感器触发回调函数
+  * @param  htim:定时器句柄
+  * @retval 无
+  */
+void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
+{
+  /* 获取霍尔传感器引脚状态,作为换相的依据 */
+  uint8_t step = 0;
+  step = get_hall_state();
+
+  if(get_bldcm_direction() == MOTOR_FWD)
+  {
+    step = (uint32_t)7 - step;        // 根据顺序表的规律 CW = 7 - CCW;
+  }
+  /*---- 定义定时器OC1为A(U)相 OC2为B(V)相，OC3为C(W)相 ---- */
+  /*---- 定义uWStep低3位为霍尔传感器引脚状态,IC1(001,U),IC2(010,V),IC3(100,W) ----*/
+  switch(step)
+  {
+    case 1://C+ A-
+      /*  Channe2 configuration  */ 
+      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_2);    // 停止PWM输出
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM2_GPIO_PORT, ADVANCE_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+    
+      /*  Channe3 configuration */
+      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_3);    // 开始PWM输出
+
+      /*  Channel configuration  */
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM1_GPIO_PORT, ADVANCE_OCNPWM1_PIN, GPIO_PIN_SET);    // 开启下桥臂
+      break;
+    
+    case 2: //A+  B-
+      /*  Channe3 configuration */ 
+      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_3);
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM3_GPIO_PORT, ADVANCE_OCNPWM3_PIN, GPIO_PIN_RESET);
+    
+      /*  Channel configuration  */
+      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_1);
+      
+      /*  Channe2 configuration */
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM2_GPIO_PORT, ADVANCE_OCNPWM2_PIN, GPIO_PIN_SET);
+      break;
+    
+    case 3:// C+ B-
+      /*  Channel configuration */ 
+      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_1);
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM1_GPIO_PORT, ADVANCE_OCNPWM1_PIN, GPIO_PIN_RESET);
+ 
+      /*  Channe3 configuration  */
+      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_3);
+  
+      /*  Channe2 configuration  */
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM2_GPIO_PORT, ADVANCE_OCNPWM2_PIN, GPIO_PIN_SET);
+      break;
+    
+    case 4:// B+ C-
+      /*  Channel configuration */ 
+      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_1);
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM1_GPIO_PORT, ADVANCE_OCNPWM1_PIN, GPIO_PIN_RESET);
+
+      /*  Channe2 configuration */
+      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_2);
+      
+      /*  Channe3 configuration */
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM3_GPIO_PORT, ADVANCE_OCNPWM3_PIN, GPIO_PIN_SET);    
+      break;
+    
+    case 5: // B+ A-
+      /*  Channe3 configuration */       
+      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_3);
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM3_GPIO_PORT, ADVANCE_OCNPWM3_PIN, GPIO_PIN_RESET);
+    
+      /*  Channe2 configuration */
+      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_2);
+      
+      /*  Channel configuration */
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM1_GPIO_PORT, ADVANCE_OCNPWM1_PIN, GPIO_PIN_SET);
+      break;
+    
+    case 6: // A+ C-
+      /*  Channe2 configuration */ 
+      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_2);
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM2_GPIO_PORT, ADVANCE_OCNPWM2_PIN, GPIO_PIN_RESET);
+    
+      /*  Channel configuration */
+      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_1); 
+      
+      /*  Channe3 configuration */
+      HAL_GPIO_WritePin(ADVANCE_OCNPWM3_GPIO_PORT, ADVANCE_OCNPWM3_PIN, GPIO_PIN_SET);
+      break;
+  }
+
+  update = 0;
+}
+
+/**
+  * @brief  定时器更新中断回调函数
+  * @param  htim:定时器句柄
+  * @retval 无
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (update++ > 1)    // 有一次在产生更新中断前霍尔传感器没有捕获到值
+  {
+    printf("堵转超时\r\n");
+    update = 0;
+    
+    LED1_ON;     // 点亮LED1表示堵转超时停止
+    
+    /* 堵转超时停止 PWM 输出 */
+    hall_disable();       // 禁用霍尔传感器接口
+    stop_pwm_output();    // 停止 PWM 输出
+  }
 }
 
 /*********************************************END OF FILE**********************/

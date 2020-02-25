@@ -763,14 +763,19 @@
               <FilePath>..\User\key\bsp_key.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_motor_control.c</FileName>
+              <FileName>bsp_motor_tim.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\motor_control\bsp_motor_control.c</FilePath>
+              <FilePath>..\User\tim\bsp_motor_tim.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_advance_tim.c</FileName>
+              <FileName>bsp_bldcm_control.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\tim\bsp_advance_tim.c</FilePath>
+              <FilePath>..\User\bldcm_control\bsp_bldcm_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_debug_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\usart\bsp_debug_usart.c</FilePath>
             </File>
           </Files>
         </Group>

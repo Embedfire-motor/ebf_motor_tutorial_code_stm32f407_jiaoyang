@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    bsp_motor_control.c
+  * @file    bsp_bldcm_control.c
   * @author  fire
   * @version V1.0
   * @date    2019-xx-xx
-  * @brief   电机控制接口
+  * @brief   无刷电机控制接口
   ******************************************************************************
   * @attention
   *
@@ -15,29 +15,32 @@
   ******************************************************************************
   */ 
 
-#include ".\motor_control\bsp_motor_control.h"
+#include ".\bldcm_control\bsp_bldcm_control.h"
 
 /* 私有变量 */
-static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
-static uint16_t    dutyfactor = 0;             // 记录占空比
+static bldcm_data_t bldcm_data;
+
+/**
+  * @brief  电机初始化
+  * @param  无
+  * @retval 无
+  */
+void bldcm_init(void)
+{
+  TIMx_Configuration();    // 电机控制定时器，引脚初始化
+  hall_tim_config();       // 霍尔传感器初始化
+}
 
 /**
   * @brief  设置电机速度
   * @param  v: 速度（占空比）
   * @retval 无
   */
-void set_motor_speed(uint16_t v)
+void set_bldcm_speed(uint16_t v)
 {
-  dutyfactor = v;
+  bldcm_data.dutyfactor = v;
   
-  if (direction == MOTOR_FWD)
-  {
-    SET_FWD_COMPAER(dutyfactor);     // 设置速度
-  }
-  else
-  {
-    SET_REV_COMPAER(dutyfactor);     // 设置速度
-  }
+  set_pwm_pulse(v);     // 设置速度
 }
 
 /**
@@ -45,20 +48,19 @@ void set_motor_speed(uint16_t v)
   * @param  无
   * @retval 无
   */
-void set_motor_direction(motor_dir_t dir)
+void set_bldcm_direction(motor_dir_t dir)
 {
-  direction = dir;
-  
-  if (direction == MOTOR_FWD)
-  {
-    SET_FWD_COMPAER(dutyfactor);     // 设置速度
-    SET_REV_COMPAER(0);              // 设置速度
-  }
-  else
-  {
-    SET_FWD_COMPAER(0);              // 设置速度
-    SET_REV_COMPAER(dutyfactor);     // 设置速度
-  }
+  bldcm_data.direction = dir;
+}
+
+/**
+  * @brief  获取电机当前方向
+  * @param  无
+  * @retval 无
+  */
+motor_dir_t get_bldcm_direction(void)
+{
+  return bldcm_data.direction;
 }
 
 /**
@@ -66,10 +68,9 @@ void set_motor_direction(motor_dir_t dir)
   * @param  无
   * @retval 无
   */
-void set_motor_enable(void)
+void set_bldcm_enable(void)
 {
-  MOTOR_FWD_ENABLE();
-  MOTOR_REV_ENABLE();
+  hall_enable();
 }
 
 /**
@@ -77,10 +78,13 @@ void set_motor_enable(void)
   * @param  无
   * @retval 无
   */
-void set_motor_disable(void)
+void set_bldcm_disable(void)
 {
-  MOTOR_FWD_DISABLE();
-  MOTOR_REV_DISABLE();
+  /* 禁用霍尔传感器接口 */
+  hall_disable();
+  
+  /* 停止 PWM 输出 */
+  stop_pwm_output();
 }
 
 /*********************************************END OF FILE**********************/

@@ -32,6 +32,7 @@ void LED_GPIO_Config(void)
     LED1_GPIO_CLK_ENABLE();
     LED2_GPIO_CLK_ENABLE();
     LED3_GPIO_CLK_ENABLE();
+    LED4_GPIO_CLK_ENABLE();
   
     /*选择要控制的GPIO引脚*/															   
     GPIO_InitStruct.Pin = LED1_PIN;	
@@ -55,6 +56,10 @@ void LED_GPIO_Config(void)
     /*选择要控制的GPIO引脚*/															   
     GPIO_InitStruct.Pin = LED3_PIN;	
     HAL_GPIO_Init(LED3_GPIO_PORT, &GPIO_InitStruct);	
+
+    /*选择要控制的GPIO引脚*/															   
+    GPIO_InitStruct.Pin = LED4_PIN;	
+    HAL_GPIO_Init(LED4_GPIO_PORT, &GPIO_InitStruct);	
 
     /*关闭RGB灯*/
     LED_RGBOFF;
