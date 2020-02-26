@@ -49,8 +49,8 @@ int main(void)
   /* 通用定时器初始化并配置PWM输出功能 */
   TIMx_Configuration();
   
-	TIM2_SetPWM_pulse(PWM_CHANNEL_1,0);
-	TIM2_SetPWM_pulse(PWM_CHANNEL_2,0);
+	TIM1_SetPWM_pulse(PWM_CHANNEL_1,0);
+	TIM1_SetPWM_pulse(PWM_CHANNEL_2,0);
 	
 	while(1)
 	{
