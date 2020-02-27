@@ -2,7 +2,7 @@
 #define	__BSP_MOTOR_CONTROL_H
 
 #include "stm32f4xx.h"
-#include "./tim/bsp_general_tim.h"
+#include "./tim/bsp_motor_tim.h"
 #include "main.h"
 
 /* 电机方向控制枚举 */

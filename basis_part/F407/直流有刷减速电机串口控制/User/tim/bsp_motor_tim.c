@@ -1,21 +1,21 @@
 /**
   ******************************************************************************
-  * @file    bsp_basic_tim.c
+  * @file    bsp_motor_tim.c
   * @author  STMicroelectronics
   * @version V1.0
   * @date    2015-xx-xx
-  * @brief   通用定时器定时范例
+  * @brief   PWM输出范例
   ******************************************************************************
   * @attention
   *
-  * 实验平台:野火  STM32 F407 开发板  
+  * 实验平台:野火 STM32 F407 开发板  
   * 论坛    :http://www.firebbs.cn
   * 淘宝    :http://firestm32.taobao.com
   *
   ******************************************************************************
   */
   
-#include "./tim/bsp_general_tim.h"
+#include "./tim/bsp_motor_tim.h"
 
 void TIM_SetTIMxCompare(TIM_TypeDef *TIMx,uint32_t channel,uint32_t compare);
 void TIM_SetPWM_period(TIM_TypeDef* TIMx,uint32_t TIM_period);
@@ -76,10 +76,10 @@ static void TIM_PWMOUTPUT_Config(void)
   TIM_TimeBaseStructure.Instance = PWM_TIM;
   /* 累计 TIM_Period个后产生一个更新或者中断*/		
   //当定时器从0计数到PWM_PERIOD_COUNT，即为PWM_PERIOD_COUNT+1次，为一个定时周期
-	TIM_TimeBaseStructure.Init.Period = PWM_PERIOD_COUNT;
+	TIM_TimeBaseStructure.Init.Period = PWM_PERIOD_COUNT - 1;
 	// 通用控制定时器时钟源TIMxCLK = HCLK/2=84MHz 
 	// 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1)
-  TIM_TimeBaseStructure.Init.Prescaler = PWM_PRESCALER_COUNT;	
+  TIM_TimeBaseStructure.Init.Prescaler = PWM_PRESCALER_COUNT - 1;	
 	
 	/*计数方式*/
   TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -91,8 +91,8 @@ static void TIM_PWMOUTPUT_Config(void)
 	/*PWM模式配置*/
   TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM1;
 	TIM_OCInitStructure.Pulse = 0;
-	TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_HIGH;
-	TIM_OCInitStructure.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+	TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_LOW;
+	TIM_OCInitStructure.OCNPolarity = TIM_OCPOLARITY_LOW;
 	TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_SET;
 	TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 	

@@ -18,7 +18,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx.h"
-#include "./tim/bsp_general_tim.h"
+#include "./tim/bsp_motor_tim.h"
 #include "./led/bsp_led.h"
 #include ".\key\bsp_key.h" 
 #include ".\motor_control\bsp_motor_control.h"
@@ -55,19 +55,30 @@ int main(void)
 	while(1)
 	{
     /* 扫描KEY1 */
-    if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
+    if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
       /* 增大占空比 */
-      ChannelPulse+=500;
+      ChannelPulse += 50;
       
-      if(ChannelPulse>PWM_PERIOD_COUNT)
-        ChannelPulse=PWM_PERIOD_COUNT;
+      if(ChannelPulse > PWM_PERIOD_COUNT)
+        ChannelPulse = PWM_PERIOD_COUNT;
       
       set_motor_speed(ChannelPulse);
     }
     
     /* 扫描KEY2 */
-    if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
+    if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
+    {
+      if(ChannelPulse < 50)
+        ChannelPulse = 0;
+      else
+        ChannelPulse -= 50;
+      
+      set_motor_speed(ChannelPulse);
+    }
+    
+    /* 扫描KEY3 */
+    if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
       /* 转换方向 */
       set_motor_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);

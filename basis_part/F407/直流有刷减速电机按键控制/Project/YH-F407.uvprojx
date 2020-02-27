@@ -758,11 +758,6 @@
               <FilePath>..\User\led\bsp_led.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_general_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\tim\bsp_general_tim.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_key.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\key\bsp_key.c</FilePath>
@@ -771,6 +766,11 @@
               <FileName>bsp_motor_control.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\motor_control\bsp_motor_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_motor_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\tim\bsp_motor_tim.c</FilePath>
             </File>
           </Files>
         </Group>

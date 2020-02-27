@@ -39,7 +39,7 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "./led/bsp_led.h"
-#include "./tim/bsp_general_tim.h"
+#include "./tim/bsp_motor_tim.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{

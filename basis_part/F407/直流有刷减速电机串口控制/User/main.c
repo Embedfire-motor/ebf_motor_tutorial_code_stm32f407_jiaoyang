@@ -18,7 +18,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx.h"
-#include "./tim/bsp_general_tim.h"
+#include "./tim/bsp_motor_tim.h"
 #include "./led/bsp_led.h"
 #include ".\key\bsp_key.h" 
 #include ".\motor_control\bsp_motor_control.h"
@@ -55,10 +55,8 @@ int main(void)
   /* 通用定时器初始化并配置PWM输出功能 */
   TIMx_Configuration();
   
-	TIM2_SetPWM_pulse(PWM_CHANNEL_1,0);
-	TIM2_SetPWM_pulse(PWM_CHANNEL_2,0);
-  
-  show_help();
+	TIM1_SetPWM_pulse(PWM_CHANNEL_1,0);
+	TIM1_SetPWM_pulse(PWM_CHANNEL_2,0);
 	
 	while(1)
 	{

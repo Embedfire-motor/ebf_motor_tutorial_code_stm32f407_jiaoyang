@@ -117,6 +117,12 @@ void deal_serial_data(void)
     
     //接收到正确的指令才为1
     char okCmd = 0;
+  
+    if (showflag)
+    {
+      show_help();
+      showflag = !showflag;
+    }
 
     //检查是否接收到指令
     if(receive_cmd == 1)
