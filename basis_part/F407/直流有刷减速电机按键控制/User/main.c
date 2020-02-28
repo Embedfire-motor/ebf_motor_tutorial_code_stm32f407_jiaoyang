@@ -49,8 +49,8 @@ int main(void)
   /* 通用定时器初始化并配置PWM输出功能 */
   TIMx_Configuration();
   
-	TIM1_SetPWM_pulse(PWM_CHANNEL_1,0);
-	TIM1_SetPWM_pulse(PWM_CHANNEL_2,0);
+	TIM1_SetPWM_pulse(PWM_CHANNEL_1, 0);
+	TIM1_SetPWM_pulse(PWM_CHANNEL_2, 0);
 	
 	while(1)
 	{
@@ -58,7 +58,7 @@ int main(void)
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
       /* 增大占空比 */
-      ChannelPulse += 50;
+      ChannelPulse += PWM_PERIOD_COUNT/10;
       
       if(ChannelPulse > PWM_PERIOD_COUNT)
         ChannelPulse = PWM_PERIOD_COUNT;
@@ -69,10 +69,10 @@ int main(void)
     /* 扫描KEY2 */
     if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
     {
-      if(ChannelPulse < 50)
+      if(ChannelPulse < PWM_PERIOD_COUNT/10)
         ChannelPulse = 0;
       else
-        ChannelPulse -= 50;
+        ChannelPulse -= PWM_PERIOD_COUNT/10;
       
       set_motor_speed(ChannelPulse);
     }
