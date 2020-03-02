@@ -47,21 +47,19 @@ int main(void)
 	printf("欢迎使用野火 电机开发板 步进电机 加减速正反旋转 例程\r\n");
 	/*步进电机初始化*/
 	stepper_Init();
-
 	int i=0,dir_val=0;
 
 	while(1)
 	{     
-		
 		dir_val=(++i % 2) ? CLOCKWISE : ANTI_CLOCKWISE;
 		printf("dir_val =%d\r\n",dir_val);
 		if(dir_val)
 		{
-			stepper_move_T(6400*20, accel_val, decel_val, set_speed);
+			stepper_move_T(6400*1, accel_val, decel_val, set_speed);
 		}
 		else 
 		{
-			stepper_move_T(-6400*20, accel_val, decel_val, set_speed);
+			stepper_move_T(-6400*1, accel_val, decel_val, set_speed);
 		}
 		
 		delay_ms(3000);//要等旋转再反向旋转

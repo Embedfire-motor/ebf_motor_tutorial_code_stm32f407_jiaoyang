@@ -34,7 +34,13 @@ struct GLOBAL_FLAGS {
   unsigned char out_ena:1;
 };
 
+/*取整宏定义*/
 
+//ceil(x)//向上取整
+//floor(x)//向下取整
+
+#define ACCEL_R(x)	ceil(x)//向上取整
+#define DECEL_R(x)	floor(x)//向下取整
 
 #define FALSE             0
 #define TRUE              1

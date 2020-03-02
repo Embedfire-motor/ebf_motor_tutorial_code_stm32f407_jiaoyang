@@ -156,8 +156,6 @@ void speed_decision()
   __IO static uint16_t last_accel_delay=0;
   // 总移动步数计数器
   __IO static uint32_t step_count = 0;
-  // 记录new_step_delay中的余数，提高下一步计算的精度
-  __IO static int32_t rest = 0;
   //定时器使用翻转模式，需要进入两次中断才输出一个完整脉冲
   __IO static uint8_t i=0;
   
@@ -180,7 +178,6 @@ void speed_decision()
 				/*步进电机停止状态*/
 				case STOP:
 						step_count = 0;
-						rest = 0;
 
 						// 关闭通道
 						TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);        
@@ -192,9 +189,9 @@ void speed_decision()
 				case ACCEL:
 						step_count++;
 						srd.accel_count++;
-						new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) 
-														 + rest)/(4 * srd.accel_count + 1));
-						rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_count + 1);
+				
+						new_step_delay = srd.step_delay - ACCEL_R(((1.0*2 * (long)srd.step_delay))/(1.0*(4 * srd.accel_count + 1)));
+
 						//检查是够应该开始减速
 						if(step_count >= srd.decel_start) {
 							srd.accel_count = srd.decel_val;
@@ -204,7 +201,6 @@ void speed_decision()
 						else if(new_step_delay <= srd.min_delay) {
 							last_accel_delay = new_step_delay;
 							new_step_delay = srd.min_delay;
-							rest = 0;
 							srd.run_state = RUN;
 						}
 						break;
@@ -227,9 +223,7 @@ void speed_decision()
 
 						step_count++;
 						srd.accel_count++;
-						new_step_delay = srd.step_delay - (((2 * (long)srd.step_delay) 
-														 + rest)/(4 * srd.accel_count + 1));
-						rest = ((2 * (long)srd.step_delay)+rest)%(4 * srd.accel_count + 1);
+						new_step_delay = srd.step_delay - DECEL_R(((1.0*2 * (long)srd.step_delay))/(1.0*(4 * srd.accel_count + 1)));
 						//检查是否为最后一步
 						if(srd.accel_count >= 0)
 						{
