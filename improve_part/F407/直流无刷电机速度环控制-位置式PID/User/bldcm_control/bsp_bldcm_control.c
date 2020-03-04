@@ -20,7 +20,7 @@
 
 /* 私有变量 */
 static bldcm_data_t bldcm_data;
-uint8_t motor_enable_flag = 0;
+
 /**
   * @brief  电机初始化
   * @param  无
@@ -108,10 +108,14 @@ void bldcm_pid_control(void)
 
     cont_val = PID_realize(actual);
     
-    if(cont_val>PWM_PERIOD_COUNT/2)
-      cont_val=PWM_PERIOD_COUNT/2;
-    else if (cont_val<200)
-      cont_val=200;
+    if(cont_val > PWM_PERIOD_COUNT)
+    {
+      cont_val = PWM_PERIOD_COUNT;
+    }
+    else if (cont_val < 0)
+    {
+      cont_val = 0;
+    }
     
     set_bldcm_speed(cont_val);
   #if PID_ASSISTANT_EN

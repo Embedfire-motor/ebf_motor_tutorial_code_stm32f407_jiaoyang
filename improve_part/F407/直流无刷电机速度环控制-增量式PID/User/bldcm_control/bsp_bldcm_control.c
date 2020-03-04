@@ -20,7 +20,7 @@
 
 /* 私有变量 */
 static bldcm_data_t bldcm_data;
-uint8_t motor_enable_flag = 0;
+
 /**
   * @brief  电机初始化
   * @param  无
@@ -102,16 +102,16 @@ void bldcm_pid_control(void)
 {
   if (bldcm_data.is_enable)
   {
-    float cont_val = 0;    // 当前控制值
+    static float cont_val = 0;    // 当前控制值
     
     int actual = get_motor_speed();   // 电机旋转的当前速度
 
-    cont_val = PID_realize(actual);
+    cont_val += PID_realize(actual);
     
     if(cont_val>PWM_PERIOD_COUNT/2)
       cont_val=PWM_PERIOD_COUNT/2;
-    else if (cont_val<200)
-      cont_val=200;
+    else if (cont_val<0)
+      cont_val=0;
     
     set_bldcm_speed(cont_val);
   #if PID_ASSISTANT_EN

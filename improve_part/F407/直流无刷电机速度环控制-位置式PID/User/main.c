@@ -30,8 +30,8 @@ int pulse_num=0;
 void Delay(__IO uint32_t nCount)	 //简单的延时函数
 {
 	for(; nCount != 0; nCount--);
-}	
-extern uint8_t motor_enable_flag;
+}
+
 /**
   * @brief  主函数
   * @param  无
@@ -39,7 +39,7 @@ extern uint8_t motor_enable_flag;
   */
 int main(void) 
 {
-  __IO uint16_t target_speed = 200;
+  __IO uint16_t target_speed = 500;
   uint8_t i = 0;
   
 	/* 初始化系统时钟为168MHz */
@@ -63,12 +63,10 @@ int main(void)
   bldcm_init();
   
   /* 使能电机 */
-  set_bldcm_speed(300);
+  set_bldcm_speed(200);
   set_bldcm_enable();
   
   Delay(0xFFFFFF);
-  
-  motor_enable_flag = 1;
 	
 	while(1)
 	{
@@ -76,12 +74,10 @@ int main(void)
     if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
     {
       /* 使能电机 */
-      set_bldcm_speed(300);
+      set_bldcm_speed(200);
       set_bldcm_enable();
       
       Delay(0xFFFFFF);
-      
-      motor_enable_flag = 1;
     }
     
     /* 扫描KEY2 */
