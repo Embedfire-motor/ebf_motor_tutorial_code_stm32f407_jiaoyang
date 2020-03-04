@@ -18,6 +18,8 @@ typedef struct
 
 extern void PID_param_init(void);
 extern void set_pid_actual(float temp_val);
+extern float get_pid_actual(void);
+extern void set_p_i_d(float p, float i, float d);
 extern float PID_realize(float actual_val);
 extern void time_period_fun(void);
 

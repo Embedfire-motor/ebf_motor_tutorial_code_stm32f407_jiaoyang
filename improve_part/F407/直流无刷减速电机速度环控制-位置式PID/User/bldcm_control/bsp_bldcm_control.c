@@ -20,7 +20,7 @@
 
 /* 私有变量 */
 static bldcm_data_t bldcm_data;
-
+uint8_t motor_enable_flag = 0;
 /**
   * @brief  电机初始化
   * @param  无
@@ -71,6 +71,7 @@ motor_dir_t get_bldcm_direction(void)
   */
 void set_bldcm_enable(void)
 {
+  bldcm_data.is_enable = 1;
   hall_enable();
 }
 
@@ -86,10 +87,12 @@ void set_bldcm_disable(void)
   
   /* 停止 PWM 输出 */
   stop_pwm_output();
+  
+  bldcm_data.is_enable = 0;
 }
+
 void Transmit_FB( __IO int32_t *Feedback);
-extern uint32_t hall_timer;        // 总时间
-extern uint32_t hall_pulse_num;    // 脉冲数
+
 /**
   * @brief  电机位置式 PID 控制实现(定时调用)
   * @param  无
@@ -97,18 +100,26 @@ extern uint32_t hall_pulse_num;    // 脉冲数
   */
 void bldcm_pid_control(void)
 {
-  float cont_val = 0;    // 当前控制值
-  
-  int actual = (hall_pulse_num / 24) / ((0.099 / 0xFFFF) * hall_timer)/60;    // 电机旋转的当前速度
-  
-  hall_pulse_num = 0;
-  hall_timer = 0;
-   
-//  cont_val = PID_realize(actual);
-//  
-//  set_bldcm_speed(cont_val);
-  
-  Transmit_FB(&actual);
+  if (bldcm_data.is_enable)
+  {
+    float cont_val = 0;    // 当前控制值
+    
+    int actual = get_motor_speed();   // 电机旋转的当前速度
+
+    cont_val = PID_realize(actual);
+    
+    if(cont_val>PWM_PERIOD_COUNT/2)
+      cont_val=PWM_PERIOD_COUNT/2;
+    else if (cont_val<200)
+      cont_val=200;
+    
+    set_bldcm_speed(cont_val);
+  #if PID_ASSISTANT_EN
+    Transmit_FB(&actual);
+  #else
+    printf("实际值：%d. 目标值：%d\n", actual, get_pid_actual());
+  #endif
+  }
 }
 
 ///**

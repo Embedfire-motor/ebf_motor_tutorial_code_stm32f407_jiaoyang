@@ -158,28 +158,28 @@ uint8_t CheckSum(uint8_t *Ptr,uint8_t Num )
   */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if(huart == &UartHandle)
-  {
-    if(RxBuf[0] != FRAME_START )    // 帧头正确
-    {
-      return;
-    }
-    if(RxBuf[FRAME_LENTH-1] == FRAME_END ) // 帧尾正确
-    { 
-      /* 判断校验码 */
-      if(CheckSum((uint8_t*)&RxBuf[FRAME_CHECK_BEGIN],FRAME_CHECK_NUM) != RxBuf[FRAME_CHECKSUM] )
-      {
-        Msg.Code = NULL;
-        return;
-      }
-      else
-      {
-        /* 解析数据帧 */
-//        ptr_Fun_();
-      }
-    }
-    HAL_UART_Receive_IT(huart,(uint8_t *)&RxBuf,FRAME_LENTH); // 重新使能接收中断
-  }
+//  if(huart == &UartHandle)
+//  {
+//    if(RxBuf[0] != FRAME_START )    // 帧头正确
+//    {
+//      return;
+//    }
+//    if(RxBuf[FRAME_LENTH-1] == FRAME_END ) // 帧尾正确
+//    { 
+//      /* 判断校验码 */
+//      if(CheckSum((uint8_t*)&RxBuf[FRAME_CHECK_BEGIN],FRAME_CHECK_NUM) != RxBuf[FRAME_CHECKSUM] )
+//      {
+//        Msg.Code = NULL;
+//        return;
+//      }
+//      else
+//      {
+//        /* 解析数据帧 */
+////        ptr_Fun_();
+//      }
+//    }
+//    HAL_UART_Receive_IT(huart,(uint8_t *)&RxBuf,FRAME_LENTH); // 重新使能接收中断
+//  }
 }
 /**
   * 函数功能: 发送反馈值

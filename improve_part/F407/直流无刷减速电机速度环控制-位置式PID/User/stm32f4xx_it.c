@@ -41,6 +41,7 @@
 #include "./led/bsp_led.h"
 #include "./tim/bsp_motor_tim.h"
 #include "./tim/bsp_basic_tim.h"
+#include "./usart/bsp_debug_usart.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -193,7 +194,7 @@ void BASIC_TIM_IRQHandler (void)
 
 void DEBUG_USART_IRQHandler(void)
 {
-  
+  HAL_UART_IRQHandler(&UartHandle);
 }
 
 /**

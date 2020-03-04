@@ -248,7 +248,7 @@ void hall_enable(void)
 
   LED1_OFF;
   
-//  HAL_TIM_TriggerCallback(&htimx_hall);   // 执行一次换相
+  HAL_TIM_TriggerCallback(&htimx_hall);   // 执行一次换相
 }
 
 /**
@@ -304,9 +304,65 @@ void hall_tim_config(void)
 	hall_tim_init();      // 初始化定时器
 }
 
-int update = 0;     // 定时器更新计数
-uint32_t hall_timer = 0;        // 总时间
-uint32_t hall_pulse_num = 0;    // 脉冲数
+static motor_rotate_t motor_drive;    // 定义电机驱动实现
+
+/**
+  * @brief  更新电机速度
+  * @param  time：计数器的总值
+  * @param  num：霍尔触发次数
+  * @retval 无
+  */
+
+static void update_motor_speed(uint32_t time, uint32_t num)
+{
+  int speed_temp = 0;
+  static uint8_t count = 0;
+  static int speed_group[10];
+  static int flag = 0;
+
+  /* 计算速度：
+     电机每转一圈共用12个脉冲，(1.0/(84000000.0/128.0)为计数器的周期，(1.0/(84000000.0/128.0) * time)为时间长。
+  */
+  speed_group[count++] = (num / 12.0) / ((1.0/(84000000.0/HALL_PRESCALER_COUNT) * time)/60.0);
+
+  if (count > 9)
+  {
+    flag = 1;
+    count = 0;
+  }
+
+  speed_temp = 0;
+
+  /* 计算近 10 次的速度平均值（滤波） */
+  if (flag)
+  {
+    for (uint8_t c=0; c<10; c++)
+    {
+      speed_temp += speed_group[c];
+    }
+
+    motor_drive.speed = speed_temp/10;
+  }
+  else
+  {
+    for (uint8_t c=0; c<count+1; c++)
+    {
+      speed_temp += speed_group[c];
+    }
+
+    motor_drive.speed = speed_temp/count;
+  }
+}
+
+/**
+  * @brief  获取电机转速
+  * @param  无
+  * @retval 返回电机转速
+  */
+float get_motor_speed(void)
+{
+  return motor_drive.speed;
+}
 
 /**
   * @brief  霍尔传感器触发回调函数
@@ -318,9 +374,18 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
   /* 获取霍尔传感器引脚状态,作为换相的依据 */
   uint8_t step = 0;
   
-  /**/
-  hall_timer += __HAL_TIM_GET_COMPARE(htim,TIM_CHANNEL_1);
-  hall_pulse_num ++;  
+  
+  motor_drive.hall_timer += __HAL_TIM_GET_COMPARE(htim,TIM_CHANNEL_1);     // 获取计数器的值
+  motor_drive.hall_pulse_num ++;  
+  
+  if (motor_drive.hall_pulse_num >= 2)
+  {
+    update_motor_speed(motor_drive.hall_timer, motor_drive.hall_pulse_num);     // 更新速度
+    
+    /* 复位数值，重新开始 */
+    motor_drive.hall_pulse_num = 0;
+    motor_drive.hall_timer = 0;
+  }
   
   step = get_hall_state();
 
@@ -393,7 +458,7 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
       break;
   }
 
-  update = 0;
+  motor_drive.timeout = 0;
 }
 
 /**
@@ -405,10 +470,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if(htim == (&htimx_hall))
   {
-    if (update++ > 1)    // 有一次在产生更新中断前霍尔传感器没有捕获到值
+    if (motor_drive.timeout++ > 1)    // 有一次在产生更新中断前霍尔传感器没有捕获到值
     {
       printf("堵转超时\r\n");
-      update = 0;
+      motor_drive.timeout = 0;       
       
       LED1_ON;     // 点亮LED1表示堵转超时停止
       

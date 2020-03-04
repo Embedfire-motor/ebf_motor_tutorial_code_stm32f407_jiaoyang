@@ -27,6 +27,8 @@
 
 #define DEBUG_USART_IRQHandler                  USART1_IRQHandler
 #define DEBUG_USART_IRQ                 		    USART1_IRQn
+
+extern UART_HandleTypeDef UartHandle;
 /************************************************************/
 
 void Usart_SendString(uint8_t *str);

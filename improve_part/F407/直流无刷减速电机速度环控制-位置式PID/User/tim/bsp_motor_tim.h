@@ -4,10 +4,20 @@
 #include "stm32f4xx.h"
 #include ".\bldcm_control\bsp_bldcm_control.h"
 
+/* 电机控旋转实现结构体 */
+
+typedef struct
+{
+  int timeout;                // 定时器更新计数
+  uint32_t hall_timer;        // 霍尔采集总时间
+  uint32_t hall_pulse_num;    // 霍尔采集总脉冲数
+  int speed;            // 电机速度 rps（转/秒）
+}motor_rotate_t;
+
+
 /* 电机控制定时器 */
 #define MOTOR_TIM           				      TIM8
 #define MOTOR_TIM_CLK_ENABLE()  			    __TIM8_CLK_ENABLE()
-extern TIM_HandleTypeDef  htimx_bldcm;
 
 /* 累计 TIM_Period个后产生一个更新或者中断		
 	当定时器从0计数到5599，即为5600次，为一个定时周期 */
@@ -94,6 +104,7 @@ extern TIM_HandleTypeDef TIM_TimeBaseStructure;
 void PWM_TIMx_Configuration(void);
 void stop_pwm_output(void);
 void set_pwm_pulse(uint16_t pulse);
+float get_motor_speed(void);
 
 void hall_enable(void);
 void hall_disable(void);

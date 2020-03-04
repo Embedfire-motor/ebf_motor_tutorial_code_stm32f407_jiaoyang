@@ -17,8 +17,10 @@ typedef struct
   motor_dir_t direction;    // 电机方向
   uint16_t dutyfactor;      // PWM 输出占空比
   uint8_t is_enable;        // 使能电机
-  uint32_t lock_timeout;    // 电机堵转计时
 }bldcm_data_t;
+
+
+#define PID_ASSISTANT_EN    1    // 1:使用PID调试助手显示波形，0：使用串口直接打印数据
 
 void bldcm_init(void);
 void set_bldcm_speed(uint16_t v);
