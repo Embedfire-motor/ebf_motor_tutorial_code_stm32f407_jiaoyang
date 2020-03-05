@@ -19,8 +19,8 @@ void PID_param_init()
     pid.err_last=0.0;
     pid.integral=0.0;
 
-		pid.Kp = 0.4;//24
-		pid.Ki = 0.03;
+		pid.Kp = 10.5;//24
+		pid.Ki = 0.025;
 		pid.Kd = 0.0;
 	
     printf("PID_init end \n");

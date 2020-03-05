@@ -104,20 +104,27 @@ void bldcm_pid_control(void)
   {
     float cont_val = 0;    // 当前控制值
     
-    int actual = get_motor_speed();   // 电机旋转的当前速度
+    int actual = get_motor_pulse();   // 电机旋转的当前位置
 
     cont_val = PID_realize(actual);
     
-    if(cont_val > PWM_PERIOD_COUNT)
+    if (cont_val < 0)
     {
-      cont_val = PWM_PERIOD_COUNT;
+      cont_val = -cont_val;
+      set_bldcm_direction(MOTOR_REV);
     }
-    else if (cont_val < 0)
+    else
     {
-      cont_val = 0;
+      set_bldcm_direction(MOTOR_FWD);
     }
     
-    set_bldcm_speed(cont_val);
+    if(cont_val > PWM_PERIOD_COUNT/4)
+    {
+      cont_val = PWM_PERIOD_COUNT/4;
+    }
+
+    set_bldcm_speed(cont_val);    // 设置占空比
+    
   #if PID_ASSISTANT_EN
     Transmit_FB(&actual);
   #else

@@ -39,7 +39,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t target_speed = 500;
+  __IO uint16_t target_pulse = 500;
   uint8_t i = 0;
   
 	/* 初始化系统时钟为168MHz */
@@ -63,10 +63,10 @@ int main(void)
   bldcm_init();
   
   /* 使能电机 */
-  set_bldcm_speed(200);
+//  set_bldcm_speed(200);
   set_bldcm_enable();
-  
-  Delay(0xFFFFFF);
+//  
+//  Delay(0xFFFFFF);
 	
 	while(1)
 	{
@@ -74,33 +74,25 @@ int main(void)
     if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
     {
       /* 使能电机 */
-      set_bldcm_speed(200);
-      set_bldcm_enable();
-      
-      Delay(0xFFFFFF);
+//      set_bldcm_speed(200);
+//      set_bldcm_enable();
+//      
+//      Delay(0xFFFFFF);
     }
     
     /* 扫描KEY2 */
     if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
     {
       /* 增大占空比 */
-      target_speed+=100;
-      
-      if(target_speed>2000)
-        target_speed=2000;
-      
-      set_pid_actual(target_speed);
+      target_pulse += 100;
+      set_pid_actual(target_pulse);
     }
     
     /* 扫描KEY3 */
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
     {
-      if(target_speed<100)
-        target_speed=100;
-      else
-        target_speed-=100;
-
-      set_pid_actual(target_speed);
+      target_pulse -= 100;
+      set_pid_actual(target_pulse);
     }
     
     /* 扫描KEY4 */

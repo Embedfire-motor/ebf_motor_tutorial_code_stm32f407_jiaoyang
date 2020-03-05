@@ -11,7 +11,8 @@ typedef struct
   int timeout;                // 定时器更新计数
   uint32_t hall_timer;        // 霍尔采集总时间
   uint32_t hall_pulse_num;    // 霍尔采集总脉冲数
-  int speed;            // 电机速度 rps（转/秒）
+  int speed;                  // 电机速度 rps（转/秒）
+  int pulse;                  // 电机旋转的种脉冲数
 }motor_rotate_t;
 
 
@@ -105,6 +106,7 @@ void PWM_TIMx_Configuration(void);
 void stop_pwm_output(void);
 void set_pwm_pulse(uint16_t pulse);
 float get_motor_speed(void);
+int get_motor_pulse(void);
 
 void hall_enable(void);
 void hall_disable(void);

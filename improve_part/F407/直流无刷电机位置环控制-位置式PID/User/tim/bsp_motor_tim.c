@@ -365,6 +365,16 @@ float get_motor_speed(void)
 }
 
 /**
+  * @brief  获取电机旋转的总脉冲数
+  * @param  无
+  * @retval 返回电机脉冲数
+  */
+int get_motor_pulse(void)
+{
+  return motor_drive.pulse;
+}
+
+/**
   * @brief  霍尔传感器触发回调函数
   * @param  htim:定时器句柄
   * @retval 无
@@ -374,9 +384,18 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
   /* 获取霍尔传感器引脚状态,作为换相的依据 */
   uint8_t step = 0;
   
-  
   motor_drive.hall_timer += __HAL_TIM_GET_COMPARE(htim,TIM_CHANNEL_1);     // 获取计数器的值
-  motor_drive.hall_pulse_num ++;  
+  motor_drive.hall_pulse_num ++;
+  
+  /* 计算电机旋转的总脉冲数 */
+  if(get_bldcm_direction() == MOTOR_FWD)
+  {
+    motor_drive.pulse++;        // 
+  }
+  else
+  {
+    motor_drive.pulse--;
+  }
   
   if (motor_drive.hall_pulse_num >= 2)
   {
@@ -472,14 +491,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
     if (motor_drive.timeout++ > 1)    // 有一次在产生更新中断前霍尔传感器没有捕获到值
     {
-      printf("堵转超时\r\n");
-      motor_drive.timeout = 0;       
-      
-      LED1_ON;     // 点亮LED1表示堵转超时停止
-      
-      /* 堵转超时停止 PWM 输出 */
-      hall_disable();       // 禁用霍尔传感器接口
-      stop_pwm_output();    // 停止 PWM 输出
+//      printf("堵转超时\r\n");
+//      motor_drive.timeout = 0;       
+//      
+//      LED1_ON;     // 点亮LED1表示堵转超时停止
+//      
+//      /* 堵转超时停止 PWM 输出 */
+//      hall_disable();       // 禁用霍尔传感器接口
+//      stop_pwm_output();    // 停止 PWM 输出
     }
   }
   else if(htim == (&TIM_TimeBaseStructure))
