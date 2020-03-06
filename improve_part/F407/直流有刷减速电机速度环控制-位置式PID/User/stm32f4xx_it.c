@@ -41,10 +41,13 @@
 #include "./led/bsp_led.h"
 #include "./tim/bsp_motor_tim.h"
 #include "./usart/bsp_debug_usart.h"
-
+#include "./encoder/bsp_encoder.h"
+#include "./tim/bsp_basic_tim.h"
+#include ".\motor_control\bsp_motor_control.h"
 
 //接收数组指针
 extern unsigned char UART_RxPtr;
+extern TIM_HandleTypeDef TIM_EncoderHandle;
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -238,6 +241,48 @@ void DEBUG_USART_IRQHandler(void)
   
   HAL_UART_IRQHandler(&UartHandle);
 }
+
+/**
+  * @brief 编码器接口中断服务函数
+  */
+void ENCODER_TIM_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&TIM_EncoderHandle);
+}
+
+/**
+  * @brief  This function handles TIM interrupt request.
+  * @param  None
+  * @retval None
+  */	
+void BASIC_TIM_IRQHandler (void)
+{
+	HAL_TIM_IRQHandler(&TIM_TimeBaseStructure);	 	
+}
+
+/**
+  * @brief  定时器更新事件回调函数
+  * @param  无
+  * @retval 无
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if(htim==(&TIM_EncoderHandle))
+  {
+    /* 判断当前计数器计数方向 */
+    if(__HAL_TIM_IS_TIM_COUNTING_DOWN(&TIM_EncoderHandle))
+      /* 下溢 */
+      Encoder_Overflow_Count--;
+    else
+      /* 上溢 */
+      Encoder_Overflow_Count++;
+  }
+  else if(htim==(&TIM_TimeBaseStructure))
+  {
+    motor_pid_control();
+  }
+}
+
 
 /**
   * @}

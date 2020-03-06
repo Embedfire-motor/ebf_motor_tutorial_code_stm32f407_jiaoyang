@@ -65,7 +65,7 @@ static void TIMx_GPIO_Config(void)
  * TIM_RepetitionCounter TIMx,x[1,8]才有(高级定时器)
  *-----------------------------------------------------------------------------
  */
-TIM_HandleTypeDef  TIM_TimeBaseStructure;
+TIM_HandleTypeDef  DCM_TimeBaseStructure;
 static void TIM_PWMOUTPUT_Config(void)
 {
   TIM_OC_InitTypeDef  TIM_OCInitStructure;  
@@ -73,20 +73,20 @@ static void TIM_PWMOUTPUT_Config(void)
   /*使能定时器*/
   PWM_TIM_CLK_ENABLE();
 	
-  TIM_TimeBaseStructure.Instance = PWM_TIM;
+  DCM_TimeBaseStructure.Instance = PWM_TIM;
   /* 累计 TIM_Period个后产生一个更新或者中断*/		
   //当定时器从0计数到PWM_PERIOD_COUNT，即为PWM_PERIOD_COUNT+1次，为一个定时周期
-	TIM_TimeBaseStructure.Init.Period = PWM_PERIOD_COUNT;
+	DCM_TimeBaseStructure.Init.Period = PWM_PERIOD_COUNT;
 	// 通用控制定时器时钟源TIMxCLK = HCLK/2=84MHz 
 	// 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1)
-  TIM_TimeBaseStructure.Init.Prescaler = PWM_PRESCALER_COUNT;	
+  DCM_TimeBaseStructure.Init.Prescaler = PWM_PRESCALER_COUNT;	
 	
 	/*计数方式*/
-  TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;
+  DCM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;
 	/*采样时钟分频*/
-  TIM_TimeBaseStructure.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
+  DCM_TimeBaseStructure.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
 	/*初始化定时器*/
-  HAL_TIM_PWM_Init(&TIM_TimeBaseStructure);
+  HAL_TIM_PWM_Init(&DCM_TimeBaseStructure);
   
 	/*PWM模式配置*/
   TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM1;
@@ -97,16 +97,16 @@ static void TIM_PWMOUTPUT_Config(void)
 	TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 	
 	/*配置PWM通道*/
-  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, PWM_CHANNEL_1);
+  HAL_TIM_PWM_ConfigChannel(&DCM_TimeBaseStructure, &TIM_OCInitStructure, PWM_CHANNEL_1);
 	/*开始输出PWM*/
-	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,PWM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&DCM_TimeBaseStructure,PWM_CHANNEL_1);
 	
 	/*配置脉宽*/
-  TIM_OCInitStructure.Pulse = PWM_PERIOD_COUNT/2;    // 默认占空比为50%
+  TIM_OCInitStructure.Pulse = 0;    // 默认占空比为50%
 	/*配置PWM通道*/
-  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, PWM_CHANNEL_2);
+  HAL_TIM_PWM_ConfigChannel(&DCM_TimeBaseStructure, &TIM_OCInitStructure, PWM_CHANNEL_2);
 	/*开始输出PWM*/
-	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,PWM_CHANNEL_2);
+	HAL_TIM_PWM_Start(&DCM_TimeBaseStructure,PWM_CHANNEL_2);
 }
 
 /**
@@ -120,10 +120,10 @@ void TIM1_SetPWM_pulse(uint32_t channel,int compare)
 {
 		switch(channel)
 	{
-		case TIM_CHANNEL_1:  	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_1,compare);break;
-		case TIM_CHANNEL_2:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_2,compare);break;
-		case TIM_CHANNEL_3:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_3,compare);break;
-		case TIM_CHANNEL_4:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_4,compare);break;
+		case TIM_CHANNEL_1:  	__HAL_TIM_SET_COMPARE(&DCM_TimeBaseStructure,TIM_CHANNEL_1,compare);break;
+		case TIM_CHANNEL_2:	  __HAL_TIM_SET_COMPARE(&DCM_TimeBaseStructure,TIM_CHANNEL_2,compare);break;
+		case TIM_CHANNEL_3:	  __HAL_TIM_SET_COMPARE(&DCM_TimeBaseStructure,TIM_CHANNEL_3,compare);break;
+		case TIM_CHANNEL_4:	  __HAL_TIM_SET_COMPARE(&DCM_TimeBaseStructure,TIM_CHANNEL_4,compare);break;
 	}
 }
 
@@ -133,7 +133,7 @@ void TIM1_SetPWM_pulse(uint32_t channel,int compare)
   * @param  无
   * @retval 无
   */
-void TIMx_Configuration(void)
+void Motor_TIMx_Configuration(void)
 {
 	TIMx_GPIO_Config();
   

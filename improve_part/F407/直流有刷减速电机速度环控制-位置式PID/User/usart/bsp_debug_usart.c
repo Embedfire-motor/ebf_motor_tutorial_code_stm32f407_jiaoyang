@@ -177,4 +177,43 @@ int fgetc(FILE *f)
 	HAL_UART_Receive(&UartHandle, (uint8_t *)&ch, 1, 1000);	
 	return (ch);
 }
+
+uint8_t check_sum(uint8_t *ptr,uint8_t num )
+{
+  uint8_t Sum = 0;
+  
+  while(num--)
+  {
+    Sum += *ptr;
+    ptr++;
+  }
+  
+  return Sum;
+}
+
+/**
+  * @brief 设置上位机的值 
+  * @param cmd：命令
+  * @param ch: 曲线通道
+  * @param data：数据
+  * @retval 无
+  */
+void set_computer_value(uint8_t cmd, uint8_t ch, int32_t data)
+{
+  packet_head_t set_packet =
+  {  
+     /* 上位机要求高位在前 */
+    .head = 0x535A4859,     // 包头
+    .len  = 0x0F0000000,    // 包长度
+  };
+  
+  set_packet.ch = ch;      // 设置通道
+  set_packet.cmd = cmd;    // 设置命令
+  set_packet.data = EXCHANGE_H_L_BIT(data);    // 复制数据
+  
+  set_packet.sum = check_sum((uint8_t *)&set_packet, sizeof(set_packet) - 1);       // 计算校验和
+  
+  HAL_UART_Transmit_IT(&UartHandle, (uint8_t *)&set_packet, sizeof(set_packet));    // 发送数据帧
+}
+
 /*********************************************END OF FILE**********************/

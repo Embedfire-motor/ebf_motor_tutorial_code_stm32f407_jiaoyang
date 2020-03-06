@@ -35,10 +35,42 @@ extern uint8_t receive_cmd;
 #define DEBUG_USART_IRQ                 		    USART1_IRQn
 /************************************************************/
 
+/* 上位机宏定义 */
+/* 数据头结构体 */
+typedef __packed struct
+{
+  uint32_t head;
+  uint8_t ch;
+  uint8_t cmd;
+  uint32_t len;
+  int32_t data;
+  uint8_t sum;
+  
+}packet_head_t;
+
+#define PACKET_HEAD     0x59485A53    // 包头
+
+/* 通道宏定义 */
+#define CURVES_CH1      0x01
+#define CURVES_CH2      0x02
+#define CURVES_CH3      0x03
+#define CURVES_CH4      0x04
+#define CURVES_CH5      0x05
+
+/* 指令 */
+#define SET_TARGET_CMD     0x01     // 设置上位机通道的目标值
+#define SET_FACT_CMD       0x02     // 发送通道实际值
+
+#define EXCHANGE_H_L_BIT(data)      (((data << 24) & 0xFF000000) |\
+                                     ((data <<  8) & 0x00FF0000) |\
+                                     ((data >>  8) & 0x0000FF00) |\
+                                     ((data >> 24) & 0x000000FF)) 
+
 void uart_FlushRxBuffer(void);
 void Usart_SendByte(uint8_t str);
 void Usart_SendString(uint8_t *str);
 void DEBUG_USART_Config(void);
 //int fputc(int ch, FILE *f);
 extern UART_HandleTypeDef UartHandle;
+void set_computer_value(uint8_t cmd, uint8_t ch, int32_t data);
 #endif /* __USART1_H */

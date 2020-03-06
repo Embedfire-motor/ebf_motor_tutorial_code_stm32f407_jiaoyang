@@ -29,9 +29,9 @@
 #define PWM_TIM_CH3_GPIO_PORT           GPIOA
 #define PWM_TIM_CH3_PIN                 GPIO_PIN_10
 
-extern TIM_HandleTypeDef  TIM_TimeBaseStructure;
+extern TIM_HandleTypeDef  DCM_TimeBaseStructure;
 
-extern void TIMx_Configuration(void);
+extern void Motor_TIMx_Configuration(void);
 extern void TIM1_SetPWM_pulse(uint32_t channel,int compare);
 
 #endif   /* __BSP_MOTOR_TIM_H */

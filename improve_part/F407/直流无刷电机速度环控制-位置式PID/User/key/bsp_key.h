@@ -25,25 +25,6 @@
 #define KEY5_GPIO_PORT            GPIOG                    
 #define KEY5_GPIO_CLK_ENABLE()    __GPIOG_CLK_ENABLE()
 
-//#define KEY1_PIN                  GPIO_PIN_0                 
-//#define KEY1_GPIO_PORT            GPIOE                      
-//#define KEY1_GPIO_CLK_ENABLE()    __GPIOE_CLK_ENABLE()
-
-//#define KEY2_PIN                  GPIO_PIN_1                 
-//#define KEY2_GPIO_PORT            GPIOE                      
-//#define KEY2_GPIO_CLK_ENABLE()    __GPIOE_CLK_ENABLE()
-
-//#define KEY3_PIN                  GPIO_PIN_2                
-//#define KEY3_GPIO_PORT            GPIOE                      
-//#define KEY3_GPIO_CLK_ENABLE()    __GPIOE_CLK_ENABLE()
-
-//#define KEY4_PIN                  GPIO_PIN_3                
-//#define KEY4_GPIO_PORT            GPIOE                      
-//#define KEY4_GPIO_CLK_ENABLE()    __GPIOE_CLK_ENABLE()
-
-//#define KEY5_PIN                  GPIO_PIN_4                 
-//#define KEY5_GPIO_PORT            GPIOE                    
-//#define KEY5_GPIO_CLK_ENABLE()    __GPIOE_CLK_ENABLE()
 /*******************************************************/
 
  /** 按键按下标置宏

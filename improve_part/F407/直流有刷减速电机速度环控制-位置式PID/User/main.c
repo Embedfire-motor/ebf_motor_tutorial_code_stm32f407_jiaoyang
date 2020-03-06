@@ -18,11 +18,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f4xx.h"
-#include "./tim/bsp_motor_tim.h""
+#include "./tim/bsp_motor_tim.h"
 #include "./led/bsp_led.h"
 #include ".\key\bsp_key.h" 
 #include ".\motor_control\bsp_motor_control.h"
 #include "./usart/bsp_debug_usart.h"
+#include "./Encoder/bsp_encoder.h"
+#include "./tim/bsp_basic_tim.h"
 
 int pulse_num=0;
 	
@@ -38,7 +40,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t ChannelPulse = 0;
+  __IO int32_t target_speed = 100;
   
   /* HAL 库初始化 */
   HAL_Init();
@@ -53,15 +55,63 @@ int main(void)
   DEBUG_USART_Config();
 
   /* 通用定时器初始化并配置PWM输出功能 */
+  Motor_TIMx_Configuration();
+  
+	set_motor_disable();     // 停止电机
+  
+  /* 编码器接口初始化 */
+	Encoder_Init();
+  
+  /* 初始化基本定时器，用于处理定时任务 */
   TIMx_Configuration();
   
-	TIM1_SetPWM_pulse(PWM_CHANNEL_1,0);
-	TIM1_SetPWM_pulse(PWM_CHANNEL_2,0);
+  /* PID 参数初始化 */
+  PID_param_init();
 	
 	while(1)
 	{
-    /* 处理数据 */
-    deal_serial_data();
+    /* 扫描KEY1 */
+    if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
+    {
+      set_pid_actual(target_speed);    // 设置目标值
+      set_motor_enable();              // 使能电机
+    }
+    
+    /* 扫描KEY2 */
+    if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
+    {
+      set_motor_disable();     // 停止电机
+    }
+    
+    /* 扫描KEY3 */
+    if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
+    {
+      /* 增大目标速度 */
+      target_speed += 50;
+      
+      if(target_speed > 300)
+        target_speed = 300;
+      
+      set_pid_actual(target_speed);
+    #if PID_ASSISTANT_EN
+      set_computer_value(SET_FACT_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
+    #endif
+    }
+
+    /* 扫描KEY4 */
+    if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
+    {
+      /* 减小目标速度 */
+      target_speed -= 50;
+      
+      if(target_speed < -300)
+        target_speed = -300;
+      
+      set_pid_actual(target_speed);
+    #if PID_ASSISTANT_EN
+      set_computer_value(SET_FACT_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
+    #endif
+    }
 	}
 }
 

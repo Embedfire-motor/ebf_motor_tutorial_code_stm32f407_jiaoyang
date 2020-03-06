@@ -13,18 +13,14 @@ void PID_param_init()
 {
 		/* 初始化参数 */
     printf("PID_init begin \n");
-    pid.target_val=0.0;				
+    pid.target_val=100.0;				
     pid.actual_val=0.0;
     pid.err=0.0;
     pid.err_last=0.0;
     pid.integral=0.0;
-//		pid.Kp = 0.31;
-//		pid.Ki = 0.070;
-//		pid.Kd = 0.3;
 
-
-		pid.Kp = 0.01;//24
-		pid.Ki = 0.80;
+		pid.Kp = 0.50;
+		pid.Ki = 0.30;
 		pid.Kd = 0.04;
 	
     printf("PID_init end \n");
@@ -39,6 +35,32 @@ void PID_param_init()
 void set_pid_actual(float temp_val)
 {
   pid.target_val = temp_val;    // 设置当前的目标值
+}
+
+/**
+  * @brief  获取目标值
+  * @param  无
+	*	@note 	无
+  * @retval 目标值
+  */
+float get_pid_actual(void)
+{
+  return pid.target_val;    // 设置当前的目标值
+}
+
+/**
+  * @brief  设置比例、积分、微分系数
+  * @param  p：比例系数 P
+  * @param  i：积分系数 i
+  * @param  d：微分系数 d
+	*	@note 	无
+  * @retval 无
+  */
+void set_p_i_d(float p, float i, float d)
+{
+  	pid.Kp = p;    // 设置比例系数 P
+		pid.Ki = i;    // 设置积分系数 I
+		pid.Kd = d;    // 设置微分系数 D
 }
 
 /**
