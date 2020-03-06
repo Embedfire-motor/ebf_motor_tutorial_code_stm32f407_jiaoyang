@@ -139,14 +139,16 @@ __IO uint8_t TxBuf[FRAME_LENTH] ; // 发送缓存区
 /* 扩展变量 ------------------------------------------------------------------*/
 MSG_TypeDef Msg;
 
-uint8_t CheckSum(uint8_t *Ptr,uint8_t Num )
+uint8_t check_sum(uint8_t *ptr,uint8_t num )
 {
   uint8_t Sum = 0;
-  while(Num--)
+  
+  while(num--)
   {
-    Sum += *Ptr;
-    Ptr++;
+    Sum += *ptr;
+    ptr++;
   }
+  
   return Sum;
 }
 
@@ -181,32 +183,30 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //    HAL_UART_Receive_IT(huart,(uint8_t *)&RxBuf,FRAME_LENTH); // 重新使能接收中断
 //  }
 }
-/**
-  * 函数功能: 发送反馈值
-  * 输入参数: 无
-  * 返 回 值: 无
-  * 说    明: 将反馈值发送到串口
-  */
-void Transmit_FB( __IO int32_t *Feedback)
-{
-  uint8_t i = 0;
-  for(i=0;i<FRAME_LENTH;i++)
-  {
-    TxBuf[i] = FILL_VALUE;  // 参数填充 0x55
-  }
-  
-  Msg.data[0].Int = *Feedback;//反馈值 速度
-  
-  TxBuf[0] = FRAME_START;   // 帧头
-  TxBuf[1] = 0x80|CODE_SETTGT; // 指令码
-  TxBuf[2] = Msg.data[0].Ch[0];
-  TxBuf[3] = Msg.data[0].Ch[1];
-  TxBuf[4] = Msg.data[0].Ch[2];
-  TxBuf[5] = Msg.data[0].Ch[3];
-  
-  TxBuf[FRAME_CHECKSUM] = CheckSum((uint8_t*)&TxBuf[FRAME_CHECK_BEGIN],FRAME_CHECK_NUM);  // 计算校验和
-  TxBuf[FRAME_LENTH-1] = FRAME_END;   // 加入帧尾
 
-  HAL_UART_Transmit_IT(&UartHandle,(uint8_t *)&TxBuf,FRAME_LENTH); // 发送数据帧
+/**
+  * @brief 设置上位机的值 
+  * @param cmd：命令
+  * @param ch: 曲线通道
+  * @param data：数据
+  * @retval 无
+  */
+void set_computer_value(uint8_t cmd, uint8_t ch, int32_t data)
+{
+  packet_head_t set_packet =
+  {  
+     /* 上位机要求高位在前 */
+    .head = 0x535A4859,     // 包头
+    .len  = 0x0F0000000,    // 包长度
+  };
+  
+  set_packet.ch = ch;      // 设置通道
+  set_packet.cmd = cmd;    // 设置命令
+  set_packet.data = EXCHANGE_H_L_BIT(data);    // 复制数据
+  
+  set_packet.sum = check_sum((uint8_t *)&set_packet, sizeof(set_packet) - 1);       // 计算校验和
+  
+  HAL_UART_Transmit_IT(&UartHandle, (uint8_t *)&set_packet, sizeof(set_packet));    // 发送数据帧
 }
+
 /*********************************************END OF FILE**********************/

@@ -118,15 +118,15 @@ void bldcm_pid_control(void)
       set_bldcm_direction(MOTOR_FWD);
     }
     
-    if(cont_val > PWM_PERIOD_COUNT/4)
+    if(cont_val > PWM_PERIOD_COUNT/10)
     {
-      cont_val = PWM_PERIOD_COUNT/4;
+      cont_val = PWM_PERIOD_COUNT/10;
     }
 
     set_bldcm_speed(cont_val);    // 设置占空比
     
   #if PID_ASSISTANT_EN
-    Transmit_FB(&actual);
+    set_computer_value(SET_FACT_CMD, CURVES_CH1, actual);     // 给通道 1 发送实际值
   #else
     printf("实际值：%d. 目标值：%d\n", actual, get_pid_actual());
   #endif

@@ -398,14 +398,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (update++ > 1)    // 有一次在产生更新中断前霍尔传感器没有捕获到值
   {
-    printf("堵转超时\r\n");
-    update = 0;
-    
-    LED1_ON;     // 点亮LED1表示堵转超时停止
-    
-    /* 堵转超时停止 PWM 输出 */
-    hall_disable();       // 禁用霍尔传感器接口
-    stop_pwm_output();    // 停止 PWM 输出
+//    printf("堵转超时\r\n");
+//    update = 0;
+//    
+//    LED1_ON;     // 点亮LED1表示堵转超时停止
+//    
+//    /* 堵转超时停止 PWM 输出 */
+//    hall_disable();       // 禁用霍尔传感器接口
+//    stop_pwm_output();    // 停止 PWM 输出
   }
 }
 

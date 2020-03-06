@@ -13,7 +13,7 @@ void PID_param_init()
 {
 		/* 初始化参数 */
     printf("PID_init begin \n");
-    pid.target_val=500.0;				
+    pid.target_val=200.0;				
     pid.actual_val=0.0;
     pid.err=0.0;
     pid.err_last=0.0;

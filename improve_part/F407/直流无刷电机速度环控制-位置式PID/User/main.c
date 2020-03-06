@@ -39,7 +39,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t target_speed = 500;
+  __IO uint16_t target_speed = 200;
   uint8_t i = 0;
   
 	/* 初始化系统时钟为168MHz */
@@ -63,10 +63,10 @@ int main(void)
   bldcm_init();
   
   /* 使能电机 */
-  set_bldcm_speed(200);
-  set_bldcm_enable();
-  
-  Delay(0xFFFFFF);
+//  set_bldcm_speed(200);
+//  set_bldcm_enable();
+//  
+//  Delay(0xFFFFFF);
 	
 	while(1)
 	{
