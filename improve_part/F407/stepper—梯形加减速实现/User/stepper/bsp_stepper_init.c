@@ -72,9 +72,9 @@ static void Stepper_GPIO_Config(void)
   */
 static void TIMx_NVIC_Configuration(void)
 {
-  /* 外设中断配置 */
-  HAL_NVIC_SetPriority(MOTOR_PUL_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(MOTOR_PUL_IRQn);
+	/* 外设中断配置 */
+	HAL_NVIC_SetPriority(MOTOR_PUL_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(MOTOR_PUL_IRQn);
 }
 
 /*
@@ -153,13 +153,12 @@ void stepper_Init()
 }
 
 /**
-  * 函数功能: 定时器中断服务函数
-  * 输入参数: 无
-  * 返 回 值: 无
-  * 说    明: 实现加减速过程
+  * @brief  定时器中断服务函数
+  * @retval 无
   */
 void MOTOR_PUL_IRQHandler(void)
 { 
+	/*速度状态决策*/
 	speed_decision();
 }
 

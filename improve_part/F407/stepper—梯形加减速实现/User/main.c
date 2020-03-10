@@ -48,7 +48,6 @@ int main(void)
 	/*步进电机初始化*/
 	stepper_Init();
 	int i=0,dir_val=0;
-
 	while(1)
 	{     
 		dir_val=(++i % 2) ? CLOCKWISE : ANTI_CLOCKWISE;

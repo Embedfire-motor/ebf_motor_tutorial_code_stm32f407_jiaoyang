@@ -20,7 +20,7 @@
 //系统加减速参数
 speedRampData srd;
 //记录步进电机的位置
-int stepPosition = 0;
+//int stepPosition = 0;
 //系统电机、串口状态
 struct GLOBAL_FLAGS status = {FALSE, FALSE,TRUE};
 
@@ -93,7 +93,7 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
 
 		// 计算多少步之后我们必须开始减速
 		// n1 = (n1+n2)decel / (accel + decel)
-		accel_lim = ((long)step*decel) / (accel+decel);
+		accel_lim = (uint32_t)(step*decel/(accel+decel));
 		// 我们必须加速至少1步才能才能开始减速.
 		if(accel_lim == 0)
 		{
@@ -105,9 +105,8 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
 		{
 			srd.decel_val = accel_lim - step;
 		}
-		else
-		{
-			srd.decel_val = -(long)(max_s_lim*accel/decel);
+		else{
+			srd.decel_val = -(max_s_lim*accel/decel);
 		}
 		// 当只剩下一步我们必须减速
 		if(srd.decel_val == 0)
@@ -148,92 +147,97 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
   */
 void speed_decision()
 {
- __IO uint32_t tim_count=0;
-  __IO uint32_t tmp = 0;
-  // 保存新（下）一个延时周期
-  uint16_t new_step_delay=0;
-  // 加速过程中最后一次延时（脉冲周期）.
-  __IO static uint16_t last_accel_delay=0;
-  // 总移动步数计数器
-  __IO static uint32_t step_count = 0;
-  //定时器使用翻转模式，需要进入两次中断才输出一个完整脉冲
-  __IO static uint8_t i=0;
+	uint32_t tim_count=0;
+	uint32_t tmp = 0;
+	// 保存新（下）一个延时周期
+	uint16_t new_step_delay=0;
+	// 加速过程中最后一次延时（脉冲周期）.
+	static uint16_t last_accel_delay=0;
+	// 总移动步数计数器
+	static uint32_t step_count = 0;
+	static int32_t rest = 0;
+	//定时器使用翻转模式，需要进入两次中断才输出一个完整脉冲
+	static uint8_t i=0;
   
-  if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx) !=RESET)
-  {
-    // 清楚定时器中断
-    __HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx);
-    
-    // 设置比较值
-    tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
-    tmp = tim_count+srd.step_delay;
-    __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tmp);
+	if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx) !=RESET)
+	{
+		// 清楚定时器中断
+		__HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx);
 
-    i++;     // 定时器中断次数计数值
-    if(i==2) // 2次，说明已经输出一个完整脉冲
-    {
+		// 设置比较值
+		tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
+		tmp = tim_count+srd.step_delay;
+		__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tmp);
+
+		i++;     // 定时器中断次数计数值
+		if(i==2) // 2次，说明已经输出一个完整脉冲
+		{
 			i=0;   // 清零定时器中断次数计数值
 			switch(srd.run_state) 
 			{
 				/*步进电机停止状态*/
 				case STOP:
-						step_count = 0;
+				step_count = 0;  // 清零步数计数器
+				rest = 0;        // 清零余值
+				// 关闭通道
+				TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);        
+				__HAL_TIM_CLEAR_FLAG(&TIM_TimeBaseStructure, MOTOR_TIM_FLAG_CCx);
 
-						// 关闭通道
-						TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);        
-						__HAL_TIM_CLEAR_FLAG(&TIM_TimeBaseStructure, MOTOR_TIM_FLAG_CCx);
-				
-						status.running = FALSE;
-						break;
+				status.running = FALSE;
+				break;
 				/*步进电机加速状态*/
 				case ACCEL:
-						step_count++;
-						srd.accel_count++;
-				
-						new_step_delay = srd.step_delay - ACCEL_R(((1.0*2 * (long)srd.step_delay))/(1.0*(4 * srd.accel_count + 1)));
+				step_count++;
+				srd.accel_count++;
 
-						//检查是够应该开始减速
-						if(step_count >= srd.decel_start) {
-							srd.accel_count = srd.decel_val;
-							srd.run_state = DECEL;
-						}
-						//检查是否到达期望的最大速度
-						else if(new_step_delay <= srd.min_delay) {
-							last_accel_delay = new_step_delay;
-							new_step_delay = srd.min_delay;
-							srd.run_state = RUN;
-						}
-						break;
+				new_step_delay = srd.step_delay - (((2 *srd.step_delay) + rest)/(4 * srd.accel_count + 1));//计算新(下)一步脉冲周期(时间间隔)
+				rest = ((2 * srd.step_delay)+rest)%(4 * srd.accel_count + 1);// 计算余数，下次计算补上余数，减少误差
+				//检查是够应该开始减速
+					if(step_count >= srd.decel_start) {
+						srd.accel_count = srd.decel_val;
+						srd.run_state = DECEL;
+					}
+					//检查是否到达期望的最大速度
+					else if(new_step_delay <= srd.min_delay) {
+						last_accel_delay = new_step_delay;
+						new_step_delay = srd.min_delay;    
+						rest = 0;                          
+						srd.run_state = RUN;
+					}
+					break;
 				/*步进电机最大速度运行状态*/
 				case RUN:
 
-						step_count++;
-						new_step_delay = srd.min_delay;
-						//检查是否需要开始减速
-						if(step_count >= srd.decel_start) 
-						{
-							srd.accel_count = srd.decel_val;
-							//以最后一次加速的延时作为开始减速的延时
-							new_step_delay = last_accel_delay;
-							srd.run_state = DECEL;
-						}
-						break;
+					step_count++;
+					new_step_delay = srd.min_delay;
+
+					//检查是否需要开始减速
+					if(step_count >= srd.decel_start) 
+					{
+						srd.accel_count = srd.decel_val;
+						//以最后一次加速的延时作为开始减速的延时
+						new_step_delay = last_accel_delay;
+						srd.run_state = DECEL;
+						
+					}
+					break;
 				/*步进电机减速状态*/
 				case DECEL:
 
-						step_count++;
-						srd.accel_count++;
-						new_step_delay = srd.step_delay - DECEL_R(((1.0*2 * (long)srd.step_delay))/(1.0*(4 * srd.accel_count + 1)));
-						//检查是否为最后一步
-						if(srd.accel_count >= 0)
-						{
-							srd.run_state = STOP;
-						}
-						break;
+					step_count++;
+					srd.accel_count++;
+					  new_step_delay = srd.step_delay - (((2 * srd.step_delay) + rest)/(4 * srd.accel_count + 1)); //计算新(下)一步脉冲周期(时间间隔)
+					  rest = ((2 * srd.step_delay)+rest)%(4 * srd.accel_count + 1);// 计算余数，下次计算补上余数，减少误差
+					//检查是否为最后一步
+					if(srd.accel_count >= 0)
+					{
+						srd.run_state = STOP;
+					}
+					break;
 			}
 			/*求得下一次间隔时间*/
 			srd.step_delay = new_step_delay;
-    }
-  }
+		}
+	}
 }
 
