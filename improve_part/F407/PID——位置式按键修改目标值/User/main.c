@@ -49,15 +49,17 @@ int main(void)
 	while(1)
 	{       
 		/*模拟修改PID目标值*/
-		if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
+		if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
 		{
 				if(run_i%2==0)
 						set_point=200;
 				else
 						set_point=0;
 				run_i++;
+        
+        set_computer_value(SEED_TARGET_CMD, CURVES_CH1, set_point);     // 给通道 1 发送目标值
 		}   
-    if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
+    if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
 		{
 				pid_status=!pid_status;//取反状态
 		} 

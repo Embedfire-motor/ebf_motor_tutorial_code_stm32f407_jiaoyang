@@ -51,7 +51,7 @@ static void TIM_Mode_Config(void)
 	TIM_TimeBaseStructure.Instance = BASIC_TIM;
 	/* 累计 TIM_Period个后产生一个更新或者中断*/		
 	//当定时器从0计数到4999，即为5000次，为一个定时周期
-	TIM_TimeBaseStructure.Init.Period = 200-1;       
+	TIM_TimeBaseStructure.Init.Period = 400-1;       
 
 	//定时器时钟源TIMxCLK = 2 * PCLK1  
 	//				PCLK1 = HCLK / 4 
