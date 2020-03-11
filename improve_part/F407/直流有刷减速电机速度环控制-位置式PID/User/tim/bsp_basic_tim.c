@@ -26,7 +26,7 @@ TIM_HandleTypeDef TIM_TimeBaseStructure;
 static void TIMx_NVIC_Configuration(void)
 {
 	//设置抢占优先级，子优先级
-	HAL_NVIC_SetPriority(BASIC_TIM_IRQn, 0, 3);
+	HAL_NVIC_SetPriority(BASIC_TIM_IRQn, 1, 3);
 	// 设置中断来源
 	HAL_NVIC_EnableIRQ(BASIC_TIM_IRQn);
 }

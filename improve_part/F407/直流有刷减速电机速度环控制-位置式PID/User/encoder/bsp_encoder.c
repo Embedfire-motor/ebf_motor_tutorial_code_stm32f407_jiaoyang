@@ -107,7 +107,7 @@ static void TIM_Encoder_Init(void)
   __HAL_TIM_URS_ENABLE(&TIM_EncoderHandle);
   
   /* 设置中断优先级 */
-  HAL_NVIC_SetPriority(ENCODER_TIM_IRQn, 5, 1);
+  HAL_NVIC_SetPriority(ENCODER_TIM_IRQn, 0, 1);
   /* 使能定时器中断 */
   HAL_NVIC_EnableIRQ(ENCODER_TIM_IRQn);
   

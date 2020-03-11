@@ -32,13 +32,26 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
 {
 	for(; nCount != 0; nCount--);
 }	
+//uint8_t temp[4] = {255, 65, 46, 61};
+//void fun(char c[])
+//{
+//	
+//	float f, f1;
+
+//	//temp = c;
+
+//	f1 = *(float*)& temp[0];
+//	f = *(float *)&c[0];
+
+//	printf("f = %f, f = %f\n", f, f1);
+//}
 	
 /**
   * @brief  主函数
   * @param  无
   * @retval 无
   */
-int main(void) 
+int main(void)
 {
   __IO int32_t target_speed = 100;
   
@@ -48,8 +61,11 @@ int main(void)
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
   
-	/* 初始化按键GPIO */
+	/* 初始化按键 GPIO */
 	Key_GPIO_Config();
+  
+  /* 初始化 LED */
+  LED_GPIO_Config();
   
   /* 初始化串口 */
   DEBUG_USART_Config();
@@ -57,7 +73,7 @@ int main(void)
   /* 通用定时器初始化并配置PWM输出功能 */
   Motor_TIMx_Configuration();
   
-	set_motor_disable();     // 停止电机
+	set_motor_disable();     // 停止电机 
   
   /* 编码器接口初始化 */
 	Encoder_Init();
@@ -67,12 +83,15 @@ int main(void)
   
   /* PID 参数初始化 */
   PID_param_init();
-	
+
 	while(1)
 	{
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
+    #if PID_ASSISTANT_EN
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
+    #endif
       set_pid_actual(target_speed);    // 设置目标值
       set_motor_enable();              // 使能电机
     }
@@ -94,7 +113,7 @@ int main(void)
       
       set_pid_actual(target_speed);
     #if PID_ASSISTANT_EN
-      set_computer_value(SET_FACT_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
     #endif
     }
 
@@ -109,7 +128,7 @@ int main(void)
       
       set_pid_actual(target_speed);
     #if PID_ASSISTANT_EN
-      set_computer_value(SET_FACT_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
     #endif
     }
 	}

@@ -184,7 +184,7 @@ void deal_serial_data(void)
       uart_FlushRxBuffer();
     }
 }
-
+#include "./led/bsp_led.h"   
 /**
   * @brief  电机位置式 PID 控制实现(定时调用)
   * @param  无
@@ -197,7 +197,7 @@ void motor_pid_control(void)
     float cont_val = 0;                       // 当前控制值
     static __IO int32_t Capture_Count = 0;    // 当前时刻总计数值
     static __IO int32_t Last_Count = 0;       // 上一时刻总计数值
-    int32_t actual_speed = 0;                   // 实际测得速度
+    int32_t actual_speed = 0;                 // 实际测得速度
     
     /* 当前时刻总计数值 = 计数器值 + 计数溢出次数 * ENCODER_TIM_PERIOD  */
     Capture_Count =__HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (Encoder_Overflow_Count * ENCODER_TIM_PERIOD);
@@ -224,7 +224,11 @@ void motor_pid_control(void)
     set_motor_speed(cont_val);                                                 // 设置 PWM 占空比
     
   #if PID_ASSISTANT_EN
-    set_computer_value(SET_FACT_CMD, CURVES_CH1, actual_speed);                // 给通道 1 发送实际值
+    set_computer_value(SEED_FACT_CMD, CURVES_CH1, actual_speed);                // 给通道 1 发送实际值
+    if (actual_speed < -100)
+    {
+      LED3_TOGGLE;
+    }
   #else
     printf("实际值：%d. 目标值：%.0f\n", actual_speed, get_pid_actual());      // 打印实际值和目标值
   #endif
