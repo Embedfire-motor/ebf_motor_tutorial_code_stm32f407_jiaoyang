@@ -45,7 +45,7 @@
 #endif
 
 /* 减速电机减速比 */
-#define REDUCTION_RATIO                        34
+#define REDUCTION_RATIO                        30
 
 extern __IO int16_t Encoder_Overflow_Count;
 extern TIM_HandleTypeDef TIM_EncoderHandle;

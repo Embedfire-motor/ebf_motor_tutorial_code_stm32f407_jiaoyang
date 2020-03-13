@@ -44,8 +44,7 @@ typedef __packed struct
   uint8_t ch;       // 通道
   uint32_t len;     // 包长度
   uint8_t cmd;      // 命令
-  int32_t data;     // 包数据（实用只有一个字数据的情况）
-  uint8_t sum;      // 校验和
+//  uint8_t sum;      // 校验和
   
 }packet_head_t;
 
@@ -61,6 +60,10 @@ typedef __packed struct
 /* 指令(下位机 -> 上位机) */
 #define SEED_TARGET_CMD      0x01     // 发送上位机通道的目标值
 #define SEED_FACT_CMD        0x02     // 发送通道实际值
+#define SEED_P_I_D_CMD       0x03     // 发送 PID 值（同步上位机显示的值）
+#define SEED_START_CMD       0x04     // 发送启动指令（同步上位机按钮状态）
+#define SEED_STOP_CMD        0x05     // 发送停止指令（同步上位机按钮状态）
+#define SEED_PERIOD_CMD      0x06     // 发送周期（同步上位机显示的值）
 
 /* 指令(上位机 -> 下位机) */
 #define SET_P_I_D_CMD        0x10     // 设置 PID 值
@@ -71,9 +74,9 @@ typedef __packed struct
 #define SET_PERIOD_CMD       0x15     // 设置周期
 
 /* 索引值宏定义 */
-#define HEAD_INDEX_VAL       0x0u     // 包头索引值（4字节）
+#define HEAD_INDEX_VAL       0x3u     // 包头索引值（4字节）
 #define CHX_INDEX_VAL        0x4u     // 通道索引值（1字节）
-#define LEN_INDEX_VAL        0x5u     // 包长索引值（4字节）
+#define LEN_INDEX_VAL        0x8u     // 包长索引值（4字节）
 #define CMD_INDEX_VAL        0x9u     // 命令索引值（1字节）
 
 #define EXCHANGE_H_L_BIT(data)      ((((data) << 24) & 0xFF000000) |\
@@ -81,10 +84,10 @@ typedef __packed struct
                                      (((data) >>  8) & 0x0000FF00) |\
                                      (((data) >> 24) & 0x000000FF))     // 交换高低字节
 
-#define COMPOUND_32BIT(data)        ((((data)[0] << 24) & 0xFF000000) |\
-                                     (((data)[1] << 16) & 0x00FF0000) |\
-                                     (((data)[2] <<  8) & 0x0000FF00) |\
-                                     (((data)[3] <<  0) & 0x000000FF))      // 合成为一个字
+#define COMPOUND_32BIT(data)        (((*(data-0) << 24) & 0xFF000000) |\
+                                     ((*(data-1) << 16) & 0x00FF0000) |\
+                                     ((*(data-2) <<  8) & 0x0000FF00) |\
+                                     ((*(data-3) <<  0) & 0x000000FF))      // 合成为一个字
 
 void uart_FlushRxBuffer(void);
 void Usart_SendByte(uint8_t str);
@@ -92,7 +95,7 @@ void Usart_SendString(uint8_t *str);
 void DEBUG_USART_Config(void);
 //int fputc(int ch, FILE *f);
 extern UART_HandleTypeDef UartHandle;
-void set_computer_value(uint8_t cmd, uint8_t ch, int32_t data);
-uint8_t check_sum(uint8_t *ptr,uint8_t len);
+void set_computer_value(uint8_t cmd, uint8_t ch, void *data, uint8_t num);
+uint8_t check_sum(uint8_t init, uint8_t *ptr,uint8_t len);
 void parse_data(void);
 #endif /* __USART1_H */

@@ -53,7 +53,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void)
 {
-  __IO int32_t target_speed = 100;
+  int32_t target_speed = 100;
   
   /* HAL 库初始化 */
   HAL_Init();
@@ -83,14 +83,19 @@ int main(void)
   
   /* PID 参数初始化 */
   PID_param_init();
+  
+#if defined(PID_ASSISTANT_EN)
+  set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
+  set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &target_speed, 1);     // 给通道 1 发送目标值
+#endif
 
 	while(1)
 	{
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
-    #if PID_ASSISTANT_EN
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
+    #if defined(PID_ASSISTANT_EN) 
+      set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     #endif
       set_pid_actual(target_speed);    // 设置目标值
       set_motor_enable();              // 使能电机
@@ -100,6 +105,7 @@ int main(void)
     if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
     {
       set_motor_disable();     // 停止电机
+      set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     }
     
     /* 扫描KEY3 */
@@ -108,12 +114,12 @@ int main(void)
       /* 增大目标速度 */
       target_speed += 50;
       
-      if(target_speed > 300)
-        target_speed = 300;
+      if(target_speed > 350)
+        target_speed = 350;
       
       set_pid_actual(target_speed);
-    #if PID_ASSISTANT_EN
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
+    #if defined(PID_ASSISTANT_EN)
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
     #endif
     }
 
@@ -123,12 +129,12 @@ int main(void)
       /* 减小目标速度 */
       target_speed -= 50;
       
-      if(target_speed < -300)
-        target_speed = -300;
+      if(target_speed < -350)
+        target_speed = -350;
       
       set_pid_actual(target_speed);
-    #if PID_ASSISTANT_EN
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, target_speed);     // 给通道 1 发送目标值
+    #if defined(PID_ASSISTANT_EN)
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
     #endif
     }
 	}

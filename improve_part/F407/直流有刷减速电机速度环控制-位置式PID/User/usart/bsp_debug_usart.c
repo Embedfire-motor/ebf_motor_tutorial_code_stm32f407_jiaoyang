@@ -18,7 +18,8 @@
 #include "./usart/bsp_debug_usart.h"
 #include ".\motor_control\bsp_motor_control.h"
 #include "./pid/bsp_pid.h"
-#include "./led/bsp_led.h"  
+#include "./led/bsp_led.h"
+#include "./tim/bsp_basic_tim.h"
 
 UART_HandleTypeDef UartHandle;
 
@@ -138,9 +139,9 @@ int fgetc(FILE *f)
   * @param len：需要计算的长度
   * @retval 校验和
   */
-uint8_t check_sum(uint8_t *ptr,uint8_t len )
+uint8_t check_sum(uint8_t init, uint8_t *ptr, uint8_t len )
 {
-  uint8_t sum = 0;
+  uint8_t sum = init;
   
   while(len--)
   {
@@ -152,28 +153,41 @@ uint8_t check_sum(uint8_t *ptr,uint8_t len )
 }
 
 /**
-  * @brief 设置上位机的值 
+  * @brief 设置上位机的值
   * @param cmd：命令
   * @param ch: 曲线通道
-  * @param data：数据
+  * @param data：参数指针
+  * @param num：参数个数
   * @retval 无
   */
-void set_computer_value(uint8_t cmd, uint8_t ch, int32_t data)
+void set_computer_value(uint8_t cmd, uint8_t ch, void *data, uint8_t num)
 {
-  static packet_head_t set_packet =
-  {  
-     /* 上位机要求高位在前 */
-    .head = 0x535A4859,     // 包头
-    .len  = 0x0F000000,    // 包长度
-  };
+  uint8_t sum = 0;    // 校验和
+  num *= 4;           // 一个参数 4 个字节
   
-  set_packet.ch = ch;      // 设置通道
-  set_packet.cmd = cmd;    // 设置命令
-  set_packet.data = EXCHANGE_H_L_BIT(data);    // 复制数据
+  static packet_head_t set_packet;
   
-  set_packet.sum = check_sum((uint8_t *)&set_packet, sizeof(set_packet) - 1);       // 计算校验和
+  set_packet.head = PACKET_HEAD;     // 包头 0x59485A53
+  set_packet.len  = 0x0B + num;      // 包长
+  set_packet.ch   = ch;              // 设置通道
+  set_packet.cmd  = cmd;             // 设置命令
   
-  HAL_UART_Transmit(&UartHandle, (uint8_t *)&set_packet, sizeof(set_packet), 0xFFFFF);    // 发送数据帧
+  sum = check_sum(0, (uint8_t *)&set_packet, sizeof(set_packet));       // 计算包头校验和
+  sum = check_sum(sum, (uint8_t *)data, num);                           // 计算参数校验和
+  
+  HAL_UART_Transmit(&UartHandle, (uint8_t *)&set_packet, sizeof(set_packet), 0xFFFFF);    // 发送数据头
+  HAL_UART_Transmit(&UartHandle, (uint8_t *)data, num, 0xFFFFF);                          // 发送参数
+  HAL_UART_Transmit(&UartHandle, (uint8_t *)&sum, sizeof(sum), 0xFFFFF);                  // 发送校验和
+}
+
+/**
+  * @brief 同步上位机的值
+  * @param 无
+  * @retval 无
+  */
+void sync_computer_value(void)
+{
+  
 }
 
 /**
@@ -194,19 +208,15 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
   if (packet.head == PACKET_HEAD)    // 检查包头
   {
     /* 包头正确 */
-    if (check_sum(UART_RxBuffer, packet.len) == UART_RxBuffer[packet.len - 1])    // 检查校验和是否正确
+    if (check_sum(0, UART_RxBuffer, packet.len - 1) == UART_RxBuffer[packet.len - 1])    // 检查校验和是否正确
     {
       switch(packet.cmd)
       {
         case SET_P_I_D_CMD:
         {
-          uint8_t *buff0 = &UART_RxBuffer[10];
-          uint8_t *buff1 = &UART_RxBuffer[14];
-          uint8_t *buff2 = &UART_RxBuffer[18];
-          
-          uint32_t temp0 = (*buff0 << 24) | (*(buff0+1) << 16) | (*(buff0+2) << 8) | (*(buff0+3));
-          uint32_t temp1 = (*buff1 << 24) | (*(buff1+1) << 16) | (*(buff1+2) << 8) | (*(buff1+3));
-          uint32_t temp2 = (*buff2 << 24) | (*(buff2+1) << 16) | (*(buff2+2) << 8) | (*(buff2+3));
+          uint32_t temp0 = COMPOUND_32BIT(&UART_RxBuffer[13]);
+          uint32_t temp1 = COMPOUND_32BIT(&UART_RxBuffer[17]);
+          uint32_t temp2 = COMPOUND_32BIT(&UART_RxBuffer[21]);
           
           float p_temp, i_temp, d_temp;
           
@@ -220,7 +230,7 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
 
         case SET_TARGET_CMD:
         {
-          int actual_temp = COMPOUND_32BIT(&UART_RxBuffer[10]);    // 得到数据
+          int actual_temp = COMPOUND_32BIT(&UART_RxBuffer[13]);    // 得到数据
           
           set_pid_actual(actual_temp);    // 设置目标值
         }
@@ -246,7 +256,8 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
         
         case SET_PERIOD_CMD:
         {
-//          uint32_t temp = COMPOUND_32BIT(&UART_RxBuffer[10]);     // 周期数
+          uint32_t temp = COMPOUND_32BIT(&UART_RxBuffer[13]);     // 周期数
+          SET_BASIC_TIM_PERIOD(temp);                             // 设置定时器周期1~1000ms
         }
         break;
       }
