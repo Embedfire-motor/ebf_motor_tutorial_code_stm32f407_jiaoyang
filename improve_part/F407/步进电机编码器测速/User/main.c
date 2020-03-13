@@ -28,17 +28,17 @@
 #include "./Encoder/bsp_encoder.h"
 
 /* 电机旋转方向 */
-__IO int8_t Motor_Direction = 0;
+__IO int8_t motor_direction = 0;
 /* 当前时刻总计数值 */
-__IO int32_t Capture_Count = 0;
+__IO int32_t capture_count = 0;
 /* 上一时刻总计数值 */
-__IO int32_t Last_Count = 0;
+__IO int32_t last_count = 0;
 /* 单位时间内总计数值 */
-__IO int32_t Count_Per_Unit = 0;
+__IO int32_t count_per_unit = 0;
 /* 电机转轴转速 */
-__IO float Shaft_Speed = 0.0f;
+__IO float shaft_speed = 0.0f;
 /* 累积圈数 */
-__IO float Number_Of_Rotations = 0.0f;
+__IO float number_of_rotations = 0.0f;
 
 /**
   * @brief  主函数
@@ -65,36 +65,36 @@ int main(void)
 	stepper_Init();
   /* 编码器接口初始化 */
 	Encoder_Init();
-  /* 停止电机 */
+  /* 上电默认停止电机，按键2启动 */
   MOTOR_EN(OFF);
   
 	while(1)
 	{ /* 20ms计算一次 */
     
     /* 电机旋转方向 = 计数器计数方向 */
-    Motor_Direction = __HAL_TIM_IS_TIM_COUNTING_DOWN(&TIM_EncoderHandle);
+    motor_direction = __HAL_TIM_IS_TIM_COUNTING_DOWN(&TIM_EncoderHandle);
     
     /* 当前时刻总计数值 = 计数器值 + 计数溢出次数 * ENCODER_TIM_PERIOD  */
-    Capture_Count =__HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (Encoder_Overflow_Count * ENCODER_TIM_PERIOD);
+    capture_count =__HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (Encoder_Overflow_Count * ENCODER_TIM_PERIOD);
     
     /* 单位时间内总计数值 = 当前时刻总计数值 - 上一时刻总计数值 */
-    Count_Per_Unit = Capture_Count - Last_Count;
+    count_per_unit = capture_count - last_count;
     
     /* 转轴转速 = 单位时间内的计数值 / 编码器总分辨率 * 时间系数  */
-    Shaft_Speed = (float)Count_Per_Unit / ENCODER_TOTAL_RESOLUTION * 50 ;
+    shaft_speed = (float)count_per_unit / ENCODER_TOTAL_RESOLUTION * 50 ;
     
     /* 累积圈数 = 当前时刻总计数值 / 编码器总分辨率  */
-    Number_Of_Rotations = (float)Capture_Count / ENCODER_TOTAL_RESOLUTION;
+    number_of_rotations = (float)capture_count / ENCODER_TOTAL_RESOLUTION;
 
     /* 记录当前总计数值，供下一时刻计算使用 */
-    Last_Count = Capture_Count;
+    last_count = capture_count;
     
     if(i == 50)/* 1s报告一次 */
     {
-      printf("\r\n电机方向：%d\r\n", Motor_Direction);
-      printf("单位时间内有效计数值：%d\r\n", (Count_Per_Unit<0 ? abs(Count_Per_Unit) : Count_Per_Unit));
-      printf("步进电机转速：%.2f 转/秒\r\n", Shaft_Speed);
-      printf("累计圈数：%.2f 圈\r\n", Number_Of_Rotations);
+      printf("\r\n电机方向：%d\r\n", motor_direction);
+      printf("单位时间内有效计数值：%d\r\n", (count_per_unit<0 ? abs(count_per_unit) : count_per_unit));
+      printf("步进电机转速：%.2f 转/秒\r\n", shaft_speed);
+      printf("累计圈数：%.2f 圈\r\n", number_of_rotations);
       i = 0;
     }
     delay_ms(20);
