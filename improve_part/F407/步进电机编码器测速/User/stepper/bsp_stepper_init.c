@@ -23,7 +23,7 @@ void TIM_SetPWM_period(TIM_TypeDef* TIMx,uint32_t TIM_period);
 
 TIM_HandleTypeDef TIM_TimeBaseStructure;
 //__IO uint16_t OC_Pulse_num = 500;     //比较输出的计数值
-__IO uint16_t OC_Pulse_num = 200;     //比较输出的计数值
+__IO uint16_t OC_Pulse_num = 100;     //比较输出的计数值
 
 
  /**
