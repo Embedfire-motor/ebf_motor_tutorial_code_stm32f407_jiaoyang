@@ -105,7 +105,9 @@ int main(void)
     if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
     {
       set_motor_disable();     // 停止电机
+    #if defined(PID_ASSISTANT_EN) 
       set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
+    #endif
     }
     
     /* 扫描KEY3 */
