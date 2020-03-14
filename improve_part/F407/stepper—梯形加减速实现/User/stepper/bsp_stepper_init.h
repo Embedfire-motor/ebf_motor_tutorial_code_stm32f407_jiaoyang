@@ -29,13 +29,13 @@
 #define MOTOR_PUL_TIM                   TIM8
 #define MOTOR_PUL_CLK_ENABLE()  		__TIM8_CLK_ENABLE()
 
-//#define MOTOR_PUL_PORT       			GPIOI
-//#define MOTOR_PUL_PIN             		GPIO_PIN_5
-//#define MOTOR_PUL_GPIO_CLK_ENABLE()		__HAL_RCC_GPIOI_CLK_ENABLE()
+#define MOTOR_PUL_PORT       			GPIOI
+#define MOTOR_PUL_PIN             		GPIO_PIN_5
+#define MOTOR_PUL_GPIO_CLK_ENABLE()		__HAL_RCC_GPIOI_CLK_ENABLE()
 
-#define MOTOR_PUL_PORT       			GPIOC
-#define MOTOR_PUL_PIN             		GPIO_PIN_6
-#define MOTOR_PUL_GPIO_CLK_ENABLE()		__HAL_RCC_GPIOC_CLK_ENABLE()
+//#define MOTOR_PUL_PORT       			GPIOC
+//#define MOTOR_PUL_PIN             		GPIO_PIN_6
+//#define MOTOR_PUL_GPIO_CLK_ENABLE()		__HAL_RCC_GPIOC_CLK_ENABLE()
 
 #define MOTOR_PUL_GPIO_AF               GPIO_AF3_TIM8
 #define MOTOR_PUL_CHANNEL_x             TIM_CHANNEL_1
