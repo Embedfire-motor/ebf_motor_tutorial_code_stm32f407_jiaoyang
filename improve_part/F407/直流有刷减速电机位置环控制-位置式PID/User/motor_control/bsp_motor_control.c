@@ -107,13 +107,13 @@ void motor_pid_control(void)
 {
   if (is_motor_en == 1)     // 电机在使能状态下才进行控制处理
   {
-    static float cont_val = 0;                // 当前控制值
-    static int32_t Capture_Count = 0;    // 当前时刻总计数值
+    float cont_val = 0;           // 当前控制值
+    int32_t Capture_Count = 0;    // 当前时刻总计数值
     
     /* 当前时刻总计数值 = 计数器值 + 计数溢出次数 * ENCODER_TIM_PERIOD  */
     Capture_Count = __HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (Encoder_Overflow_Count * ENCODER_TIM_PERIOD);
     
-    cont_val += PID_realize(Capture_Count);    // 进行 PID 计算
+    cont_val = PID_realize(Capture_Count);    // 进行 PID 计算
     
     if (cont_val > 0)    // 判断电机方向
     {
@@ -125,7 +125,7 @@ void motor_pid_control(void)
       set_motor_direction(MOTOR_REV);
     }
     
-    cont_val = (cont_val > PWM_PERIOD_COUNT*3/5) ? PWM_PERIOD_COUNT*3/5 : cont_val;    // 速度上限处理
+    cont_val = (cont_val > PWM_PERIOD_COUNT*0.48) ? PWM_PERIOD_COUNT*0.48 : cont_val;    // 速度上限处理
     set_motor_speed(cont_val);                                                         // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)

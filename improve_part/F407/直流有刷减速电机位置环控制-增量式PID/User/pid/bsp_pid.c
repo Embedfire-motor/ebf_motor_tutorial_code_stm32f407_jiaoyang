@@ -74,12 +74,10 @@ void set_p_i_d(float p, float i, float d)
   */
 float PID_realize(float actual_val)
 {
-  /*传入实际值*/
-	pid.actual_val = actual_val;
 	/*计算目标值与实际值的误差*/
-  pid.err=pid.target_val-pid.actual_val;
+  pid.err=pid.target_val-actual_val;
 	/*PID算法实现*/
-	pid.actual_val = pid.Kp*(pid.err - pid.err_next) 
+	pid.actual_val += pid.Kp*(pid.err - pid.err_next) 
                  + pid.Ki*pid.err 
                  + pid.Kd*(pid.err - 2 * pid.err_next + pid.err_last);
 	/*传递误差*/

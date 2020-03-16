@@ -122,7 +122,7 @@ void motor_pid_control(void)
     /* 记录当前总计数值，供下一时刻计算使用 */
     Last_Count = Capture_Count;
     
-    cont_val += PID_realize(actual_speed);    // 进行 PID 计算
+    cont_val = PID_realize(actual_speed);    // 进行 PID 计算
     
     if (cont_val > 0)    // 判断电机方向
     {
