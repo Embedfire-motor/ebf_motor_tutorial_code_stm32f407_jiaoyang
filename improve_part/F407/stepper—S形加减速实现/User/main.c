@@ -43,25 +43,32 @@ int main(void)
 	stepper_Init();
 	/*按键中断初始化*/
 	EXTI_Key_Config();	
-
-	while(1)
-	{     
-		if(print_flag)
-		{
-			/*初速度为0，末速度5，加速时间为4s*/
-			//CalculateSpeedTab(0,10,5);
-////			
-			CalcSpeed(0,10,5.0f);
+	
+	CalcSpeed(0,100,0.1f);
 									
 //			STEPMOTOR_MoveRel();
 //			channel_sw(1);
-			STEPMOTOR_MoveRel();
-			//stepper_move_T(-6400*2, 5, 5, 5);
+	STEPMOTOR_MoveRel();
+	
 
-			
-			
-			print_flag=0;
-		}
+	while(1)
+	{     
+//		if(print_flag)
+//		{
+//			/*初速度为0，末速度5，加速时间为4s*/
+//			//CalculateSpeedTab(0,10,5);
+//////			
+//			CalcSpeed(0,10,5.0f);
+//									
+////			STEPMOTOR_MoveRel();
+////			channel_sw(1);
+//			STEPMOTOR_MoveRel();
+//			//stepper_move_T(-6400*2, 5, 5, 5);
+
+//			
+//			
+//			print_flag=0;
+//		}
 	}
 } 	
 

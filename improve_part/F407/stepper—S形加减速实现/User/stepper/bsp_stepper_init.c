@@ -174,7 +174,7 @@ void speed_decision()
 		// 清楚定时器中断
 		__HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx);
 		/******************************************************************/
-/*		
+		
 		    i++;     // 定时器中断次数计数值
     if(i == 2) // 2次，说明已经输出一个完整脉冲
     {
@@ -203,12 +203,14 @@ void speed_decision()
         }
       }
     }
-	*/	
+	
 		/**********************************************************************/
 		// 设置比较值
 		uint32_t tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
-		uint32_t tmp = tim_count+30;
+		uint32_t tmp = tim_count+Toggle_Pulse;
 		__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tmp);
+		
+		
 	}
 }
 
