@@ -21,6 +21,7 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./delay/core_delay.h"
 #include "./stepper/bsp_creat_S_tab.h"
+#include "./stepper/bsp_stepper_init.h"
 #include "./key/bsp_exti.h"
 #include "./led/bsp_led.h"  
 
@@ -48,9 +49,17 @@ int main(void)
 		if(print_flag)
 		{
 			/*初速度为0，末速度5，加速时间为4s*/
-			CalculateSpeedTab(0,10,5);
-			stepper_move_T(-6400*2, 5, 5, 5);
-			channel_sw(1);
+			//CalculateSpeedTab(0,10,5);
+////			
+			CalcSpeed(0,10,5.0f);
+									
+//			STEPMOTOR_MoveRel();
+//			channel_sw(1);
+			STEPMOTOR_MoveRel();
+			//stepper_move_T(-6400*2, 5, 5, 5);
+
+			
+			
 			print_flag=0;
 		}
 	}

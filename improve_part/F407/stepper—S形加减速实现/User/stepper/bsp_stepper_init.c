@@ -15,6 +15,7 @@
   ******************************************************************************
   */
 #include "./stepper/bsp_stepper_init.h"
+#include "./stepper/bsp_creat_S_tab.h"
 #include "./delay/core_delay.h"   
 #include "stm32f4xx.h"
 #include "math.h"
@@ -102,7 +103,7 @@ void TIM_PWMOUTPUT_Config(void)
 	// 通用控制定时器时钟源TIMxCLK = HCLK/2	=	84MHz 
 	// 高级控制定时器时钟源TIMxCLK = HCLK		=	168MHz 
 	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)
-	TIM_TimeBaseStructure.Init.Prescaler = 5;//TIM_PRESCALER;                
+	TIM_TimeBaseStructure.Init.Prescaler = TIM_PRESCALER;//TIM_PRESCALER;                
 
 	/*计数方式*/
 	TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;            
@@ -131,7 +132,7 @@ void TIM_PWMOUTPUT_Config(void)
 	/* 确定定时器 */
 	HAL_TIM_Base_Start(&TIM_TimeBaseStructure);
 	/* 启动比较输出并使能中断 */
-//	HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
+	HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
 	/*使能比较通道*/
 	TIM_CCxChannelCmd(MOTOR_PUL_TIM,MOTOR_PUL_CHANNEL_x,TIM_CCx_ENABLE);
 
@@ -151,6 +152,9 @@ void channel_sw(int temp)
 }
 
 
+__IO int32_t  Step_Position   = 0;           // 当前位置
+__IO uint16_t    Toggle_Pulse = 0;        // 脉冲频率控制
+__IO uint8_t  MotionStatus    = 0;  
 
 /**
   * @brief  速度决策
@@ -159,18 +163,77 @@ void channel_sw(int temp)
   */
 void speed_decision()
 {
+	  __IO uint32_t Tim_Count = 0;
+  __IO uint32_t tmp = 0;
+  __IO float Tim_Pulse = 0;
+  __IO static uint8_t i = 0;  
+	
   
 	if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx) !=RESET)
 	{
 		// 清楚定时器中断
 		__HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx);
-
+		/******************************************************************/
+/*		
+		    i++;     // 定时器中断次数计数值
+    if(i == 2) // 2次，说明已经输出一个完整脉冲
+    {
+      i = 0;   // 清零定时器中断次数计数值
+      if(MotionStatus == ACCEL || MotionStatus == DECEL)
+      {
+        Step_Position ++;
+        if(Step_Position  < Speed.AccelStep )
+        { 
+          Tim_Pulse = T1_FREQ / Speed.VelocityTab[Step_Position];// 由速度表得到每一步的定时器计数值
+          if((Tim_Pulse / 2) >= 0xFFFF)
+            Tim_Pulse = 0xFFFF;
+          Toggle_Pulse = (uint16_t) (Tim_Pulse / 2);
+        }
+        else
+        {
+          if(MotionStatus == ACCEL)   
+            MotionStatus = AVESPEED;
+          else
+          {
+            MotionStatus = STOP; 
+//            free(Speed.VelocityTab);          //  运动完要释放内存
+            TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);// 使能定时器通道 
+            
+          }
+        }
+      }
+    }
+	*/	
+		/**********************************************************************/
 		// 设置比较值
 		uint32_t tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
-		uint32_t tmp = tim_count+1000;
+		uint32_t tmp = tim_count+30;
 		__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tmp);
 	}
 }
+
+/**
+  * 函数功能: 步进电机做S型加减速运动
+  * 输入参数: 无
+  * 返 回 值: 无
+  * 说    明: 无
+  */
+void STEPMOTOR_MoveRel()
+{
+  Step_Position = 0;
+  MotionStatus = ACCEL; // 电机为运动状态
+  // 第一步速度是0,则定时器从0xFFFF开始;
+  if(Speed.VelocityTab[0] == 0)
+    Toggle_Pulse = 0xFFFF;
+  else
+    Toggle_Pulse  = (uint32_t)(T1_FREQ/Speed.VelocityTab[0]);
+  __HAL_TIM_SET_COUNTER(&TIM_TimeBaseStructure,0);
+  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,(uint16_t)(Toggle_Pulse)); // 设置定时器比较值
+  TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);// 使能定时器通道 
+  //STEPMOTOR_OUTPUT_ENABLE();
+}
+
+
 
 
 void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t speed)
@@ -179,7 +242,7 @@ void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t spee
 	/*获取当前计数值*/
 	int tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
 	/*在当前计数值基础上设置定时器比较值*/
-	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tim_count+1000); 
+	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tim_count+500); 
 	/*使能定时器通道*/
 	TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);
 
