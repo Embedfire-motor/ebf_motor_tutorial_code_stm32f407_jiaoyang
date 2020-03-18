@@ -150,6 +150,41 @@ void channel_sw(int temp)
 		HAL_TIM_OC_Stop_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
 }
 
+
+
+/**
+  * @brief  速度决策
+	*	@note 	在中断中使用，每进一次中断，决策一次
+  * @retval 无
+  */
+void speed_decision()
+{
+  
+	if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx) !=RESET)
+	{
+		// 清楚定时器中断
+		__HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx);
+
+		// 设置比较值
+		uint32_t tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
+		uint32_t tmp = tim_count+1000;
+		__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tmp);
+	}
+}
+
+
+void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t speed)
+{  
+
+	/*获取当前计数值*/
+	int tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
+	/*在当前计数值基础上设置定时器比较值*/
+	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tim_count+1000); 
+	/*使能定时器通道*/
+	TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);
+
+}
+
 /**
   * @brief  引脚初始化
   * @retval 无
