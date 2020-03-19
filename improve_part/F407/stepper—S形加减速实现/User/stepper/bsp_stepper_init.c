@@ -132,7 +132,7 @@ void TIM_PWMOUTPUT_Config(void)
 	/* 确定定时器 */
 	HAL_TIM_Base_Start(&TIM_TimeBaseStructure);
 	/* 启动比较输出并使能中断 */
-	HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
+//	HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
 	/*使能比较通道*/
 	TIM_CCxChannelCmd(MOTOR_PUL_TIM,MOTOR_PUL_CHANNEL_x,TIM_CCx_ENABLE);
 

@@ -326,9 +326,20 @@ void stepper_start_run()
     Toggle_Pulse = 0xFFFF;
   else
     Toggle_Pulse  = (uint32_t)(T1_FREQ/Speed.VelocityTab[0]);
+
   __HAL_TIM_SET_COUNTER(&TIM_TimeBaseStructure,0);
   __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,(uint16_t)(Toggle_Pulse)); // 设置定时器比较值
+		/* 启动比较输出并使能中断 */
+	HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
   TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);// 使能定时器通道 
+	
+//	//__HAL_TIM_SET_COUNTER(&TIM_TimeBaseStructure,0);
+//		/*获取当前计数值*/
+//	int tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
+//	/*在当前计数值基础上设置定时器比较值*/
+//	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tim_count+Toggle_Pulse); 
+//	TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);// 使能定时器通道 
+	
   //STEPMOTOR_OUTPUT_ENABLE();
 }
 

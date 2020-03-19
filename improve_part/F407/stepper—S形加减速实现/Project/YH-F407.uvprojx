@@ -773,9 +773,9 @@
               <FilePath>..\User\stepper\bsp_stepper_init.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_creat_S_tab.c</FileName>
+              <FileName>bsp_stepper_S_speed.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\stepper\bsp_creat_S_tab.c</FilePath>
+              <FilePath>..\User\stepper\bsp_stepper_S_speed.c</FilePath>
             </File>
           </Files>
         </Group>

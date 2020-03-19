@@ -200,6 +200,16 @@
           <WinNumber>1</WinNumber>
           <ItemText>Time</ItemText>
         </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>TIM_TimeBaseStructure,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>10</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>Toggle_Pulse,0x0A</ItemText>
+        </Ww>
       </WatchWindow1>
       <Tracepoint>
         <THDelay>0</THDelay>
@@ -1190,8 +1200,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\User\stepper\bsp_creat_S_tab.c</PathWithFileName>
-      <FilenameWithoutPath>bsp_creat_S_tab.c</FilenameWithoutPath>
+      <PathWithFileName>..\User\stepper\bsp_stepper_S_speed.c</PathWithFileName>
+      <FilenameWithoutPath>bsp_stepper_S_speed.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
