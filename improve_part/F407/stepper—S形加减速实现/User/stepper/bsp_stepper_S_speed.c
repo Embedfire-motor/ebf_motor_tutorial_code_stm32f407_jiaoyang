@@ -55,6 +55,19 @@ a-t 曲线如下 （V-t曲线 请看 文档）
 SpeedCalc_TypeDef Speed ;
 uint8_t print_flag=0;
 
+typedef struct {
+	uint8_t 	status;	//状态
+	uint8_t 	dir;		//方向
+	uint32_t 	pos;		//位置
+	uint32_t  pluse_time;//脉冲时间	
+}Stepper_Typedef;
+
+Stepper_Typedef *Stepper;
+
+void test()
+{
+
+}
 
 
 /** 
@@ -81,6 +94,7 @@ uint8_t print_flag=0;
   */
 void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
 {
+	
   uint8_t Is_Dec = FALSE;     
   int32_t i = 0;
   int32_t Vm =0;              // 中间点速度
@@ -260,11 +274,11 @@ void speed_decision(void)
   
 	if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx) !=RESET)
 	{
-		// 清楚定时器中断
+		/*清除定时器中断*/
 		__HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx);
 		/******************************************************************/
 		
-		    i++;     // 定时器中断次数计数值
+		i++;     // 定时器中断次数计数值
     if(i == 2) // 2次，说明已经输出一个完整脉冲
     {
       i = 0;   // 清零定时器中断次数计数值
@@ -286,6 +300,7 @@ void speed_decision(void)
           {
             MotionStatus = STOP; 
 //            free(Speed.VelocityTab);          //  运动完要释放内存
+						memset(Speed.VelocityTab,0,sizeof(float)*534);
             TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);// 使能定时器通道 
             
           }
@@ -294,11 +309,12 @@ void speed_decision(void)
     }
 	
 		/**********************************************************************/
-		// 设置比较值
+		// 获取当前计数器数值
 		uint32_t tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
+		/*计算下一次时间*/
 		uint32_t tmp = tim_count+Toggle_Pulse;
+		/*设置比较值*/
 		__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tmp);
-		
 		
 	}
 }
@@ -317,30 +333,29 @@ uint8_t  MotionStatus    = 0;
   * 返 回 值: 无
   * 说    明: 无
   */
+
+
 void stepper_start_run()
 {
+	/*初始化电机状态*/
+	
   Step_Position = 0;
   MotionStatus = ACCEL; // 电机为运动状态
-  // 第一步速度是0,则定时器从0xFFFF开始;
+  	
   if(Speed.VelocityTab[0] == 0)
     Toggle_Pulse = 0xFFFF;
   else
     Toggle_Pulse  = (uint32_t)(T1_FREQ/Speed.VelocityTab[0]);
+	
 
-  __HAL_TIM_SET_COUNTER(&TIM_TimeBaseStructure,0);
-  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,(uint16_t)(Toggle_Pulse)); // 设置定时器比较值
-		/* 启动比较输出并使能中断 */
+	/*获取当前计数值*/
+	uint32_t temp=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
+	/*在当前计数值基础上设置定时器比较值*/
+	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,temp +Toggle_Pulse); 
+	/*开启中断输出比较*/
 	HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
-  TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);// 使能定时器通道 
-	
-//	//__HAL_TIM_SET_COUNTER(&TIM_TimeBaseStructure,0);
-//		/*获取当前计数值*/
-//	int tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
-//	/*在当前计数值基础上设置定时器比较值*/
-//	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tim_count+Toggle_Pulse); 
-//	TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);// 使能定时器通道 
-	
-  //STEPMOTOR_OUTPUT_ENABLE();
+	/*使能定时器通道*/
+	TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_ENABLE);
 }
 
 

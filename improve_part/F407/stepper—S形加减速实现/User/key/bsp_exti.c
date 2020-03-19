@@ -62,11 +62,7 @@ void KEY1_IRQHandler(void)
   //确保是否产生了EXTI Line中断
 	if(__HAL_GPIO_EXTI_GET_IT(KEY1_INT_GPIO_PIN) != RESET) 
 	{
-		// LED2 取反		
-		LED2_TOGGLE;
 
-		print_flag=1;
-		
     //清除中断标志位
 		__HAL_GPIO_EXTI_CLEAR_IT(KEY1_INT_GPIO_PIN);     
 	}  
@@ -77,7 +73,10 @@ void KEY2_IRQHandler(void)
   //确保是否产生了EXTI Line中断
 	if(__HAL_GPIO_EXTI_GET_IT(KEY2_INT_GPIO_PIN) != RESET) 
 	{
-		
+		// LED2 取反		
+		LED2_TOGGLE;
+
+		print_flag=1;
     //清除中断标志位
 		__HAL_GPIO_EXTI_CLEAR_IT(KEY2_INT_GPIO_PIN);     
 	}  

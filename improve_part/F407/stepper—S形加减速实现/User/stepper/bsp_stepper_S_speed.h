@@ -33,8 +33,10 @@ typedef struct {
   int32_t   Vo;               // 初速度   单位 Step/s
   int32_t   Vt;               // 末速度   单位 Step/s
   int32_t AccelStep;          // 加速段的步数单位 Step
-  float   VelocityTab[1000];       // 速度表格 单位 Step/s  步进电机的脉冲频率
+  float   VelocityTab[534];       // 速度表格 单位 Step/s  步进电机的脉冲频率
 }SpeedCalc_TypeDef;
+
+
 
 
 extern SpeedCalc_TypeDef Speed ;
