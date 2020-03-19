@@ -20,7 +20,7 @@
 #include "stm32f4xx.h"
 #include "./usart/bsp_debug_usart.h"
 #include "./delay/core_delay.h"
-#include "./stepper/bsp_creat_S_tab.h"
+#include "./stepper/bsp_stepper_S_speed.h"
 #include "./stepper/bsp_stepper_init.h"
 #include "./key/bsp_exti.h"
 #include "./led/bsp_led.h"  
@@ -37,18 +37,16 @@ int main(void)
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
 	DEBUG_USART_Config();
-	//  printf("欢迎使用野火 电机开发板 步进电机 生成S形加减CalculateSpeedTab速表 例程\r\n");
-	//	printf("按下按键1 可打印相应表\r\n");
-	
-	stepper_Init();
+	printf("欢迎使用野火 电机开发板 步进电机 生成S形加减CalculateSpeedTab速表 例程\r\n");
+	printf("按下按键1 可打印相应表\r\n");
 	/*按键中断初始化*/
-	EXTI_Key_Config();	
+	EXTI_Key_Config();
+	/*步进电机初始化*/
+	stepper_Init();	
 	
-	CalcSpeed(0,100,0.1f);
-									
-//			STEPMOTOR_MoveRel();
-//			channel_sw(1);
-	STEPMOTOR_MoveRel();
+	stepper_move_S(0,200,0.01f);
+
+//	stepper_start_run();
 	
 
 	while(1)
@@ -56,17 +54,7 @@ int main(void)
 //		if(print_flag)
 //		{
 //			/*初速度为0，末速度5，加速时间为4s*/
-//			//CalculateSpeedTab(0,10,5);
-//////			
-//			CalcSpeed(0,10,5.0f);
-//									
-////			STEPMOTOR_MoveRel();
-////			channel_sw(1);
-//			STEPMOTOR_MoveRel();
-//			//stepper_move_T(-6400*2, 5, 5, 5);
-
-//			
-//			
+//			//CalculateSpeedTab(0,10,5);		
 //			print_flag=0;
 //		}
 	}

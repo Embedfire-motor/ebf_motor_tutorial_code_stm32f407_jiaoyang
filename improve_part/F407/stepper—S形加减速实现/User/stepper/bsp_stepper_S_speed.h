@@ -1,9 +1,10 @@
-#ifndef __BSP_CREAT_S_TAB_H
-#define	__BSP_CREAT_S_TAB_H
+#ifndef __BSP_STEPPER_S_SPEED_H
+#define	__BSP_STEPPER_S_SPEED_H
 
 #include "stm32f4xx.h"
 #include "stm32f4xx_hal.h"
 #include "./usart/bsp_debug_usart.h"
+#include "./stepper/bsp_stepper_init.h"
 #include "math.h"
 #include "stdlib.h"
 #include "string.h"
@@ -13,6 +14,9 @@
 #define FSPR           200   // 步进电机单圈步数
 #define CONVER(speed)  ((speed) * FSPR * MICRO_STEP / 60)  // 根据电机转速（r/min），计算电机步速（step/s）
 
+extern int32_t  Step_Position  ;           // 当前位置
+extern uint16_t    Toggle_Pulse;        // 脉冲频率控制
+extern uint8_t  MotionStatus   ;  
 
 //typedef struct 
 //{
@@ -69,5 +73,6 @@ extern SpeedCalc_TypeDef Speed ;
 extern uint8_t print_flag;
 void CalculateSpeedTab(int Vo, int Vt, float Time);
 void CalcSpeed(int32_t Vo, int32_t Vt, float Time);
-
+void stepper_move_S(int start_speed,int end_speed,float time);
+void speed_decision(void);
 #endif 

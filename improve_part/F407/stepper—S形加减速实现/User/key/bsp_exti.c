@@ -17,7 +17,7 @@
   
 #include "./key/bsp_exti.h"
 #include "./led/bsp_led.h"   
-#include "./stepper/bsp_creat_S_tab.h"
+#include "./stepper/bsp_stepper_S_speed.h"
 
 
  /**

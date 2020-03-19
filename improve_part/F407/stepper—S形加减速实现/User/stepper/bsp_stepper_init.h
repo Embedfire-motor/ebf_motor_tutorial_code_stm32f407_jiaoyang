@@ -176,7 +176,7 @@
 //函数以及变量声明
 extern TIM_HandleTypeDef TIM_TimeBaseStructure;
 void stepper_Init(void);
-void STEPMOTOR_MoveRel(void);
+void stepper_start_run(void);
 void channel_sw(int temp);
-extern void stepper_move_T( int32_t step, uint32_t accel, uint32_t decel, uint32_t speed);
+
 #endif
