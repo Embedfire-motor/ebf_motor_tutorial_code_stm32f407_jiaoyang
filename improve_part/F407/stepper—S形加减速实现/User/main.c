@@ -52,13 +52,13 @@ int main(void)
 			stepper_move_S(0,100,0.1f);
 			print_flag=0;
 		}
-//		if( MotionStatus == AVESPEED)
-//    {
+		if( MotionStatus == AVESPEED)
+    {
 
-//      /* 从 60r/min 减速到0r/min */
-//			stepper_move_S(100,0,0.01f);
-//      MotionStatus = DECEL;       // 电机减速
-//    }
+      /* 从 60r/min 减速到0r/min */
+			stepper_move_S(100,0,0.1f);
+      MotionStatus = DECEL;       // 电机减速
+    }
 	}
 } 	
 
