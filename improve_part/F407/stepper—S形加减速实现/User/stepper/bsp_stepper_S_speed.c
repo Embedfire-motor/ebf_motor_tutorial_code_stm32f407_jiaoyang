@@ -64,34 +64,26 @@ typedef struct {
 
 Stepper_Typedef *Stepper;
 
-void test()
+/**
+  * @brief  将数组倒序
+  * @param  *ary		数组首地址
+	* @param  ary_len 数组长度	
+	*	@note 		无
+  * @retval 无
+  */
+void reverse_order(float *ary,int ary_len)
 {
-
+	float temp;
+	
+	for(int i=0;i<ary_len/2;i++)
+	{
+		temp=*(ary+i);
+		*(ary+i)=*(ary+ary_len-1-i);
+		*(ary+ary_len-1-i)=temp;	
+	}
 }
 
 
-/** 
-  * 函数功能： 速度表计算函数
-  * 输入参数： V0      初速度，单位：转/min
-  *           Vt      末速度，单位：转/min
-  *           Time    加速时间 单位: s
-  * 返 回 值：无
-  * 说    明: 根据速度曲线和加速时间,将数据密集化,即计算每一步的速度值,并存放在内存当中
-  *           这里采用的数学模型是匀变速直线运动
-  *           加速段的曲线有两部分组成,第一是加速度递增的加加速段,
-  *           第二是加速度递减的减加速段,两段曲线可以视为关于中心对称(中心是中点速度).这两段曲线所用时间相等
-  *           所以中点速度 Vm = (Vt + Vo)/2;
-  *       加加速段:
-  *           加加速段的加速度曲线是一条过原点的递增的直线,对加速度积分得到的就是速度的增加量
-  *           所以有:Vm - Vo = 1/2 * Jerk * t^2,得到加加速度Jerk.
-  *           最后得到位移方程 S = 1/6 * Jerk * t^3
-  *       减加速段:
-  *           减加速段的曲线跟关于加加速段对称,速度公式V = Vt - 1/2 * Jerk * (T-t)^2,
-  *           位移公式则需要通过对速度曲线求积分的方法得到,S = Vt * t - 1/6 * Jerk * t^3
-  *
-  *           :分析过程请结合工程文件夹下的曲线图理解.
-  *     
-  */
 void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
 {
 	
@@ -130,8 +122,8 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
   if( Speed.AccelStep  % 2 != 0)     // 由于浮点型数据转换成整形数据带来了误差,所以这里加1
     Speed.AccelStep  += 1;
 //  /* mallo申请内存空间,记得释放 */
-//  Speed.VelocityTab = (float*)(malloc((Speed.AccelStep + 1) * sizeof(float) ));
-//  if(Speed.VelocityTab == NULL)
+//  Speed.Form = (float*)(malloc((Speed.AccelStep + 1) * sizeof(float) ));
+//  if(Speed.Form == NULL)
 //  {
 //    printf("内存不足!请修改曲线参数,或者修改Heap大小\n");
 //    return ;
@@ -145,22 +137,24 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
   Ti = pow(TiCube,(1 / 3.0f) );                 // Ti
   Sumt += Ti;
   DeltaV = 0.5f * Jerk * pow(Sumt,2);//第一步的速度
-  Speed.VelocityTab[0] = Speed.Vo + DeltaV;
+  Speed.Form[0] = Speed.Vo + DeltaV;
   
-  if( Speed.VelocityTab[0] <= SPEED_MIN )//以当前定时器频率所能达到的最低速度
-    Speed.VelocityTab[0] = SPEED_MIN;
+	/*速度限幅*/
+  if( Speed.Form[0] <= MIN_SPEED )
+    Speed.Form[0] = MIN_SPEED;
   
+	/*计算出每一步的脉冲间隔，并且生成速度表*/
   for(i = 1; i < Speed.AccelStep; i++)
   {
     /* 步进电机的速度就是定时器脉冲输出频率,可以计算出每一步的时间 */
     /* 得到第i-1步的时间 */
-     Ti = 1.0f / Speed.VelocityTab[i-1];             // 电机每走一步的时间 Ti = 1 / Vn-1
+     Ti = 1.0f / Speed.Form[i-1];             // 电机每走一步的时间 Ti = 1 / Vn-1
     /* 加加速段速度计算 */
     if( i < INCACCELStep)
     {
       Sumt += Ti;//从0开始到i的时间累积
       DeltaV = 0.5f * Jerk * pow(Sumt,2);            // 速度的变化量: dV = 1/2 * Jerk * Ti^2;
-      Speed.VelocityTab[i] = Speed.Vo + DeltaV;      // 得到加加速段每一步对应的速度
+      Speed.Form[i] = Speed.Vo + DeltaV;      // 得到加加速段每一步对应的速度
       // 当最后一步的时候,时间并不严格等于Time,所以这里要稍作处理,作为减加速段的时间
       if(i == INCACCELStep - 1)
         Sumt  = fabs(Sumt - Time );
@@ -170,26 +164,27 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
     {
       Sumt += Ti;                                        // 时间累计
       DeltaV = 0.5f * Jerk * pow(fabs( Time - Sumt),2);  // dV = 1/2 * Jerk *(T-t)^2;
-      Speed.VelocityTab[i] = Speed.Vt - DeltaV;          // V = Vt - DeltaV ;
+      Speed.Form[i] = Speed.Vt - DeltaV;          // V = Vt - DeltaV ;
     }
   }
-  if(Is_Dec == TRUE) // 减速运动
+	
+	/*将速度表倒序排列，就是减速*/
+  if(Is_Dec == TRUE)
   {
     float tmp_Speed = 0;  
     /* 倒序排序 */
+		
     for(i = 0; i< (Speed.AccelStep / 2); i++)
     {
-      tmp_Speed = Speed.VelocityTab[i];
-      Speed.VelocityTab[i] = Speed.VelocityTab[Speed.AccelStep-1 - i];
-      Speed.VelocityTab[Speed.AccelStep-1 - i] = tmp_Speed;
+      tmp_Speed = Speed.Form[i];
+      Speed.Form[i] = Speed.Form[Speed.AccelStep-1 - i];
+      Speed.Form[Speed.AccelStep-1 - i] = tmp_Speed;
     }
+		
   }
-//  打印输出速度值
-//  for(i= 0; i < Speed.AccelStep;i++)
-//  {
-//    printf("Speed[%d] = %f\n",i,Speed.VelocityTab[i]);
-//  }
 }
+
+
 
 
 /**
@@ -220,7 +215,7 @@ void speed_decision(void)
         Step_Position ++;
         if(Step_Position  < Speed.AccelStep )
         { 
-          Tim_Pulse = T1_FREQ / Speed.VelocityTab[Step_Position];// 由速度表得到每一步的定时器计数值
+          Tim_Pulse = T1_FREQ / Speed.Form[Step_Position];// 由速度表得到每一步的定时器计数值
           if((Tim_Pulse / 2) >= 0xFFFF)
             Tim_Pulse = 0xFFFF;
           Toggle_Pulse = (uint16_t) (Tim_Pulse / 2);
@@ -232,8 +227,8 @@ void speed_decision(void)
           else
           {
             MotionStatus = STOP; 
-//            free(Speed.VelocityTab);          //  运动完要释放内存
-						memset(Speed.VelocityTab,0,sizeof(float)*534);
+//            free(Speed.Form);          //  运动完要释放内存
+						memset(Speed.Form,0,sizeof(float)*FORM_LEN);
             TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);// 使能定时器通道 
             
           }
@@ -275,10 +270,10 @@ void stepper_start_run()
   Step_Position = 0;
   MotionStatus = ACCEL; // 电机为运动状态
   	
-  if(Speed.VelocityTab[0] == 0)
+  if(Speed.Form[0] == 0)
     Toggle_Pulse = 0xFFFF;
   else
-    Toggle_Pulse  = (uint32_t)(T1_FREQ/Speed.VelocityTab[0]);
+    Toggle_Pulse  = (uint32_t)(T1_FREQ/Speed.Form[0]);
 	
 
 	/*获取当前计数值*/
