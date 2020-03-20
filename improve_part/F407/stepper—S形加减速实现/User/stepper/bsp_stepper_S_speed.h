@@ -9,9 +9,7 @@
 #include "stdlib.h"
 #include "string.h"
 
-#define FORM_LEN 	   1000
-#define MICRO_STEP     32    // 驱动器细分数
-#define FSPR           200   // 步进电机单圈步数
+
 #define CONVER(speed)  ((speed) * FSPR * MICRO_STEP / 60)  // 根据电机转速（r/min），计算电机步速（step/s）
 
 extern int32_t  Step_Position  ;           // 当前位置
@@ -27,8 +25,10 @@ extern uint8_t  MotionStatus   ;
 //	float   Form[FORM_LEN]; // 速度表格 单位 Step/s
 //	
 //}Speed_s;
+/**************************************************************************************/
+#define FORM_LEN 	   1000
 
-/* 类型定义 ------------------------------------------------------------------*/
+/*S加减速所用到的参数*/
 typedef struct {
   int32_t   Vo;               // 初速度   单位 Step/s
   int32_t   Vt;               // 末速度   单位 Step/s
@@ -36,25 +36,35 @@ typedef struct {
   float   Form[FORM_LEN];       // 速度表格 单位 Step/s  步进电机的脉冲频率
 }SpeedCalc_TypeDef;
 
-
-
-
 extern SpeedCalc_TypeDef Speed ;
 
+#define CW                0 // 顺时针
+#define CCW               1 // 逆时针
 
-// 定义定时器预分频，定时器实际时钟频率为：168MHz/（STEPMOTOR_TIMx_PRESCALER+1）
-#define TIM_PRESCALER               168-1 // 步进电机驱动器细分需要设置为32
+/*电机速度决策中的四个状态*/
+#define ACCEL                 1   //  加速状态
+#define AVESPEED              2   //  匀速状态
+#define DECEL                 3   //  减速状态
+#define STOP                  0   //  停止状态
+																												  
 
-
-// 定义定时器周期，输出比较模式周期设置为0xFFFF
-#define STEPMOTOR_TIM_PERIOD                   0xFFFF
-// 定义高级定时器重复计数寄存器值
-#define STEPMOTOR_TIM_REPETITIONCOUNTER       0
-
-
+/*频率相关参数*/
+//定时器实际时钟频率为：168MHz/(TIM_PRESCALER+1)
+//其中 高级定时器的 频率为168MHz,其他定时器为84MHz
+//168/(168)=1Mhz
+//具体需要的频率可以自己计算
+#define TIM_PRESCALER               168-1 
 #define T1_FREQ                               (SystemCoreClock/(TIM_PRESCALER+1)) // 频率ft值
-#define FSPR                                  200         //步进电机单圈步数
-#define MICRO_STEP                            32          // 步进电机驱动器细分数
+
+
+/*电机单圈参数*/
+#define STEP_ANGLE				1.8									//步进电机的步距角 单位：度
+#define FSPR              (360.0f/1.8f)         //步进电机的一圈所需脉冲数
+
+#define MICRO_STEP        32          				//细分器细分数 
+#define SPR               (FSPR*MICRO_STEP)   //细分后一圈所需脉冲数
+
+/**/
 
 #define ROUNDPS_2_STEPPS(RPM)                 ((RPM) * FSPR * MICRO_STEP / 60)         // 根据电机转速（r/min），计算电机步速（step/s）
 #define MIDDLEVELOCITY(Vo,Vt)                 ( ( (Vo) + (Vt) ) / 2 )                  // S型加减速加速段的中点速度 
@@ -65,10 +75,7 @@ extern SpeedCalc_TypeDef Speed ;
 #define TRUE                                   1
 #define FALSE                                  0
 
-#define ACCEL                                  1   //  电机状态标记: 加速
-#define AVESPEED                               2   //  电机状态标记: 匀速
-#define DECEL                                  3   //  电机状态标记: 减速
-#define STOP                                   0   //  电机状态标记: 停止
+
 
 #define SPEED_MIN                              (T1_FREQ / (65535.0f))// 最低频率/速度
 

@@ -103,7 +103,7 @@ void TIM_PWMOUTPUT_Config(void)
 	// 通用控制定时器时钟源TIMxCLK = HCLK/2	=	84MHz 
 	// 高级控制定时器时钟源TIMxCLK = HCLK		=	168MHz 
 	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)
-	TIM_TimeBaseStructure.Init.Prescaler = TIM_PRESCALER;//TIM_PRESCALER;                
+	TIM_TimeBaseStructure.Init.Prescaler = TIM_PRESCALER;
 
 	/*计数方式*/
 	TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;            

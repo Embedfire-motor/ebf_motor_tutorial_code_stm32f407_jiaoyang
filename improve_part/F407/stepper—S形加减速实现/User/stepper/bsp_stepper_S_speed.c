@@ -242,14 +242,15 @@ void stepper_start_run()
 	/*初始化电机状态*/
 	
   Step_Position = 0;
-  MotionStatus = ACCEL; // 电机为运动状态
+  /*电机的运行状态*/
+	MotionStatus = ACCEL;
   	
-  if(Speed.Form[0] == 0)
+	/*计算第一次脉冲间隔*/
+  if(Speed.Form[0] == 0)	//排除分母为0的情况
     Toggle_Pulse = 0xFFFF;
-  else
+  else										//分母不为0的情况
     Toggle_Pulse  = (uint32_t)(T1_FREQ/Speed.Form[0]);
 	
-
 	/*获取当前计数值*/
 	uint32_t temp=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
 	/*在当前计数值基础上设置定时器比较值*/
