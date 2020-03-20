@@ -28,6 +28,13 @@ extern uint8_t  MotionStatus   ;
 /**************************************************************************************/
 #define FORM_LEN 	   1000
 
+typedef struct {
+	uint8_t 	status;	//状态
+	uint8_t 	dir;		//方向
+	uint32_t 	pos;		//位置
+	uint32_t  pluse_time;//脉冲时间	
+}Stepper_Typedef;
+
 /*S加减速所用到的参数*/
 typedef struct {
   int32_t   Vo;               // 初速度   单位 Step/s

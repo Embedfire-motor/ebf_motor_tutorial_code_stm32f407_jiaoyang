@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    bsp_creat_S_tab.c
+  * @file    bsp_stepper_S_speed.c
   * @author  fire
   * @version V1.0
   * @date    2020-xx-xx
-  * @brief   S加减速生成表
+  * @brief   S形加减速
   ******************************************************************************
   * @attention
   *
@@ -53,17 +53,10 @@ a-t 曲线如下 （V-t曲线 请看 文档）
 */
 
 SpeedCalc_TypeDef Speed ;
+
+Stepper_Typedef Stepper;
+
 uint8_t print_flag=0;
-
-typedef struct {
-	uint8_t 	status;	//状态
-	uint8_t 	dir;		//方向
-	uint32_t 	pos;		//位置
-	uint32_t  pluse_time;//脉冲时间	
-}Stepper_Typedef;
-
-Stepper_Typedef *Stepper;
-
 
 void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
 {
@@ -168,10 +161,9 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
   */
 void speed_decision(void)
 {
-	  __IO uint32_t Tim_Count = 0;
-  __IO uint32_t tmp = 0;
-  __IO float Tim_Pulse = 0;
-  __IO static uint8_t i = 0;  
+
+  float Tim_Pulse = 0;
+  static uint8_t i = 0;  
 	
   
 	if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx) !=RESET)
@@ -184,24 +176,23 @@ void speed_decision(void)
     if(i == 2) // 2次，说明已经输出一个完整脉冲
     {
       i = 0;   // 清零定时器中断次数计数值
-      if(MotionStatus == ACCEL || MotionStatus == DECEL)
+      if(Stepper.status == ACCEL || Stepper.status == DECEL)
       {
-        Step_Position ++;
-        if(Step_Position  < Speed.AccelStep )
+        Stepper.pos++;
+        if(Stepper.pos  < Speed.AccelStep )
         { 
-          Tim_Pulse = T1_FREQ / Speed.Form[Step_Position];// 由速度表得到每一步的定时器计数值
+          Tim_Pulse = T1_FREQ / Speed.Form[Stepper.pos];// 由速度表得到每一步的定时器计数值
           if((Tim_Pulse / 2) >= 0xFFFF)
             Tim_Pulse = 0xFFFF;
-          Toggle_Pulse = (uint16_t) (Tim_Pulse / 2);
+          Stepper.pluse_time = (uint16_t) (Tim_Pulse / 2);
         }
         else
         {
-          if(MotionStatus == ACCEL)   
-            MotionStatus = AVESPEED;
+          if(Stepper.status == ACCEL)   
+            Stepper.status = AVESPEED;
           else
           {
-            MotionStatus = STOP; 
-//            free(Speed.Form);          //  运动完要释放内存
+            Stepper.status = STOP; 
 						memset(Speed.Form,0,sizeof(float)*FORM_LEN);
             TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);// 使能定时器通道 
             
@@ -214,20 +205,12 @@ void speed_decision(void)
 		// 获取当前计数器数值
 		uint32_t tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
 		/*计算下一次时间*/
-		uint32_t tmp = tim_count+Toggle_Pulse;
+		uint32_t tmp = tim_count+Stepper.pluse_time;
 		/*设置比较值*/
 		__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,tmp);
 		
 	}
 }
-
-
-
-int32_t  Step_Position   = 0;           // 当前位置
-uint16_t    Toggle_Pulse = 0;        // 脉冲频率控制
-uint8_t  MotionStatus    = 0;  
-
-
 
 /**
   * 函数功能: 步进电机做S型加减速运动
@@ -239,22 +222,24 @@ uint8_t  MotionStatus    = 0;
 
 void stepper_start_run()
 {
-	/*初始化电机状态*/
+
+	/*初始化结构体*/
+	memset(&Stepper,0,sizeof(Stepper_Typedef));
+	/*初始电机状态*/
+	Stepper.status=ACCEL;
+	/*初始电机位置*/
+	Stepper.pos=0;
 	
-  Step_Position = 0;
-  /*电机的运行状态*/
-	MotionStatus = ACCEL;
-  	
 	/*计算第一次脉冲间隔*/
   if(Speed.Form[0] == 0)	//排除分母为0的情况
-    Toggle_Pulse = 0xFFFF;
+    Stepper.pluse_time = 0xFFFF;
   else										//分母不为0的情况
-    Toggle_Pulse  = (uint32_t)(T1_FREQ/Speed.Form[0]);
+    Stepper.pluse_time  = (uint32_t)(T1_FREQ/Speed.Form[0]);
 	
 	/*获取当前计数值*/
 	uint32_t temp=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
 	/*在当前计数值基础上设置定时器比较值*/
-	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,temp +Toggle_Pulse); 
+	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,temp +Stepper.pluse_time); 
 	/*开启中断输出比较*/
 	HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
 	/*使能定时器通道*/
