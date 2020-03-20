@@ -9,7 +9,7 @@
 #include "stdlib.h"
 #include "string.h"
 
-#define FORM_LEN 	   534
+#define FORM_LEN 	   1000
 #define MICRO_STEP     32    // 驱动器细分数
 #define FSPR           200   // 步进电机单圈步数
 #define CONVER(speed)  ((speed) * FSPR * MICRO_STEP / 60)  // 根据电机转速（r/min），计算电机步速（step/s）
@@ -33,7 +33,7 @@ typedef struct {
   int32_t   Vo;               // 初速度   单位 Step/s
   int32_t   Vt;               // 末速度   单位 Step/s
   int32_t AccelStep;          // 加速段的步数单位 Step
-  float   Form[FORM_LEN];       // 速度表格 单位 Step/s  步进电机的脉冲频率
+  float   VelocityTab[534];       // 速度表格 单位 Step/s  步进电机的脉冲频率
 }SpeedCalc_TypeDef;
 
 
@@ -70,7 +70,7 @@ extern SpeedCalc_TypeDef Speed ;
 #define DECEL                                  3   //  电机状态标记: 减速
 #define STOP                                   0   //  电机状态标记: 停止
 
-#define MIN_SPEED                              (T1_FREQ / (65535.0f))// 最低频率/速度
+#define SPEED_MIN                              (T1_FREQ / (65535.0f))// 最低频率/速度
 
 extern uint8_t print_flag;
 void CalculateSpeedTab(int Vo, int Vt, float Time);

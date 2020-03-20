@@ -43,7 +43,7 @@ int main(void)
 	EXTI_Key_Config();
 	/*步进电机初始化*/
 	stepper_Init();	
-
+	test();
 	while(1)
 	{     
 		if(print_flag)
