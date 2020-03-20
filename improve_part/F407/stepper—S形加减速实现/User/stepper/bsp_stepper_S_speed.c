@@ -113,9 +113,12 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
   DeltaV = 0.5f * Jerk * pow(Sumt,2);//第一步的速度
   Speed.Form[0] = Speed.Vo + DeltaV;
   
-  if( Speed.Form[0] <= SPEED_MIN )//以当前定时器频率所能达到的最低速度
-    Speed.Form[0] = SPEED_MIN;
-  
+	/***************************************************************************/
+	/*最小速度限幅*/
+  if( Speed.Form[0] <= MIN_SPEED )//以当前定时器频率所能达到的最低速度
+    Speed.Form[0] = MIN_SPEED;
+  /***************************************************************************/
+	/*计算S形速度表*/
   for(i = 1; i < Speed.AccelStep; i++)
   {
     /* 步进电机的速度就是定时器脉冲输出频率,可以计算出每一步的时间 */
@@ -139,7 +142,9 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
       Speed.Form[i] = Speed.Vt - DeltaV;          // V = Vt - DeltaV ;
     }
   }
-  if(Is_Dec == TRUE) // 减速运动
+	/***************************************************************************/
+	/*减速运动，倒序排列*/
+  if(Is_Dec == TRUE)
   {
     float tmp_Speed = 0;  
     /* 倒序排序 */
@@ -154,6 +159,7 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
 }
 
 
+
 /**
   * @brief  速度决策
 	*	@note 	在中断中使用，每进一次中断，决策一次
@@ -161,37 +167,46 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
   */
 void speed_decision(void)
 {
-
-  float Tim_Pulse = 0;
-  static uint8_t i = 0;  
-	
+	/*计数临时变量*/
+  float temp_p = 0;
+	/*脉冲计数*/
+  static uint8_t i = 0;  	
   
 	if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx) !=RESET)
 	{
 		/*清除定时器中断*/
 		__HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx);
-		/******************************************************************/
 		
-		i++;     // 定时器中断次数计数值
-    if(i == 2) // 2次，说明已经输出一个完整脉冲
+		/******************************************************************/
+		/*两次为一个脉冲周期*/
+		i++; 
+    if(i == 2)
     {
-      i = 0;   // 清零定时器中断次数计数值
+			/*脉冲周期完整后清零*/
+      i = 0;   
+			/*判断当前的状态，*/
       if(Stepper.status == ACCEL || Stepper.status == DECEL)
       {
+				/*步数位置索引递增*/
         Stepper.pos++;
         if(Stepper.pos  < Speed.AccelStep )
         { 
-          Tim_Pulse = T1_FREQ / Speed.Form[Stepper.pos];// 由速度表得到每一步的定时器计数值
-          if((Tim_Pulse / 2) >= 0xFFFF)
-            Tim_Pulse = 0xFFFF;
-          Stepper.pluse_time = (uint16_t) (Tim_Pulse / 2);
+					/*获取每一步的定时器计数值*/
+          temp_p = T1_FREQ / Speed.Form[Stepper.pos];
+          if((temp_p / 2) >= 0xFFFF)
+            temp_p = 0xFFFF;
+          Stepper.pluse_time = (uint16_t) (temp_p / 2);
         }
         else
         {
+					/*加速部分结束后接下来就是匀速状态或者停止状态*/
           if(Stepper.status == ACCEL)   
-            Stepper.status = AVESPEED;
+					{
+					  Stepper.status = AVESPEED;
+					}          
           else
           {
+						/*停止状态，清空速度表并且关闭通道*/
             Stepper.status = STOP; 
 						memset(Speed.Form,0,sizeof(float)*FORM_LEN);
             TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);// 使能定时器通道 
@@ -200,7 +215,6 @@ void speed_decision(void)
         }
       }
     }
-	
 		/**********************************************************************/
 		// 获取当前计数器数值
 		uint32_t tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
@@ -212,14 +226,14 @@ void speed_decision(void)
 	}
 }
 
+
 /**
-  * 函数功能: 步进电机做S型加减速运动
-  * 输入参数: 无
-  * 返 回 值: 无
-  * 说    明: 无
+  * @brief  初始化状态并且设置第一步的速度
+  * @param  无
+	* @param  无
+	*	@note 		无
+  * @retval 无
   */
-
-
 void stepper_start_run()
 {
 

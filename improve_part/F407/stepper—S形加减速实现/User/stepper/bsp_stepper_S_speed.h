@@ -84,7 +84,7 @@ extern SpeedCalc_TypeDef Speed ;
 
 
 
-#define SPEED_MIN                              (T1_FREQ / (65535.0f))// 最低频率/速度
+#define MIN_SPEED                              (T1_FREQ / (65535.0f))// 最低频率/速度
 
 extern uint8_t print_flag;
 void CalculateSpeedTab(int Vo, int Vt, float Time);
