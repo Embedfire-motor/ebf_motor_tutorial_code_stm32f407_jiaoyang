@@ -4,7 +4,7 @@
   * @author  fire
   * @version V1.0
   * @date    2020-xx-xx
-  * @brief   S加减速生成表
+  * @brief   S加减速实现
   ******************************************************************************
   * @attention
   *
@@ -46,24 +46,19 @@ int main(void)
 
 	while(1)
 	{     
-		
 		if(print_flag)
 		{
-			/*初速度为0，末速度5，加速时间为4s*/
+			/*步进电机加速部分*/
 			stepper_move_S(1,100,0.1f);
 			print_flag=0; 
 		}
-		
 		if( Stepper.status == AVESPEED)
     {
-      /* 从 60r/min 减速到0r/min */
+			/*步进电机减速部分*/
 			stepper_move_S(100,1,0.1f);
-      Stepper.status = DECEL;       // 电机减速
+      Stepper.status = DECEL;    
     }
-		
 	}
-
-
 } 	
 
 

@@ -12,41 +12,29 @@
 
 #define CONVER(speed)  ((speed) * FSPR * MICRO_STEP / 60)  // 根据电机转速（r/min），计算电机步速（step/s）
 
-
-
-//typedef struct 
-//{
-//	int		Vo;  //初速度 单位 Step/s
-//	int		Vt;  //末速度 单位 Step/s
-//	int		AccelHalfStep;   //加速阶段半路程	单位 Step   
-//	int		AccelTotalStep;  //总路程，加速阶段总步数 Step
-//	float   Form[FORM_LEN]; // 速度表格 单位 Step/s
-//	
-//}Speed_s;
-/**************************************************************************************/
 #define FORM_LEN 	   1000
 
 typedef struct {
-	uint8_t 	status;	//状态
-	uint8_t 	dir;		//方向
-	uint32_t 	pos;		//位置
-	uint32_t  pluse_time;//脉冲时间	
+	uint8_t 	status;			/*状态*/
+	uint8_t 	dir;				/*方向*/
+	uint32_t 	pos;				/*位置*/
+	uint32_t  pluse_time; /*脉冲时间*/
 }Stepper_Typedef;
 
 /*S加减速所用到的参数*/
 typedef struct {
-  int32_t   Vo;               // 初速度   单位 Step/s
-  int32_t   Vt;               // 末速度   单位 Step/s
-  int32_t AccelTotalStep;          // 加速段的步数单位 Step
-	int32_t	INC_AccelTotalStep;
-	int32_t Dec_AccelTotalStep;
-  float   Form[FORM_LEN];       // 速度表格 单位 Step/s  步进电机的脉冲频率
+  int32_t   Vo;                	/*初始速度*/
+  int32_t   Vt;               	/*末速度*/
+  int32_t 	AccelTotalStep;   	/*加速总步数*/  
+	int32_t		INC_AccelTotalStep;	/*加加速度步数*/
+	int32_t 	Dec_AccelTotalStep;	/*减加速度步数*/
+  float   	Form[FORM_LEN];     /*S加减速 速度表*/ 
 }SpeedCalc_TypeDef;
 
 extern SpeedCalc_TypeDef Speed ;
 
-#define CW                0 // 顺时针
-#define CCW               1 // 逆时针
+#define CW                		0 // 顺时针
+#define CCW               		1 // 逆时针
 
 /*电机速度决策中的四个状态*/
 #define ACCEL                 1   //  加速状态
@@ -60,32 +48,21 @@ extern SpeedCalc_TypeDef Speed ;
 //其中 高级定时器的 频率为168MHz,其他定时器为84MHz
 //168/(168)=1Mhz
 //具体需要的频率可以自己计算
-#define TIM_PRESCALER               168-1 
-#define T1_FREQ                               (SystemCoreClock/(TIM_PRESCALER+1)) // 频率ft值
+#define TIM_PRESCALER         168-1 
+#define T1_FREQ               (SystemCoreClock/(TIM_PRESCALER+1)) // 频率ft值
 
 
 /*电机单圈参数*/
-#define STEP_ANGLE				1.8									//步进电机的步距角 单位：度
-#define FSPR              (360.0f/1.8f)         //步进电机的一圈所需脉冲数
-
-#define MICRO_STEP        32          				//细分器细分数 
-#define SPR               (FSPR*MICRO_STEP)   //细分后一圈所需脉冲数
-
-/**/
+#define STEP_ANGLE						1.8									//步进电机的步距角 单位：度
+#define FSPR              		(360.0f/1.8f)         //步进电机的一圈所需脉冲数
+			
+#define MICRO_STEP        		32          				//细分器细分数 
+#define SPR               		(FSPR*MICRO_STEP)   //细分后一圈所需脉冲数
 
 #define CONVER(speed)  ((speed) * FSPR * MICRO_STEP / 60)  // 根据电机转速（r/min），计算电机步速（step/s）
 
-
-#define ROUNDPS_2_STEPPS(RPM)                 ((RPM) * FSPR * MICRO_STEP / 60)         // 根据电机转速（r/min），计算电机步速（step/s）
-#define MIDDLEVELOCITY(Vo,Vt)                 ( ( (Vo) + (Vt) ) / 2 )                  // S型加减速加速段的中点速度 
-#define INCACCEL(Vo,V,T)                      ( ( 2 * ((V) - (Vo)) ) / pow((T),2) )    // 加加速度:加速度增加量   V - V0 = 1/2 * J * t^2
-#define INCACCELSTEP(J,T)                     ( ( (J) * pow( (T) , 3 ) ) / 6 )         // 加加速段的位移量(步数)  S = 1/6 * J * t^3
-#define ACCEL_TIME(T)                         ( (T) / 2 )                              // 加加速段和减加速段的时间是相等的
-
-#define TRUE                                   1
-#define FALSE                                  0
-
-
+#define TRUE                  1
+#define FALSE                 0
 
 #define MIN_SPEED                              (T1_FREQ / (65535.0f))// 最低频率/速度
 

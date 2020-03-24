@@ -51,9 +51,8 @@ a-t 曲线如下 （V-t曲线 请看 文档）
 得： S = K*T^3/6
 
 */
-
+/*算法相关结构体变量定义*/
 SpeedCalc_TypeDef Speed ;
-
 Stepper_Typedef Stepper;
 
 uint8_t print_flag=0;
@@ -68,11 +67,11 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float T)
   float Ti = 0;               // 时间间隔 dt
   float Sumt = 0;             // 时间累加量
   float DeltaV = 0;           // 速度的增量dv  
-  float TiCube = 0;           // 时间间隔的立方
 	
 	/***************************************************************************/
 	/*判断初速度和末速度的关系，来决定加减速*/
-  if(Vo > Vt ){                               
+  if(Vo > Vt )
+	{                               
     Is_Dec = TRUE;
     Speed.Vo = CONVER(Vt);  
     Speed.Vt = CONVER(Vo); 
@@ -110,19 +109,14 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float T)
 
 	/***************************************************************************/
 	/* 计算第一步的时间 */
-	
-  /* 
-   * 目标的S型速度曲线是对 时间的方程,但是在控制电机的时候则是以步进的方式控制,所以这里对V-t曲线做转换,
-   * 得到V-S曲线,计算得到的速度表是关于步数的速度值.使得步进电机每一步都在控制当中.
-   */ 
-	
+		
 	/*根据第一步的时间计算，第一步的速度和脉冲时间间隔*/
- // TiCube  = 6.0f * 1.0f / K;                 // 根据位移和时间的公式S = 1/2 * K * Ti^3 第1步的时间:Ti^3 = 6 * 1 / K ;
-  Ti = pow(6.0f * 1.0f / K,(1 / 3.0f) ); //开方求解 Ti 时间常数
-  Sumt += Ti;
-	
-  DeltaV = 0.5f * K * pow(Sumt,2);//第一步的速度
-	
+	/*根据位移为0的时候的情况，计算时间的关系式 ->  根据位移和时间的公式S = 1/2 * K * Ti^3  可得 Ti=6 * 1 / K开1/3次方 */
+  Ti = pow((6.0f * 1.0f / K),(1 / 3.0f) ); //开方求解 Ti 时间常数
+  Sumt += Ti;//累计时间常数
+	/*根据V=1/2*K*T^2,可以计算第一步的速度*/
+  DeltaV = 0.5f * K * pow(Sumt,2);
+	/*在初始速度的基础上增加速度*/
   Speed.Form[0] = Speed.Vo + DeltaV;
   
 	/***************************************************************************/
@@ -134,25 +128,30 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float T)
 	/*计算S形速度表*/
   for(i = 1; i < Speed.AccelTotalStep; i++)
   {
-    /* 步进电机的速度就是定时器脉冲输出频率,可以计算出每一步的时间 */
-    /* 得到第i-1步的时间 */
-     Ti = 1.0f / Speed.Form[i-1];             // 电机每走一步的时间 Ti = 1 / Vn-1
-    /* 加加速段速度计算 */
+	
+		/*根据时间周期与频率成反比的关系，可以计算出Ti,在这里每次计算上一步时间，用于积累到当前时间*/
+		Ti = 1.0f / Speed.Form[i-1];   
+    /* 加加速度计算 */
     if( i < Speed.INC_AccelTotalStep)
     {
-      Sumt += Ti;//从0开始到i的时间累积
-      DeltaV = 0.5f * K * pow(Sumt,2);            // 速度的变化量: dV = 1/2 * K * Ti^2;
-      Speed.Form[i] = Speed.Vo + DeltaV;      // 得到加加速段每一步对应的速度
-      // 当最后一步的时候,时间并不严格等于Time,所以这里要稍作处理,作为减加速段的时间
+			/*累积时间*/
+      Sumt += Ti;
+			/*速度的变化量 dV = 1/2 * K * Ti^2 */
+      DeltaV = 0.5f * K * pow(Sumt,2);
+			/*根据初始速度和变化量求得速度表*/
+      Speed.Form[i] = Speed.Vo + DeltaV;  
+			/*为了保证在最后一步可以使得时间严谨的与预期计算的时间一致，在最后一步进行处理*/
       if(i == Speed.INC_AccelTotalStep - 1)
         Sumt  = fabs(Sumt - T );
     }
-    /* 减加速段速度计算 */
+    /* 减加速度计算 */
     else
     {
-      Sumt += Ti;                                        // 时间累计
-      DeltaV = 0.5f * K * pow(fabs( T - Sumt),2);  // dV = 1/2 * K *(T-t)^2;
-      Speed.Form[i] = Speed.Vt - DeltaV;          // V = Vt - DeltaV ;
+			/*时间累积*/
+      Sumt += Ti;                                       
+			/*计算速度*/
+      DeltaV = 0.5f * K * pow(fabs( T - Sumt),2); 
+      Speed.Form[i] = Speed.Vt - DeltaV;          
     }
   }
 	/***************************************************************************/
