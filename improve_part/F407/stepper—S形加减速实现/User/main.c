@@ -51,7 +51,7 @@ int main(void)
 		{
 			/*初速度为0，末速度5，加速时间为4s*/
 			stepper_move_S(0,100,0.1f);
-			print_flag=0;
+			print_flag=0; 
 		}
 		
 		if( Stepper.status == AVESPEED)
@@ -62,6 +62,8 @@ int main(void)
     }
 		
 	}
+
+
 } 	
 
 

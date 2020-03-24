@@ -12,9 +12,7 @@
 
 #define CONVER(speed)  ((speed) * FSPR * MICRO_STEP / 60)  // 根据电机转速（r/min），计算电机步速（step/s）
 
-extern int32_t  Step_Position  ;           // 当前位置
-extern uint16_t    Toggle_Pulse;        // 脉冲频率控制
-extern uint8_t  MotionStatus   ;  
+
 
 //typedef struct 
 //{

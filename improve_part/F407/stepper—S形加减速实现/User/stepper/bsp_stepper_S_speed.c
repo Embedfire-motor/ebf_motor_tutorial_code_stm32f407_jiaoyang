@@ -95,13 +95,14 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
   Speed.AccelStep = DecAccelStep + INCACCELStep;              // 加速需要的步数 
   if( Speed.AccelStep  % 2 != 0)     // 由于浮点型数据转换成整形数据带来了误差,所以这里加1
     Speed.AccelStep  += 1;
-//  /* mallo申请内存空间,记得释放 */
-//  Speed.Form = (float*)(malloc((Speed.AccelStep + 1) * sizeof(float) ));
-//  if(Speed.Form == NULL)
-//  {
-//    printf("内存不足!请修改曲线参数,或者修改Heap大小\n");
-//    return ;
-//  }
+	
+	/*判断内存长度*/
+	if(FORM_LEN<Speed.AccelStep)
+	{
+		printf("FORM_LEN 缓存长度不足\r\n,请将 FORM_LEN 修改为 %d \r\n",Speed.AccelStep);
+		return ;
+	}
+	
   /* 
    * 目标的S型速度曲线是对时间的方程,但是在控制电机的时候则是以步进的方式控制,所以这里对V-t曲线做转换,
    * 得到V-S曲线,计算得到的速度表是关于步数的速度值.使得步进电机每一步都在控制当中.
@@ -157,7 +158,6 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
   }
 
 }
-
 
 
 /**
