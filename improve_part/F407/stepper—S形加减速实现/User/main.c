@@ -50,14 +50,14 @@ int main(void)
 		if(print_flag)
 		{
 			/*初速度为0，末速度5，加速时间为4s*/
-			stepper_move_S(0,100,0.1f);
+			stepper_move_S(1,100,0.1f);
 			print_flag=0; 
 		}
 		
 		if( Stepper.status == AVESPEED)
     {
       /* 从 60r/min 减速到0r/min */
-			stepper_move_S(100,0,0.1f);
+			stepper_move_S(100,1,0.1f);
       Stepper.status = DECEL;       // 电机减速
     }
 		

@@ -58,88 +58,100 @@ Stepper_Typedef Stepper;
 
 uint8_t print_flag=0;
 
-void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
+void CalcSpeed(int32_t Vo, int32_t Vt, float T)
 {
 	
   uint8_t Is_Dec = FALSE;     
   int32_t i = 0;
   int32_t Vm =0;              // 中间点速度
-  int32_t INCACCELStep;       // 加加速所需的步数
-  int32_t DecAccelStep;       // 减加速所需的步数
-  float Jerk = 0;             // 加加速度
+  float K = 0;             // 加加速度
   float Ti = 0;               // 时间间隔 dt
   float Sumt = 0;             // 时间累加量
   float DeltaV = 0;           // 速度的增量dv  
   float TiCube = 0;           // 时间间隔的立方
-
-  if(Vo > Vt )                          // 初速度比末速度大,做减速运动,数值变化跟加速运动相同,
-  {                                     // 只是建表的时候注意将速度倒序.    
+	
+	/***************************************************************************/
+	/*判断初速度和末速度的关系，来决定加减速*/
+  if(Vo > Vt ){                               
     Is_Dec = TRUE;
-    Speed.Vo = ROUNDPS_2_STEPPS(Vt);    // 起速:Step/s
-    Speed.Vt = ROUNDPS_2_STEPPS(Vo);    // 末速:Step/s
+    Speed.Vo = CONVER(Vt);  
+    Speed.Vt = CONVER(Vo); 
   }
   else
   {
     Is_Dec = FALSE;
-    Speed.Vo = ROUNDPS_2_STEPPS(Vo);    
-    Speed.Vt = ROUNDPS_2_STEPPS(Vt);    
+    Speed.Vo = CONVER(Vo);    
+    Speed.Vt = CONVER(Vt);    
   }
-
-  Time = ACCEL_TIME(Time);                                    // 得到加加速段的时间
-  Vm =  MIDDLEVELOCITY( Speed.Vo , Speed.Vt );                // 计算中点速度
-  Jerk = fabs(INCACCEL( Speed.Vo, Vm, Time ));                // 根据中点速度计算加加速度
-  INCACCELStep = (int32_t)INCACCELSTEP(Jerk,Time);            // 加加速需要的步数
-  DecAccelStep = (int32_t)(Speed.Vt * Time - INCACCELStep);   // 减加速需要的步数 S = Vt * Time - S1
+	/***************************************************************************/
+	/*计算初始参数*/
+	T = T / 2;						//加加速段的时间（加速度斜率>0的时间）
+	
+  Vm = (Speed.Vo + Speed.Vt) / 2;	//计算中点的速度
+	
+  K = fabs(( 2 * ((Vm) - (Speed.Vo)) ) / pow((T),2));// 根据中点速度计算加加速度
+		
+  Speed.INC_AccelTotalStep = (int32_t)( ( (K) * pow( (T) ,3) ) / 6 );// 加加速需要的步数
+	
+  Speed.Dec_AccelTotalStep = (int32_t)(Speed.Vt * T - Speed.INC_AccelTotalStep);   // 减加速需要的步数 S = Vt * Time - S1
   
-  /* 申请内存空间存放速度表 */
-  Speed.AccelStep = DecAccelStep + INCACCELStep;              // 加速需要的步数 
-  if( Speed.AccelStep  % 2 != 0)     // 由于浮点型数据转换成整形数据带来了误差,所以这里加1
-    Speed.AccelStep  += 1;
+	/***************************************************************************/
+	/*计算共需要的步数，并校检内存大小，申请内存空间存放速度表*/
+  Speed.AccelTotalStep = Speed.Dec_AccelTotalStep + Speed.INC_AccelTotalStep;              // 加速需要的步数 
+  if( Speed.AccelTotalStep  % 2 != 0)     // 由于浮点型数据转换成整形数据带来了误差,所以这里加1
+    Speed.AccelTotalStep  += 1;
 	
 	/*判断内存长度*/
-	if(FORM_LEN<Speed.AccelStep)
+	if(FORM_LEN<Speed.AccelTotalStep)
 	{
-		printf("FORM_LEN 缓存长度不足\r\n,请将 FORM_LEN 修改为 %d \r\n",Speed.AccelStep);
+		printf("FORM_LEN 缓存长度不足\r\n,请将 FORM_LEN 修改为 %d \r\n",Speed.AccelTotalStep);
 		return ;
 	}
+
+	/***************************************************************************/
+	/* 计算第一步的时间 */
 	
   /* 
-   * 目标的S型速度曲线是对时间的方程,但是在控制电机的时候则是以步进的方式控制,所以这里对V-t曲线做转换,
+   * 目标的S型速度曲线是对 时间的方程,但是在控制电机的时候则是以步进的方式控制,所以这里对V-t曲线做转换,
    * 得到V-S曲线,计算得到的速度表是关于步数的速度值.使得步进电机每一步都在控制当中.
    */ 
-// 计算第一步速度  //根据第一步的速度值达到下一步的时间
-  TiCube  = 6.0f * 1.0f / Jerk;                 // 根据位移和时间的公式S = 1/2 * J * Ti^3 第1步的时间:Ti^3 = 6 * 1 / Jerk ;
-  Ti = pow(TiCube,(1 / 3.0f) );                 // Ti
+	
+	/*根据第一步的时间计算，第一步的速度和脉冲时间间隔*/
+ // TiCube  = 6.0f * 1.0f / K;                 // 根据位移和时间的公式S = 1/2 * K * Ti^3 第1步的时间:Ti^3 = 6 * 1 / K ;
+  Ti = pow(6.0f * 1.0f / K,(1 / 3.0f) ); //开方求解 Ti 时间常数
   Sumt += Ti;
-  DeltaV = 0.5f * Jerk * pow(Sumt,2);//第一步的速度
+	
+  DeltaV = 0.5f * K * pow(Sumt,2);//第一步的速度
+	
   Speed.Form[0] = Speed.Vo + DeltaV;
   
 	/***************************************************************************/
 	/*最小速度限幅*/
   if( Speed.Form[0] <= MIN_SPEED )//以当前定时器频率所能达到的最低速度
     Speed.Form[0] = MIN_SPEED;
+	
   /***************************************************************************/
 	/*计算S形速度表*/
-  for(i = 1; i < Speed.AccelStep; i++)
+  for(i = 1; i < Speed.AccelTotalStep; i++)
   {
     /* 步进电机的速度就是定时器脉冲输出频率,可以计算出每一步的时间 */
     /* 得到第i-1步的时间 */
      Ti = 1.0f / Speed.Form[i-1];             // 电机每走一步的时间 Ti = 1 / Vn-1
     /* 加加速段速度计算 */
-    if( i < INCACCELStep)
+    if( i < Speed.INC_AccelTotalStep)
     {
       Sumt += Ti;//从0开始到i的时间累积
-      DeltaV = 0.5f * Jerk * pow(Sumt,2);            // 速度的变化量: dV = 1/2 * Jerk * Ti^2;
+      DeltaV = 0.5f * K * pow(Sumt,2);            // 速度的变化量: dV = 1/2 * K * Ti^2;
       Speed.Form[i] = Speed.Vo + DeltaV;      // 得到加加速段每一步对应的速度
       // 当最后一步的时候,时间并不严格等于Time,所以这里要稍作处理,作为减加速段的时间
-      if(i == INCACCELStep - 1)
-        Sumt  = fabs(Sumt - Time );
+      if(i == Speed.INC_AccelTotalStep - 1)
+        Sumt  = fabs(Sumt - T );
     }
     /* 减加速段速度计算 */
     else
     {
       Sumt += Ti;                                        // 时间累计
-      DeltaV = 0.5f * Jerk * pow(fabs( Time - Sumt),2);  // dV = 1/2 * Jerk *(T-t)^2;
+      DeltaV = 0.5f * K * pow(fabs( T - Sumt),2);  // dV = 1/2 * K *(T-t)^2;
       Speed.Form[i] = Speed.Vt - DeltaV;          // V = Vt - DeltaV ;
     }
   }
@@ -149,14 +161,13 @@ void CalcSpeed(int32_t Vo, int32_t Vt, float Time)
   {
     float tmp_Speed = 0;  
     /* 倒序排序 */
-    for(i = 0; i< (Speed.AccelStep / 2); i++)
+    for(i = 0; i< (Speed.AccelTotalStep / 2); i++)
     {
       tmp_Speed = Speed.Form[i];
-      Speed.Form[i] = Speed.Form[Speed.AccelStep-1 - i];
-      Speed.Form[Speed.AccelStep-1 - i] = tmp_Speed;
+      Speed.Form[i] = Speed.Form[Speed.AccelTotalStep-1 - i];
+      Speed.Form[Speed.AccelTotalStep-1 - i] = tmp_Speed;
     }
   }
-
 }
 
 
@@ -189,7 +200,7 @@ void speed_decision(void)
       {
 				/*步数位置索引递增*/
         Stepper.pos++;
-        if(Stepper.pos  < Speed.AccelStep )
+        if(Stepper.pos  < Speed.AccelTotalStep )
         { 
 					/*获取每一步的定时器计数值*/
           temp_p = T1_FREQ / Speed.Form[Stepper.pos];

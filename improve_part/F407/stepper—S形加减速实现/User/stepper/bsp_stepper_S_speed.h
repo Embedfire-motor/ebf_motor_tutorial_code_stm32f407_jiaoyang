@@ -37,7 +37,9 @@ typedef struct {
 typedef struct {
   int32_t   Vo;               // 初速度   单位 Step/s
   int32_t   Vt;               // 末速度   单位 Step/s
-  int32_t AccelStep;          // 加速段的步数单位 Step
+  int32_t AccelTotalStep;          // 加速段的步数单位 Step
+	int32_t	INC_AccelTotalStep;
+	int32_t Dec_AccelTotalStep;
   float   Form[FORM_LEN];       // 速度表格 单位 Step/s  步进电机的脉冲频率
 }SpeedCalc_TypeDef;
 
@@ -71,6 +73,9 @@ extern SpeedCalc_TypeDef Speed ;
 
 /**/
 
+#define CONVER(speed)  ((speed) * FSPR * MICRO_STEP / 60)  // 根据电机转速（r/min），计算电机步速（step/s）
+
+
 #define ROUNDPS_2_STEPPS(RPM)                 ((RPM) * FSPR * MICRO_STEP / 60)         // 根据电机转速（r/min），计算电机步速（step/s）
 #define MIDDLEVELOCITY(Vo,Vt)                 ( ( (Vo) + (Vt) ) / 2 )                  // S型加减速加速段的中点速度 
 #define INCACCEL(Vo,V,T)                      ( ( 2 * ((V) - (Vo)) ) / pow((T),2) )    // 加加速度:加速度增加量   V - V0 = 1/2 * J * t^2
@@ -85,8 +90,7 @@ extern SpeedCalc_TypeDef Speed ;
 #define MIN_SPEED                              (T1_FREQ / (65535.0f))// 最低频率/速度
 
 extern uint8_t print_flag;
-void CalculateSpeedTab(int Vo, int Vt, float Time);
-void CalcSpeed(int32_t Vo, int32_t Vt, float Time);
+void CalcSpeed(int32_t Vo, int32_t Vt, float T);
 void stepper_move_S(int start_speed,int end_speed,float time);
 void speed_decision(void);
 #endif 
