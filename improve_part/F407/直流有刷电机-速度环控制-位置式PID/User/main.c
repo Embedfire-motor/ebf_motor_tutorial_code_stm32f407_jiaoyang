@@ -97,7 +97,7 @@ int main(void)
     #if defined(PID_ASSISTANT_EN) 
       set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     #endif
-      set_pid_actual(target_speed);    // 设置目标值
+      set_pid_target(target_speed);    // 设置目标值
       set_motor_enable();              // 使能电机
     }
     
@@ -119,7 +119,7 @@ int main(void)
       if(target_speed > 350)
         target_speed = 350;
       
-      set_pid_actual(target_speed);
+      set_pid_target(target_speed);
     #if defined(PID_ASSISTANT_EN)
       set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
     #endif
@@ -134,7 +134,7 @@ int main(void)
       if(target_speed < -350)
         target_speed = -350;
       
-      set_pid_actual(target_speed);
+      set_pid_target(target_speed);
     #if defined(PID_ASSISTANT_EN)
       set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
     #endif

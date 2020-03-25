@@ -232,7 +232,7 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
         {
           int actual_temp = COMPOUND_32BIT(&UART_RxBuffer[13]);    // 得到数据
           
-          set_pid_actual(actual_temp);    // 设置目标值
+          set_pid_target(actual_temp);    // 设置目标值
         }
         break;
         
