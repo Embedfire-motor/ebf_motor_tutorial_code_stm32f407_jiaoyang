@@ -39,7 +39,7 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "./led/bsp_led.h"
-#include "./tim/bsp_general_tim.h"
+#include "./tim/bsp_motor_tim.h"
 #include "./usart/bsp_debug_usart.h"
 
 
@@ -184,10 +184,12 @@ void SysTick_Handler(void)
 
 void DEBUG_USART_IRQHandler(void)
 {
-  uint8_t data;
+  __IO uint8_t data;
   
   if(__HAL_UART_GET_IT_SOURCE(&UartHandle, UART_IT_RXNE) != RESET)
 	{
+    data = UartHandle.Instance->DR;
+    
     //如果为退格键
     if(data == '\b')
     {
@@ -227,14 +229,13 @@ void DEBUG_USART_IRQHandler(void)
         Usart_SendByte(data);
       }
     }
+    
+    __HAL_UART_CLEAR_FLAG(&UartHandle, UART_IT_RXNE);
   }
   
-  HAL_USART_Receive_IT(&UartHandle, &data, sizeof(data));
+//  HAL_UART_Receive_IT(&UartHandle, &data, sizeof(data));
   
-  HAL_USART_IRQHandler(&UartHandle);
-  
-
-//  __HAL_UART_CLEAR_FLAG(&UartHandle, UART_IT_RXNE);
+  HAL_UART_IRQHandler(&UartHandle);
 }
 
 /**

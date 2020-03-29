@@ -51,6 +51,11 @@ void set_motor_direction(motor_dir_t dir)
 {
   direction = dir;
   
+  SET_FWD_COMPAER(0);     // 设置速度为 0
+  SET_REV_COMPAER(0);     // 设置速度为 0
+  
+  HAL_Delay(200);         // 延时一会
+  
   if (direction == MOTOR_FWD)
   {
     SET_FWD_COMPAER(dutyfactor);     // 设置速度
@@ -92,11 +97,11 @@ void set_motor_disable(void)
   */
 void show_help(void)
 {
-    printf("\n\r——————————————野火直流减速电机驱动演示程序——————————————");
-    printf("\n\r输入命令(以回车结束)：");
-    printf("\n\r< ? >       -帮助菜单");
-    printf("\n\rv[data]     -设置电机的速度（范围：0—%d）", PWM_PERIOD_COUNT);
-    printf("\n\rd[data]     -设置电机的方向，%d:正向转，%d:方向转", MOTOR_FWD, MOTOR_REV);
+    printf("——————————————野火直流减速电机驱动演示程序——————————————\n\r");
+    printf("输入命令(以回车结束)：\n\r");
+    printf("< ? >       -帮助菜单\n\r");
+    printf("v[data]     -设置电机的速度（范围：0—%d）\n\r", PWM_PERIOD_COUNT);
+    printf("d[data]     -设置电机的方向，%d:正向转，%d:反向转\n\r", MOTOR_FWD, MOTOR_REV);
 }
 
 /**
@@ -112,11 +117,13 @@ void deal_serial_data(void)
     
     //接收到正确的指令才为1
     char okCmd = 0;
-//    if(showflag)
-//    {
-//      showflag = 0;
-//      ShowData(stepPosition, acceleration, deceleration, speed, steps);
-//    }
+  
+    if (showflag)
+    {
+      show_help();
+      showflag = !showflag;
+    }
+
     //检查是否接收到指令
     if(receive_cmd == 1)
     {
@@ -129,7 +136,7 @@ void deal_serial_data(void)
           if(speed_temp>=0 && speed_temp <= PWM_PERIOD_COUNT)
           {
             set_motor_speed(speed_temp);
-            printf("\n\r速度: %d", speed_temp);
+            printf("\n\r速度: %d\n\r", speed_temp);
             okCmd = 1;
           }
         }
@@ -144,18 +151,11 @@ void deal_serial_data(void)
           if(dec_temp>=0)
           {
             set_motor_direction(dec_temp);
-            printf("\n\r方向:%s", dec_temp ? "反向" : "正向");
+            printf("\n\r方向:%s\n\r", dec_temp ? "反向转" : "正向转");
             okCmd = 1;
           }
         }
       }
-//      else if(UART_RxBuffer[0] == 's')
-//      {
-//        /* 设置电机停止转动 */
-//        set_motor_disable();
-//        printf("\n\r已停止运转");
-//        okCmd = 1;
-//      }
       else if(UART_RxBuffer[0] == '?')
       {
         //打印帮助命令
@@ -165,7 +165,7 @@ void deal_serial_data(void)
       //如果指令有无则打印帮助命令
       if(okCmd != 1)
       {
-        printf("\n\r 输入有误，请重新输入...");
+        printf("\n\r 输入有误，请重新输入...\n\r");
         show_help();
       }
 
@@ -173,7 +173,7 @@ void deal_serial_data(void)
       receive_cmd = 0;
       uart_FlushRxBuffer();
 
-    }//end if(cmd)
+    }
 }
 
 /*********************************************END OF FILE**********************/
