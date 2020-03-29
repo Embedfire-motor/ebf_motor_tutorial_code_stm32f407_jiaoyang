@@ -31,16 +31,16 @@ extern int pid_status;
   * @param  无
   * @retval 无
   */
-int main(void) 
+int main1(void) 
 {
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
-	DEBUG_USART_Config();
-	/* 初始化基本定时器定时，20ms产生一次中断 */
+  DEBUG_USART_Config();
+  /* 初始化基本定时器定时，20ms产生一次中断 */
 	TIMx_Configuration();
 	/* PID算法参数初始化 */
-	PID_param_init();	
+  PID_param_init();	
 	/*led初始化*/
 	LED_GPIO_Config();
 	/*按键初始化*/
@@ -52,14 +52,68 @@ int main(void)
 		if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
 		{
 				if(run_i%2==0)
-					set_point=200;
+						set_point=200;
 				else
-					set_point=0;
+						set_point=0;
 				run_i++;
 		}   
-		if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
+    if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
 		{
 				pid_status=!pid_status;//取反状态
+		} 
+		
+	}
+}
+
+int main(void) 
+{
+	/* 初始化系统时钟为168MHz */
+	SystemClock_Config();
+	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
+  DEBUG_USART_Config();
+  /* 初始化基本定时器定时，20ms产生一次中断 */
+	TIMx_Configuration();
+	/* PID算法参数初始化 */
+  PID_param_init();	
+	/*led初始化*/
+	LED_GPIO_Config();
+	/*按键初始化*/
+	Key_GPIO_Config();
+	int run_i=0;
+#if defined(PID_ASSISTANT_EN) 
+    int temp = set_point;    // 上位机需要整数参数，转换一下
+    set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
+#endif	
+	while(1)
+	{       
+		/*模拟修改PID目标值*/
+		if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
+		{
+				if(run_i%2==0)
+						set_point=200;
+				else
+						set_point=0;
+				run_i++;
+        
+    #if defined(PID_ASSISTANT_EN) 
+        temp = set_point;    // 上位机需要整数参数，转换一下
+        set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
+		#endif
+    }   
+    if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
+		{
+				pid_status=!pid_status;//取反状态
+      
+    #if defined(PID_ASSISTANT_EN) 
+      if (!pid_status)
+      {
+        set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
+      }
+      else
+      {
+        set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
+      }      
+    #endif
 		} 
 		
 	}

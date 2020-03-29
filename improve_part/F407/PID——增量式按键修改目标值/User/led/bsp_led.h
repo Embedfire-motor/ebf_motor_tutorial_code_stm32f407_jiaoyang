@@ -5,46 +5,42 @@
 
 //引脚定义
 /*******************************************************/
-#define LED1_PIN                  GPIO_PIN_15                
-#define LED1_GPIO_PORT            GPIOA                     
-#define LED1_GPIO_CLK_ENABLE()    __GPIOA_CLK_ENABLE()
+//R 红色灯
+#define LED1_PIN                  GPIO_PIN_6                
+#define LED1_GPIO_PORT            GPIOF                     
+#define LED1_GPIO_CLK_ENABLE()    __GPIOF_CLK_ENABLE()
 
-#define LED2_PIN                  GPIO_PIN_2                 
-#define LED2_GPIO_PORT            GPIOE                      
-#define LED2_GPIO_CLK_ENABLE()    __GPIOE_CLK_ENABLE()
+//G 绿色灯
+#define LED2_PIN                  GPIO_PIN_7                 
+#define LED2_GPIO_PORT            GPIOF                      
+#define LED2_GPIO_CLK_ENABLE()    __GPIOF_CLK_ENABLE()
 
-#define LED3_PIN                  GPIO_PIN_15               
-#define LED3_GPIO_PORT            GPIOG                       
-#define LED3_GPIO_CLK_ENABLE()    __GPIOG_CLK_ENABLE()
+//B 蓝色灯
+#define LED3_PIN                  GPIO_PIN_8               
+#define LED3_GPIO_PORT            GPIOF                       
+#define LED3_GPIO_CLK_ENABLE()    __GPIOF_CLK_ENABLE()
 
-#define LED4_PIN                  GPIO_PIN_8               
-#define LED4_GPIO_PORT            GPIOB                       
-#define LED4_GPIO_CLK_ENABLE()    __GPIOB_CLK_ENABLE()
+
+/************************************************************/
 
 
 /** 控制LED灯亮灭的宏，
 	* LED低电平亮，设置ON=0，OFF=1
 	* 若LED高电平亮，把宏设置成ON=1 ，OFF=0 即可
 	*/
-//#define ON  GPIO_PIN_RESET
-//#define OFF GPIO_PIN_SET
+#define ON  GPIO_PIN_RESET
+#define OFF GPIO_PIN_SET
 
 /* 带参宏，可以像内联函数一样使用 */
 #define LED1(a)	HAL_GPIO_WritePin(LED1_GPIO_PORT,LED1_PIN,a)
 
+
 #define LED2(a)	HAL_GPIO_WritePin(LED2_GPIO_PORT,LED2_PIN,a)
 
-#define LED3(a)	HAL_GPIO_WritePin(LED3_GPIO_PORT,LED3_PIN,a)
 
-#define LED4(a)	HAL_GPIO_WritePin(LED4_GPIO_PORT,LED4_PIN,a)
+#define LED3(a)	HAL_GPIO_WritePin(LED2_GPIO_PORT,LED3_PIN,a)
 
-#define LED_ALL(a)	LED1(a);\
-					LED2(a);\
-					LED3(a);\
-					LED4(a)
-					
-#define LED_ON		0
-#define LED_OFF		!0
+
 
 
 /* 直接操作寄存器的方法控制IO */
