@@ -77,8 +77,8 @@ int main(void)
       /* 增大占空比 */
       ChannelPulse += PWM_PERIOD_COUNT/10;
       
-      if(ChannelPulse > PWM_PERIOD_COUNT)
-        ChannelPulse = PWM_PERIOD_COUNT;
+      if(ChannelPulse >= PWM_PERIOD_COUNT)
+        ChannelPulse = PWM_PERIOD_COUNT-100;
       
       set_motor_speed(ChannelPulse);
     }

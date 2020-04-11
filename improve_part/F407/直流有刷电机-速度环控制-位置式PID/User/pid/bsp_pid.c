@@ -23,8 +23,8 @@ void PID_param_init()
 		pid.Kd = 0.04;
 
 #if defined(PID_ASSISTANT_EN)
-//    float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
-//    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+    float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
+    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
 
@@ -64,7 +64,7 @@ void set_p_i_d(float p, float i, float d)
 		pid.Ki = i;    // 设置积分系数 I
 		pid.Kd = d;    // 设置微分系数 D
 }
-#include "./auto_pid/AutoPID.h"
+
 /**
   * @brief  PID算法实现
   * @param  actual_val:实际值
@@ -75,14 +75,12 @@ float PID_realize(float actual_val)
 {
 		/*计算目标值与实际值的误差*/
     pid.err=pid.target_val-actual_val;
-  
 		/*误差累积*/
     pid.integral+=pid.err;
 		/*PID算法实现*/
     pid.actual_val=pid.Kp*pid.err+pid.Ki*pid.integral+pid.Kd*(pid.err-pid.err_last);
 		/*误差传递*/
     pid.err_last=pid.err;
-  pid.actual_val = (float)PID(pid.err);
 		/*返回当前实际值*/
     return pid.actual_val;
 }

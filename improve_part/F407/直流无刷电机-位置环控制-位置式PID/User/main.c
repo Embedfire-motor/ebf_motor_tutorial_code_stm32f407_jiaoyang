@@ -63,9 +63,9 @@ int main(void)
   bldcm_init();
   
   /* 使能电机 */
-//  set_bldcm_speed(200);
+  set_bldcm_speed(200);
   set_bldcm_enable();
-//  
+  
 //  Delay(0xFFFFFF);
 	
 	while(1)
@@ -74,10 +74,10 @@ int main(void)
     if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
     {
       /* 使能电机 */
-//      set_bldcm_speed(200);
-//      set_bldcm_enable();
-//      
-//      Delay(0xFFFFFF);
+      set_bldcm_speed(200);
+      set_bldcm_enable();
+      
+      Delay(0xFFFFFF);
     }
     
     /* 扫描KEY2 */

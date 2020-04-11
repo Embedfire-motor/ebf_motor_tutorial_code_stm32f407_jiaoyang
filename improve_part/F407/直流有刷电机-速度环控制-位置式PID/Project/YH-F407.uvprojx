@@ -792,11 +792,6 @@
               <FileType>1</FileType>
               <FilePath>..\User\tim\bsp_basic_tim.c</FilePath>
             </File>
-            <File>
-              <FileName>AutoPID.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\auto_pid\AutoPID.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
