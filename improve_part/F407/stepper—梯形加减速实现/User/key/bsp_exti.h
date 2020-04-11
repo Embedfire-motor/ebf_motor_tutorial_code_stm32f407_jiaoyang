@@ -11,11 +11,11 @@
 #define KEY1_INT_EXTI_IRQ                 EXTI0_IRQn
 #define KEY1_IRQHandler                   EXTI0_IRQHandler
 
-#define KEY2_INT_GPIO_PORT                GPIOC
-#define KEY2_INT_GPIO_CLK_ENABLE()        __GPIOA_CLK_ENABLE();
-#define KEY2_INT_GPIO_PIN                 GPIO_PIN_13
-#define KEY2_INT_EXTI_IRQ                 EXTI15_10_IRQn
-#define KEY2_IRQHandler                   EXTI15_10_IRQHandler
+#define KEY2_INT_GPIO_PORT                GPIOG
+#define KEY2_INT_GPIO_CLK_ENABLE()        __GPIOG_CLK_ENABLE();
+#define KEY2_INT_GPIO_PIN                 GPIO_PIN_2
+#define KEY2_INT_EXTI_IRQ                 EXTI2_IRQn
+#define KEY2_IRQHandler                   EXTI2_IRQHandler
 /*******************************************************/
 
 

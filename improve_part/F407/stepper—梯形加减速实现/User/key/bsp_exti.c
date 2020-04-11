@@ -41,7 +41,7 @@ void EXTI_Key_Config(void)
     /* 使用上面的结构体初始化按键 */
     HAL_GPIO_Init(KEY1_INT_GPIO_PORT, &GPIO_InitStructure); 
     /* 配置 EXTI 中断源 到key1 引脚、配置中断优先级*/
-    HAL_NVIC_SetPriority(KEY1_INT_EXTI_IRQ, 0, 0);
+    HAL_NVIC_SetPriority(KEY1_INT_EXTI_IRQ, 1, 1);
     /* 使能中断 */
     HAL_NVIC_EnableIRQ(KEY1_INT_EXTI_IRQ);
 
@@ -50,7 +50,7 @@ void EXTI_Key_Config(void)
     /* 其他配置与上面相同 */
     HAL_GPIO_Init(KEY2_INT_GPIO_PORT, &GPIO_InitStructure);      
     /* 配置 EXTI 中断源 到key1 引脚、配置中断优先级*/
-    HAL_NVIC_SetPriority(KEY2_INT_EXTI_IRQ, 0, 0);
+    HAL_NVIC_SetPriority(KEY2_INT_EXTI_IRQ, 1, 1);
     /* 使能中断 */
     HAL_NVIC_EnableIRQ(KEY2_INT_EXTI_IRQ);
 }

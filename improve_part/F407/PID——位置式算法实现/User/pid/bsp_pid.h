@@ -4,6 +4,7 @@
 #include "./usart/bsp_debug_usart.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 typedef struct
 {

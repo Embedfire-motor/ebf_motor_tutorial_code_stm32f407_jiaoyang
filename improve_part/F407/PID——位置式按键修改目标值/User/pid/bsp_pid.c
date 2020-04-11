@@ -28,7 +28,11 @@ void PID_param_init()
 		pid.Kp = 0.01;//24
 		pid.Ki = 0.80;
 		pid.Kd = 0.04;
-//    printf("PID_init end \n");
+
+  #if defined(PID_ASSISTANT_EN)
+    float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
+    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+  #endif
 
 }
 
@@ -100,14 +104,13 @@ float set_point=0.0;
 int pid_status=0;
 void time_period_fun()
 {
-	static int num=0;
-	static int run_i=0;
 			
 	if(!pid_status)
 	{
 		float val=PID_realize(set_point);
     
-    set_computer_value(SEED_FACT_CMD, CURVES_CH1, val);                // 给通道 1 发送实际值
+    int temp = val;    // 上位机需要整数参数，转换一下
+    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &temp, 1);                // 给通道 1 发送实际值
 //		printf("val,%f;act,%f\n",set_point,val);	
 	}
 }

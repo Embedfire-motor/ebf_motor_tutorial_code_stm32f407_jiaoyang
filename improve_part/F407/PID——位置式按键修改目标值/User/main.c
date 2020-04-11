@@ -46,6 +46,12 @@ int main(void)
 	/*按键初始化*/
 	Key_GPIO_Config();
 	int run_i=0;
+  
+#if defined(PID_ASSISTANT_EN) 
+    int temp = set_point;    // 上位机需要整数参数，转换一下
+    set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
+#endif
+  
 	while(1)
 	{       
 		/*模拟修改PID目标值*/
@@ -57,11 +63,25 @@ int main(void)
 						set_point=0;
 				run_i++;
         
-        set_computer_value(SEED_TARGET_CMD, CURVES_CH1, set_point);     // 给通道 1 发送目标值
-		}   
+    #if defined(PID_ASSISTANT_EN) 
+        temp = set_point;    // 上位机需要整数参数，转换一下
+        set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
+		#endif
+    }   
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
 		{
 				pid_status=!pid_status;//取反状态
+      
+    #if defined(PID_ASSISTANT_EN) 
+      if (!pid_status)
+      {
+        set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
+      }
+      else
+      {
+        set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
+      }      
+    #endif
 		} 
 		
 	}

@@ -56,8 +56,7 @@ void LED_GPIO_Config(void)
     GPIO_InitStruct.Pin = LED3_PIN;	
     HAL_GPIO_Init(LED3_GPIO_PORT, &GPIO_InitStruct);	
 
-    /*¹Ø±ÕRGBµÆ*/
-    LED_RGBOFF;
+	LED_ALL(LED_OFF);
 
 }
 /*********************************************END OF FILE**********************/

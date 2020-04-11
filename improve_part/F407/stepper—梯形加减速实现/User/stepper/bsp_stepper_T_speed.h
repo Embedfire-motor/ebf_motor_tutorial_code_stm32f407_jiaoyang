@@ -5,36 +5,38 @@
 #include "./stepper/bsp_stepper_init.h"
 #include "math.h"
 
-//梯形加减速相关变量
-typedef struct {
-  //电机运行状态
-  unsigned char run_state : 3;
-  //电机运行方向
-  unsigned char dir : 1;
-  //下一个脉冲延时周期，启动时为加速度速率
-  unsigned int step_delay;
-  //开始减速的位置
-  unsigned int decel_start;
-  //减速距离
-  signed int decel_val;
-  //最小延时（即最大速度）
-  signed int min_delay;
-  //加速或者减速计数器
-  signed int accel_count;
-} speedRampData;
+/*梯形加减速相关变量*/
+typedef struct 
+{
+	/*当前电机状态*/
+	uint8_t  run_state ; 
+	/*旋转方向*/
+	uint8_t  dir ;    
+	/*脉冲间隔*/
+	int  step_delay;  
+	/*减速位置*/
+	int  decel_start; 
+	/*减速步数*/
+	int  decel_val;   
+	/*最小间隔*/
+	int  min_delay;   
+	/*加速步数*/
+	int  accel_count; 
+}speedRampData;
 
-
-//系统状态
-struct GLOBAL_FLAGS {
-  //当步进电机正在运行时，值为1
-  unsigned char running:1;
-  //当串口接收到数据时，值为1
-  unsigned char cmd:1;
-  //当驱动器正常输出时,值为1
-  unsigned char out_ena:1;
+/*/系统状态*/
+struct GLOBAL_FLAGS 
+{
+	//当步进电机正在运行时，值为1
+	unsigned char running:1;
+	//当串口接收到数据时，值为1
+	unsigned char cmd:1;
+	//当驱动器正常输出时,值为1
+	unsigned char out_ena:1;
 };
 
-
+#define ACCEL_R(x)	ceil(x)//向上取整
+#define DECEL_R(x)	floor(x)//向下取整
 
 #define FALSE             0
 #define TRUE              1
@@ -67,7 +69,7 @@ struct GLOBAL_FLAGS {
 
 #define ALPHA             ((float)(2*3.14159/SPR))       // α= 2*pi/spr
 #define A_T_x10           ((float)(10*ALPHA*T1_FREQ))
-#define T1_FREQ_148       ((float)((T1_FREQ*0.676)/10)) // 0.676为误差修正值
+#define T1_FREQ_148       ((float)((T1_FREQ*0.676)/10)) // 0.69为误差修正值(计算过程，文档中有写)
 #define A_SQ              ((float)(2*100000*ALPHA)) 
 #define A_x200            ((float)(200*ALPHA))
 
