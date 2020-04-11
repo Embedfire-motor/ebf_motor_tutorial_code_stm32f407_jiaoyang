@@ -180,16 +180,9 @@ void SysTick_Handler(void)
   * @param  None
   * @retval None
   */	
-void  ADVANCE_TIM_IRQHandler (void)
+void ADVANCE_TIM_IRQHandler(void)
 {
-	HAL_TIM_IRQHandler(&TIM_TimeBaseStructure);	 	
-}
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    if(htim==(&TIM_TimeBaseStructure))
-    {
-        LED1_TOGGLE;  //∫Ïµ∆÷‹∆⁄…¡À∏
-    }
+  HAL_TIM_IRQHandler(&TIM_AdvanceHandle);	 	
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

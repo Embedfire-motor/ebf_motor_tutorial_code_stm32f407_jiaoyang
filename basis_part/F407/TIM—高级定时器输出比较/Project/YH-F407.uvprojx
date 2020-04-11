@@ -762,6 +762,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\tim\bsp_advance_tim.c</FilePath>
             </File>
+            <File>
+              <FileName>core_delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\delay\core_delay.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -4,7 +4,7 @@
   * @author  fire
   * @version V1.0
   * @date    2017-xx-xx
-  * @brief   GPIO输出--使用固件库点亮LED灯
+  * @brief   TIM--高级定时器输出比较
   ******************************************************************************
   * @attention
   *
@@ -20,6 +20,7 @@
 #include "stm32f4xx.h"
 #include "./tim/bsp_advance_tim.h"
 #include "./led/bsp_led.h"
+#include "./delay/core_delay.h"
 
 /**
   * @brief  主函数
@@ -28,18 +29,32 @@
   */
 int main(void) 
 {
+  /*初始化时基*/
+  HAL_InitTick(5);
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
 	/* 初始化LED */
 	LED_GPIO_Config();
-    /* 初始化基本定时器定时，1s产生一次中断 */
-	TIMx_Configuration();
+  /* 初始化高级定时器 */
+	TIMx_AdvanceConfig();
   
 	while(1)
-	{       
+	{
+    /*修改比较输出的计数值*/
+    OC_Pulse_num_Channel1 += 200;
+    OC_Pulse_num_Channel2 += 120;
+    
+    if(OC_Pulse_num_Channel1 == 60000)
+    {
+      OC_Pulse_num_Channel1 = 400;
+    }
+    else if(OC_Pulse_num_Channel2 == 60000)
+    {
+      OC_Pulse_num_Channel2 = 600;
+    }
+    delay_ms(10);
 	}
 }
-
 
 
 /**
