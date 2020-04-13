@@ -12,19 +12,19 @@ _pid pid;
 void PID_param_init()
 {
 		/* 初始化参数 */
-    pid.target_val=1800.0;				
+    pid.target_val=1920.0;				
     pid.actual_val=0.0;
     pid.err=0.0;
     pid.err_last=0.0;
     pid.integral=0.0;
 
-		pid.Kp = 0.6;
-		pid.Ki = 0.4;
-		pid.Kd = 0.2;
+		pid.Kp = 23;
+		pid.Ki = 0;
+		pid.Kd = 25;
 
 #if defined(PID_ASSISTANT_EN)
     float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
-    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+//    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
 
@@ -32,7 +32,7 @@ void PID_param_init()
   * @brief  设置目标值
   * @param  val		目标值
 	*	@note 	无
-  * @retval 无
+  * @retval 无---------------
   */
 void set_pid_actual(float temp_val)
 {

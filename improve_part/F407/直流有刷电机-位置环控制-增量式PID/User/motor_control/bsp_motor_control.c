@@ -125,7 +125,7 @@ void motor_pid_control(void)
       set_motor_direction(MOTOR_REV);
     }
     
-    temp_val = (fabs(cont_val) > PWM_PERIOD_COUNT*3/5) ? PWM_PERIOD_COUNT*3/5 : fabs(cont_val);    // 速度上限处理
+    temp_val = (fabs(cont_val) > PWM_PERIOD_COUNT*0.48) ? PWM_PERIOD_COUNT*0.48 : fabs(cont_val);    // 速度上限处理
     set_motor_speed(temp_val);                                                                     // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)

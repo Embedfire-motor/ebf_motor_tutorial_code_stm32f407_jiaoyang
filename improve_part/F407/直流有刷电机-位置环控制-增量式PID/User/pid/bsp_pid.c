@@ -19,13 +19,13 @@ void PID_param_init()
 		pid.err_last = 0.0;
 		pid.err_next = 0.0;
 		
-		pid.Kp = 0.6;
+		pid.Kp = 80;
 		pid.Ki = 0.4;
-		pid.Kd = 0.2;
+		pid.Kd = 500;
 
 #if defined(PID_ASSISTANT_EN)
-    float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
-    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+//    float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
+//    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
 
@@ -76,6 +76,12 @@ float PID_realize(float actual_val)
 {
 	/*计算目标值与实际值的误差*/
   pid.err=pid.target_val-actual_val;
+  
+  if (pid.err > -50 && pid.err < 50)
+  {
+    pid.err = 0;
+  }
+  
 	/*PID算法实现*/
 	pid.actual_val += pid.Kp*(pid.err - pid.err_next) 
                  + pid.Ki*pid.err 

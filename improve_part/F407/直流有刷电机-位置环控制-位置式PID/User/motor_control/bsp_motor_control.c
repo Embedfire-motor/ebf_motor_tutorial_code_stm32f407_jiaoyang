@@ -13,7 +13,7 @@
   * 淘宝    :http://firestm32.taobao.com
   *
   ******************************************************************************
-  */ 
+  */
 
 #include ".\motor_control\bsp_motor_control.h"
 #include "./usart/bsp_debug_usart.h"
@@ -126,7 +126,7 @@ void motor_pid_control(void)
     }
     
     cont_val = (cont_val > PWM_PERIOD_COUNT*0.48) ? PWM_PERIOD_COUNT*0.48 : cont_val;    // 速度上限处理
-    set_motor_speed(0);                                                         // 设置 PWM 占空比
+    set_motor_speed(cont_val);                                                         // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)
     set_computer_value(SEED_FACT_CMD, CURVES_CH1, &Capture_Count, 1);                // 给通道 1 发送实际值

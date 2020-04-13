@@ -114,8 +114,8 @@ int main(void)
       /* 增大目标速度 */
       target_speed += 50;
       
-      if(target_speed > 350)
-        target_speed = 350;
+      if(target_speed > 280)
+        target_speed = 280;
       
       set_pid_actual(target_speed);
     #if defined(PID_ASSISTANT_EN)
@@ -129,8 +129,8 @@ int main(void)
       /* 减小目标速度 */
       target_speed -= 50;
       
-      if(target_speed < -350)
-        target_speed = -350;
+      if(target_speed < -280)
+        target_speed = -280;
       
       set_pid_actual(target_speed);
     #if defined(PID_ASSISTANT_EN)

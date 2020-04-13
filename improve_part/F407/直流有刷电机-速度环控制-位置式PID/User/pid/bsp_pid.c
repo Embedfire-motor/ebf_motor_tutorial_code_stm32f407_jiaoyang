@@ -75,7 +75,7 @@ float PID_realize(float actual_val)
 {
 		/*计算目标值与实际值的误差*/
     pid.err=pid.target_val-actual_val;
-		/*误差累积*/
+    /*误差累积*/
     pid.integral+=pid.err;
 		/*PID算法实现*/
     pid.actual_val=pid.Kp*pid.err+pid.Ki*pid.integral+pid.Kd*(pid.err-pid.err_last);
