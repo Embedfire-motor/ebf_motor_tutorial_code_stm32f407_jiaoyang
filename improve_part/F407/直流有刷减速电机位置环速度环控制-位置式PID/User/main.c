@@ -86,8 +86,8 @@ int main(void)
   PID_param_init();
   
 #if defined(PID_ASSISTANT_EN)
-  set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
-  set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &target_location, 1);     // 给通道 1 发送目标值
+  set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
+  set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &target_location, 1);     // 给通道 1 发送目标值
 #endif
 
 	while(1)
@@ -96,7 +96,7 @@ int main(void)
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
     #if defined(PID_ASSISTANT_EN) 
-      set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
+      set_computer_value(SEND_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     #endif
       set_pid_target(&pid_location, target_location);    // 设置目标值
       set_motor_enable();              // 使能电机
@@ -106,7 +106,7 @@ int main(void)
     if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
     {
       set_motor_disable();     // 停止电机
-      set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
+      set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     }
     
     /* 扫描KEY3 */
@@ -117,7 +117,7 @@ int main(void)
       
       set_pid_target(&pid_location, target_location);
     #if defined(PID_ASSISTANT_EN)
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
     #endif
     }
 
@@ -129,7 +129,7 @@ int main(void)
       
       set_pid_target(&pid_location, target_location);
     #if defined(PID_ASSISTANT_EN)
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
     #endif
     }
 	}

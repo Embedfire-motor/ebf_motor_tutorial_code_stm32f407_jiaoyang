@@ -15,7 +15,7 @@
   ******************************************************************************
   */ 
 
-#include ".\motor_control\bsp_motor_control.h"
+#include "./motor_control/bsp_motor_control.h"
 #include "./usart/bsp_debug_usart.h"
 #include "./pid/bsp_pid.h"
 #include "./tim/bsp_basic_tim.h"
@@ -26,7 +26,7 @@ static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
 static uint8_t    is_motor_en = 0;             // 电机使能
 
-#define TARGET_SPEED_MAX    200    // 目标速度的最大值 r/m
+#define TARGET_SPEED_MAX    150    // 目标速度的最大值 r/m
 
 /**
   * @brief  设置电机速度
@@ -107,13 +107,13 @@ void set_motor_disable(void)
   */
 void motor_pid_control(void)
 {
-  static uint32_t location_timer;    // 位置环周期
+  static uint32_t location_timer = 0;    // 位置环周期
   
-  if (is_motor_en == 1)     // 电机在使能状态下才进行控制处理
+  if (is_motor_en == 1)              // 电机在使能状态下才进行控制处理
   {
     static int32_t Capture_Count = 0;    // 当前时刻总计数值
     static int32_t Last_Count = 0;       // 上一时刻总计数值
-    float cont_val = 0;           // 当前控制值
+    float cont_val = 0;                  // 当前控制值
     
     /* 当前时刻总计数值 = 计数器值 + 计数溢出次数 * ENCODER_TIM_PERIOD  */
     Capture_Count = __HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (Encoder_Overflow_Count * ENCODER_TIM_PERIOD);
@@ -136,7 +136,7 @@ void motor_pid_control(void)
       
     #if defined(PID_ASSISTANT_EN)
       int32_t temp = cont_val;
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
     #endif
     }
     
@@ -164,8 +164,8 @@ void motor_pid_control(void)
     set_motor_speed(cont_val);                                                 // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)
-    set_computer_value(SEED_FACT_CMD, CURVES_CH2, &actual_speed, 1);      // 给通道 2 发送实际值
-    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &Capture_Count, 1);     // 给通道 1 发送实际值
+    set_computer_value(SEND_FACT_CMD, CURVES_CH2, &actual_speed, 1);      // 给通道 2 发送实际值
+    set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Capture_Count, 1);     // 给通道 1 发送实际值
   #else
     printf("实际值速度：%d. 实际位置值：%d, 目标位置值：%.0f\n", actual_speed, Capture_Count, get_pid_target(&pid_location));      // 打印实际值和目标值
   #endif

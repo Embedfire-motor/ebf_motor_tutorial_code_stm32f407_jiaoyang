@@ -20,31 +20,31 @@ void PID_param_init(void)
     pid_location.err_last=0.0;
     pid_location.integral=0.0;
   
-		pid_location.Kp = 0.6;
-		pid_location.Ki = 0.1;
+		pid_location.Kp = 0.158;
+		pid_location.Ki = 0.12;
 		pid_location.Kd = 0.0;
   
-  		/* 速度相关初始化参数 */
+  	/* 速度相关初始化参数 */
     pid_speed.target_val=100.0;				
     pid_speed.actual_val=0.0;
     pid_speed.err=0.0;
     pid_speed.err_last=0.0;
     pid_speed.integral=0.0;
   
-		pid_speed.Kp = 13;
-		pid_speed.Ki = 3.5;
+		pid_speed.Kp = 30;
+		pid_speed.Ki = 8;
 		pid_speed.Kd = 0.04;
 
 #if defined(PID_ASSISTANT_EN)
     float pid_temp[3] = {pid_location.Kp, pid_location.Ki, pid_location.Kd};
-//    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
     
     pid_temp[0] = pid_speed.Kp;
     pid_temp[1] = pid_speed.Ki;
     pid_temp[2] = pid_speed.Kd;
-    set_computer_value(SEED_P_I_D_CMD, CURVES_CH2, pid_temp, 3);     // 给通道 2 发送 P I D 值
+    set_computer_value(SEND_P_I_D_CMD, CURVES_CH2, pid_temp, 3);     // 给通道 2 发送 P I D 值
 #endif
-}
+} 
 
 /**
   * @brief  设置目标值
@@ -101,17 +101,6 @@ float location_pid_realize(_pid *pid, float actual_val)
       pid->integral = 0;
     }
 
-//    /* 积分分离 */
-//    if((pid->err >= -1000) && (pid->err <= 1000))
-//    {
-        pid->integral += pid->err;    // 误差累积; //积分
-
-//      /* 设定积分上限 */
-//      if(pid->integral >= 1000)
-//        pid->integral = 1000;
-//      if(pid->integral <= -1000)
-//        pid->integral = -1000;
-//    }
 		/*PID算法实现*/
     pid->actual_val = pid->Kp*pid->err+pid->Ki*pid->integral+pid->Kd*(pid->err-pid->err_last);
   
@@ -133,16 +122,10 @@ float speed_pid_realize(_pid *pid, float actual_val)
 		/*计算目标值与实际值的误差*/
     pid->err=pid->target_val-actual_val;
 
-//    if((pid->err<0.2f )&& (pid->err>-0.2f))
-//      pid->err = 0.0f;
+    if((pid->err<0.2f )&& (pid->err>-0.2f))
+      pid->err = 0.0f;
 
     pid->integral += pid->err;    // 误差累积
-//    
-//      /* 设定积分上限 */
-//    if(pid->integral >= 1000)
-//      pid->integral = 1000;
-//    if(pid->integral <= -1000)
-//      pid->integral = -1000;
 
 		/*PID算法实现*/
     pid->actual_val = pid->Kp*pid->err+pid->Ki*pid->integral+pid->Kd*(pid->err-pid->err_last);
