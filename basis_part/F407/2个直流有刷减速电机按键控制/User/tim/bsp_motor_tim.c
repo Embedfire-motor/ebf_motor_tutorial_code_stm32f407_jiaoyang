@@ -103,7 +103,7 @@ static void TIM_PWMOUTPUT_Config(void)
 	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,PWM_CHANNEL_1);
 	
 	/*配置脉宽*/
-  TIM_OCInitStructure.Pulse = PWM_PERIOD_COUNT/2;    // 默认占空比为50%
+  TIM_OCInitStructure.Pulse = 0;    // 默认占空比为50%
 	/*配置PWM通道*/
   HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, PWM_CHANNEL_2);
 	/*开始输出PWM*/
@@ -141,7 +141,126 @@ void TIMx_Configuration(void)
   TIM_PWMOUTPUT_Config();
 }
 
+/**
+  * @brief  配置TIM复用输出PWM时用到的I/O
+  * @param  无
+  * @retval 无
+  */
+static void TIMx_GPIO_Config2(void) 
+{
+ GPIO_InitTypeDef GPIO_InitStruct;
+  
+  /* 定时器通道功能引脚端口时钟使能 */
+	
+	__HAL_RCC_GPIOI_CLK_ENABLE();
+	__HAL_RCC_GPIOI_CLK_ENABLE();
+  
+  /* 定时器通道1功能引脚IO初始化 */
+	/*设置输出类型*/
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	/*设置引脚速率 */ 
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	/*设置复用*/
+  GPIO_InitStruct.Alternate = PWM2_TIM_GPIO_AF;
+	
+	/*选择要控制的GPIO引脚*/	
+	GPIO_InitStruct.Pin = PWM2_TIM_CH1_PIN;
+	/*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
+  HAL_GPIO_Init(PWM2_TIM_CH1_GPIO_PORT, &GPIO_InitStruct);
 
+  GPIO_InitStruct.Pin = PWM2_TIM_CH2_PIN;	
+  HAL_GPIO_Init(PWM2_TIM_CH2_GPIO_PORT, &GPIO_InitStruct);
+	
+}
+
+
+/*
+ * 注意：TIM_TimeBaseInitTypeDef结构体里面有5个成员，TIM6和TIM7的寄存器里面只有
+ * TIM_Prescaler和TIM_Period，所以使用TIM6和TIM7的时候只需初始化这两个成员即可，
+ * 另外三个成员是通用定时器和高级定时器才有.
+ *-----------------------------------------------------------------------------
+ * TIM_Prescaler         都有
+ * TIM_CounterMode			 TIMx,x[6,7]没有，其他都有（基本定时器）
+ * TIM_Period            都有
+ * TIM_ClockDivision     TIMx,x[6,7]没有，其他都有(基本定时器)
+ * TIM_RepetitionCounter TIMx,x[1,8]才有(高级定时器)
+ *-----------------------------------------------------------------------------
+ */
+TIM_HandleTypeDef  TIM_TimeBaseStructure2;
+static void TIM_PWMOUTPUT2_Config(void)
+{
+  TIM_OC_InitTypeDef  TIM_OCInitStructure;  
+	
+  /*使能定时器*/
+  PWM2_TIM_CLK_ENABLE();
+	
+  TIM_TimeBaseStructure2.Instance = PWM2_TIM;
+  /* 累计 TIM_Period个后产生一个更新或者中断*/		
+  //当定时器从0计数到PWM_PERIOD_COUNT，即为PWM_PERIOD_COUNT+1次，为一个定时周期
+	TIM_TimeBaseStructure2.Init.Period = PWM_PERIOD_COUNT - 1;
+	// 通用控制定时器时钟源TIMxCLK = HCLK/2=84MHz 
+	// 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1)
+  TIM_TimeBaseStructure2.Init.Prescaler = PWM_PRESCALER_COUNT - 1;	
+	
+	/*计数方式*/
+  TIM_TimeBaseStructure2.Init.CounterMode = TIM_COUNTERMODE_UP;
+	/*采样时钟分频*/
+  TIM_TimeBaseStructure2.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;
+	/*初始化定时器*/
+  HAL_TIM_PWM_Init(&TIM_TimeBaseStructure2);
+  
+	/*PWM模式配置*/
+  TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM1;
+	TIM_OCInitStructure.Pulse = 0;
+	TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_HIGH;
+	TIM_OCInitStructure.OCNPolarity = TIM_OCPOLARITY_HIGH;
+	TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_SET;
+	TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  TIM_OCInitStructure.OCFastMode = TIM_OCFAST_DISABLE;
+	
+	/*配置PWM通道*/
+  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure2, &TIM_OCInitStructure, PWM_CHANNEL_1);
+	/*开始输出PWM*/
+	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure2,PWM_CHANNEL_1);
+	
+	/*配置脉宽*/
+  TIM_OCInitStructure.Pulse = 0;    // 默认占空比为50%
+	/*配置PWM通道*/
+  HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure2, &TIM_OCInitStructure, PWM_CHANNEL_2);
+	/*开始输出PWM*/
+	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure2,PWM_CHANNEL_2);
+}
+
+/**
+  * @brief  设置TIM通道的占空比
+	* @param  channel		通道	（1,2,3,4）
+	* @param  compare		占空比
+	*	@note 	无
+  * @retval 无
+  */
+void TIM1_SetPWM2_pulse(uint32_t channel,int compare)
+{
+		switch(channel)
+	{
+		case TIM_CHANNEL_1:  	__HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure2,TIM_CHANNEL_1,compare);break;
+		case TIM_CHANNEL_2:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure2,TIM_CHANNEL_2,compare);break;
+		case TIM_CHANNEL_3:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure2,TIM_CHANNEL_3,compare);break;
+		case TIM_CHANNEL_4:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure2,TIM_CHANNEL_4,compare);break;
+	}
+}
+
+
+/**
+  * @brief  初始化控制通用定时器
+  * @param  无
+  * @retval 无
+  */
+void TIMx_Configuration2(void)
+{
+	TIMx_GPIO_Config2();
+  
+  TIM_PWMOUTPUT2_Config();
+}
 
 
 /*********************************************END OF FILE**********************/

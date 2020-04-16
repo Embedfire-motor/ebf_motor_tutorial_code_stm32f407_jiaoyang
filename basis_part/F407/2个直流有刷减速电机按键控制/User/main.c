@@ -23,8 +23,6 @@
 #include ".\key\bsp_key.h" 
 #include ".\motor_control\bsp_motor_control.h"
 
-int pulse_num=0;
-	
 void Delay(__IO uint32_t nCount)	 //简单的延时函数
 {
 	for(; nCount != 0; nCount--);
@@ -38,6 +36,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
 int main(void) 
 {
   __IO uint16_t ChannelPulse = 0;
+  __IO uint16_t ChannelPulse2 = 0;
   uint8_t i = 0;
   
 	/* 初始化系统时钟为168MHz */
@@ -47,10 +46,10 @@ int main(void)
 	Key_GPIO_Config();
 
   /* 通用定时器初始化并配置PWM输出功能 */
-  TIMx_Configuration();
+  motor_init();
   
-	TIM1_SetPWM_pulse(PWM_CHANNEL_1, 0);
-	TIM1_SetPWM_pulse(PWM_CHANNEL_2, 0);
+	set_motor_speed(ChannelPulse);
+  set_motor2_speed(ChannelPulse2);
 	
 	while(1)
 	{
@@ -80,8 +79,32 @@ int main(void)
     /* 扫描KEY3 */
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
+      /* 增大占空比 */
+      ChannelPulse2 += PWM_PERIOD_COUNT/10;
+      
+      if(ChannelPulse2 > PWM_PERIOD_COUNT)
+        ChannelPulse2 = PWM_PERIOD_COUNT;
+      
+      set_motor2_speed(ChannelPulse2);
+    }
+    
+    /* 扫描KEY4 */
+    if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
+    {
+      if(ChannelPulse2 < PWM_PERIOD_COUNT/10)
+        ChannelPulse2 = 0;
+      else
+        ChannelPulse2 -= PWM_PERIOD_COUNT/10;
+      
+      set_motor2_speed(ChannelPulse2);
+    }
+    
+    /* 扫描KEY5 */
+    if( Key_Scan(KEY5_GPIO_PORT, KEY5_PIN) == KEY_ON)
+    {
       /* 转换方向 */
       set_motor_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);
+      set_motor2_direction( (i % 2) ? MOTOR_FWD : MOTOR_REV);
     }
 	}
 }

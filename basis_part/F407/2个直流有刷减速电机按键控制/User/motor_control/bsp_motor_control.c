@@ -21,6 +21,12 @@
 static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
 
+void motor_init(void)
+{
+  TIMx_Configuration();     // 初始化电机 1
+  TIMx_Configuration2();    // 初始化电机 2
+}
+
 /**
   * @brief  设置电机速度
   * @param  v: 速度（占空比）
@@ -81,6 +87,68 @@ void set_motor_disable(void)
 {
   MOTOR_FWD_DISABLE();
   MOTOR_REV_DISABLE();
+}
+
+/**
+  * @brief  设置电机速度
+  * @param  v: 速度（占空比）
+  * @retval 无
+  */
+void set_motor2_speed(uint16_t v)
+{
+  dutyfactor = v;
+  
+  if (direction == MOTOR_FWD)
+  {
+    SET2_FWD_COMPAER(dutyfactor);     // 设置速度
+  }
+  else
+  {
+    SET2_REV_COMPAER(dutyfactor);     // 设置速度
+  }
+}
+
+/**
+  * @brief  设置电机方向
+  * @param  无
+  * @retval 无
+  */
+void set_motor2_direction(motor_dir_t dir)
+{
+  direction = dir;
+  
+  if (direction == MOTOR_FWD)
+  {
+    SET2_FWD_COMPAER(dutyfactor);     // 设置速度
+    SET2_REV_COMPAER(0);              // 设置速度
+  }
+  else
+  {
+    SET2_FWD_COMPAER(0);              // 设置速度
+    SET2_REV_COMPAER(dutyfactor);     // 设置速度
+  }
+}
+
+/**
+  * @brief  使能电机
+  * @param  无
+  * @retval 无
+  */
+void set_motor2_enable(void)
+{
+  MOTOR2_FWD_ENABLE();
+  MOTOR2_REV_ENABLE();
+}
+
+/**
+  * @brief  禁用电机
+  * @param  无
+  * @retval 无
+  */
+void set_motor2_disable(void)
+{
+  MOTOR2_FWD_DISABLE();
+  MOTOR2_REV_DISABLE();
 }
 
 /*********************************************END OF FILE**********************/

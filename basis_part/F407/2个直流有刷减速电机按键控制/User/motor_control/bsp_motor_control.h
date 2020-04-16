@@ -24,8 +24,24 @@ typedef enum
 #define MOTOR_FWD_DISABLE()     HAL_TIM_PWM_Stop(&TIM_TimeBaseStructure,PWM_CHANNEL_1);     // 禁用 PWM 通道 1
 #define MOTOR_REV_DISABLE()     HAL_TIM_PWM_Stop(&TIM_TimeBaseStructure,PWM_CHANNEL_2);     // 禁用 PWM 通道 2
 
+
+/* 设置速度（占空比） */
+#define SET2_FWD_COMPAER(ChannelPulse)     TIM1_SetPWM2_pulse(PWM_CHANNEL_1,ChannelPulse)    // 设置比较寄存器的值
+#define SET2_REV_COMPAER(ChannelPulse)     TIM1_SetPWM2_pulse(PWM_CHANNEL_2,ChannelPulse)    // 设置比较寄存器的值
+
+/* 使能输出 */
+#define MOTOR2_FWD_ENABLE()      HAL_TIM_PWM_Start(&TIM_TimeBaseStructure2,PWM_CHANNEL_1);    // 使能 PWM 通道 1
+#define MOTOR2_REV_ENABLE()      HAL_TIM_PWM_Start(&TIM_TimeBaseStructure2,PWM_CHANNEL_2);    // 使能 PWM 通道 2
+
+/* 禁用输出 */
+#define MOTOR2_FWD_DISABLE()     HAL_TIM_PWM_Stop(&TIM_TimeBaseStructure2,PWM_CHANNEL_1);     // 禁用 PWM 通道 1
+#define MOTOR2_REV_DISABLE()     HAL_TIM_PWM_Stop(&TIM_TimeBaseStructure2,PWM_CHANNEL_2);     // 禁用 PWM 通道 2
+
+void motor_init(void);
 void set_motor_speed(uint16_t v);
 void set_motor_direction(motor_dir_t dir);
+void set_motor2_speed(uint16_t v);
+void set_motor2_direction(motor_dir_t dir);
 
 #endif /* __LED_H */
 
