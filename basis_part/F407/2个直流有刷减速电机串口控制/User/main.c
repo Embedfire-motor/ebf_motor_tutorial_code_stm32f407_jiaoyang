@@ -53,10 +53,10 @@ int main(void)
   DEBUG_USART_Config();
 
   /* 通用定时器初始化并配置PWM输出功能 */
-  TIMx_Configuration();
+  motor_init();
   
-	TIM1_SetPWM_pulse(PWM_CHANNEL_1, 0);
-	TIM1_SetPWM_pulse(PWM_CHANNEL_2, 0);
+	set_motor_enable();
+  set_motor2_enable();
 	
 	while(1)
 	{

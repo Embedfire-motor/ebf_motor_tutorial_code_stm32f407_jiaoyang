@@ -48,6 +48,8 @@ int main(void)
   /* 通用定时器初始化并配置PWM输出功能 */
   motor_init();
   
+  set_motor_enable();
+  set_motor2_enable();
 	set_motor_speed(ChannelPulse);
   set_motor2_speed(ChannelPulse2);
 	

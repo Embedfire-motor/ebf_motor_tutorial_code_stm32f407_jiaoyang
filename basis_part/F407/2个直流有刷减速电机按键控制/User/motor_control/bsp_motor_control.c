@@ -18,13 +18,45 @@
 #include ".\motor_control\bsp_motor_control.h"
 
 /* 私有变量 */
-static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
-static uint16_t    dutyfactor = 0;             // 记录占空比
+static motor_dir_t direction  = MOTOR_FWD;      // 记录电机1方向
+static uint16_t    dutyfactor = 0;              // 记录电机1占空比
+static motor_dir_t direction2  = MOTOR_FWD;     // 记录电机2方向
+static uint16_t    dutyfactor2 = 0;             // 记录电机2占空比
 
+void sd_gpio_config(void)
+{
+   GPIO_InitTypeDef GPIO_InitStruct;
+  
+  /* 定时器通道功能引脚端口时钟使能 */
+	
+	ENA_GPIO_CLK_ENABLE();
+	ENB_GPIO_CLK_ENABLE();
+  
+  /* 定时器通道1功能引脚IO初始化 */
+	/*设置输出类型*/
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	/*设置引脚速率 */ 
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	
+	/*选择要控制的GPIO引脚*/	
+	GPIO_InitStruct.Pin = ENA_PIN;
+	/*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
+  HAL_GPIO_Init(ENA_GPIO_PORT, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = ENB_PIN;	
+  HAL_GPIO_Init(ENB_GPIO_PORT, &GPIO_InitStruct);
+}
+
+/**
+  * @brief  电机初始化
+  * @param  无
+  * @retval 无
+  */
 void motor_init(void)
 {
   TIMx_Configuration();     // 初始化电机 1
   TIMx_Configuration2();    // 初始化电机 2
+  sd_gpio_config();
 }
 
 /**
@@ -74,6 +106,7 @@ void set_motor_direction(motor_dir_t dir)
   */
 void set_motor_enable(void)
 {
+  MOTOR_ENABLE_A();
   MOTOR_FWD_ENABLE();
   MOTOR_REV_ENABLE();
 }
@@ -85,6 +118,7 @@ void set_motor_enable(void)
   */
 void set_motor_disable(void)
 {
+  MOTOR_DISABLE_A();
   MOTOR_FWD_DISABLE();
   MOTOR_REV_DISABLE();
 }
@@ -96,15 +130,15 @@ void set_motor_disable(void)
   */
 void set_motor2_speed(uint16_t v)
 {
-  dutyfactor = v;
+  dutyfactor2 = v;
   
-  if (direction == MOTOR_FWD)
+  if (direction2 == MOTOR_FWD)
   {
-    SET2_FWD_COMPAER(dutyfactor);     // 设置速度
+    SET2_FWD_COMPAER(dutyfactor2);     // 设置速度
   }
   else
   {
-    SET2_REV_COMPAER(dutyfactor);     // 设置速度
+    SET2_REV_COMPAER(dutyfactor2);     // 设置速度
   }
 }
 
@@ -115,17 +149,17 @@ void set_motor2_speed(uint16_t v)
   */
 void set_motor2_direction(motor_dir_t dir)
 {
-  direction = dir;
+  direction2 = dir;
   
-  if (direction == MOTOR_FWD)
+  if (direction2 == MOTOR_FWD)
   {
-    SET2_FWD_COMPAER(dutyfactor);     // 设置速度
+    SET2_FWD_COMPAER(dutyfactor2);     // 设置速度
     SET2_REV_COMPAER(0);              // 设置速度
   }
   else
   {
     SET2_FWD_COMPAER(0);              // 设置速度
-    SET2_REV_COMPAER(dutyfactor);     // 设置速度
+    SET2_REV_COMPAER(dutyfactor2);     // 设置速度
   }
 }
 
@@ -136,6 +170,7 @@ void set_motor2_direction(motor_dir_t dir)
   */
 void set_motor2_enable(void)
 {
+  MOTOR_ENABLE_B();
   MOTOR2_FWD_ENABLE();
   MOTOR2_REV_ENABLE();
 }
@@ -147,6 +182,7 @@ void set_motor2_enable(void)
   */
 void set_motor2_disable(void)
 {
+  MOTOR_DISABLE_B();
   MOTOR2_FWD_DISABLE();
   MOTOR2_REV_DISABLE();
 }
