@@ -26,6 +26,33 @@ static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
 static uint8_t    is_motor_en = 0;             // 电机使能
 
+void motor_init(void)
+{
+  /*定义一个GPIO_InitTypeDef类型的结构体*/
+  GPIO_InitTypeDef  GPIO_InitStruct;
+
+  /*开启LED相关的GPIO外设时钟*/
+  SHUTDOWN_GPIO_CLK_ENABLE();
+
+  /*选择要控制的GPIO引脚*/															   
+  GPIO_InitStruct.Pin = SHUTDOWN_PIN;	
+
+  /*设置引脚的输出类型为推挽输出*/
+  GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;  
+
+  /*设置引脚为上拉模式*/
+  GPIO_InitStruct.Pull  = GPIO_PULLUP;
+
+  /*设置引脚速率为高速 */   
+  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH; 
+
+  /*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
+  HAL_GPIO_Init(SHUTDOWN_GPIO_PORT, &GPIO_InitStruct);
+  
+  /* 配置定时器输出 PWM */
+  Motor_TIMx_Configuration();
+}
+
 /**
   * @brief  设置电机速度
   * @param  v: 速度（占空比）
@@ -82,6 +109,7 @@ void set_motor_direction(motor_dir_t dir)
 void set_motor_enable(void)
 {
   is_motor_en = 1;
+  MOTOR_ENABLE_SD();
   MOTOR_FWD_ENABLE();
   MOTOR_REV_ENABLE();
 }
@@ -94,6 +122,7 @@ void set_motor_enable(void)
 void set_motor_disable(void)
 {
   is_motor_en = 0;
+  MOTOR_DISABLE_SD();
   MOTOR_FWD_DISABLE();
   MOTOR_REV_DISABLE();
 }
@@ -129,7 +158,7 @@ void motor_pid_control(void)
     set_motor_speed(cont_val);                                                         // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)
-    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &Capture_Count, 1);                // 给通道 1 发送实际值
+    set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Capture_Count, 1);                // 给通道 1 发送实际值
   #else
     printf("实际值：%d. 目标值：%.0f\n", actual_speed, get_pid_actual());      // 打印实际值和目标值
   #endif

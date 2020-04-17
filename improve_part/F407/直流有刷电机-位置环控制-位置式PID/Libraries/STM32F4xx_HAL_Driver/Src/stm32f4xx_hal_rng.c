@@ -607,7 +607,7 @@ HAL_StatusTypeDef HAL_RNG_GenerateRandomNumber_IT(RNG_HandleTypeDef *hrng)
     /* Change RNG peripheral state */
     hrng->State = HAL_RNG_STATE_BUSY;
 
-    /* Enable the RNG Interrupts: Data Ready, Clock error, Seed error */
+    /* Enable the RNG Interrupts: Data Ready, Clock error, SEND error */
     __HAL_RNG_ENABLE_IT(hrng);
   }
   else
@@ -661,7 +661,7 @@ uint32_t HAL_RNG_GetRandomNumber_IT(RNG_HandleTypeDef *hrng)
   /* Get a 32bit Random number */
   random32bit = hrng->Instance->DR;
 
-  /* Enable the RNG Interrupts: Data Ready, Clock error, Seed error */
+  /* Enable the RNG Interrupts: Data Ready, Clock error, SEND error */
   __HAL_RNG_ENABLE_IT(hrng);
 
   /* Return the 32 bit random number */
@@ -676,7 +676,7 @@ uint32_t HAL_RNG_GetRandomNumber_IT(RNG_HandleTypeDef *hrng)
   *         the RNG clock and clear the CEIS bit using __HAL_RNG_CLEAR_IT().
   *         The clock error has no impact on the previously generated
   *         random numbers, and the RNG_DR register contents can be used.
-  * @note   In the case of a seed error, the generation of random numbers is
+  * @note   In the case of a SEND error, the generation of random numbers is
   *         interrupted as long as the SECS bit is '1'. If a number is
   *         available in the RNG_DR register, it must not be used because it may
   *         not have enough entropy. In this case, it is recommended to clear the

@@ -1,4 +1,5 @@
 #include "./pid/bsp_pid.h"
+#include ".\motor_control\bsp_motor_control.h"
 
 //定义全局变量
 
@@ -12,7 +13,7 @@ _pid pid;
 void PID_param_init()
 {
 		/* 初始化参数 */
-    pid.target_val=1920.0;				
+    pid.target_val=CIRCLE_PULSES;				
     pid.actual_val=0.0;
     pid.err=0.0;
     pid.err_last=0.0;
@@ -24,7 +25,7 @@ void PID_param_init()
 
 #if defined(PID_ASSISTANT_EN)
     float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
-//    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
 
@@ -76,21 +77,7 @@ float PID_realize(float actual_val)
 		/*计算目标值与实际值的误差*/
     pid.err=pid.target_val-actual_val;
   
-    /* 限定积分区域 */
-//    if((pid.err<400 )&& (pid.err>-400))
-//    {
-      pid.integral += pid.err;    // 误差累积
-      
-//      /* 设定积分上限 */
-//      if(pid.integral >= (pid.target_val*10))
-//      {
-//         pid.integral  = (pid.target_val*10);
-//      }
-//      else if(pid.integral <= -(pid.target_val*10))
-//      {
-//        pid.integral = -(pid.target_val*10);
-//      }
-//    }
+    pid.integral += pid.err;    // 误差累积
 
 		/*PID算法实现*/
     pid.actual_val = pid.Kp*pid.err+pid.Ki*pid.integral+pid.Kd*(pid.err-pid.err_last);

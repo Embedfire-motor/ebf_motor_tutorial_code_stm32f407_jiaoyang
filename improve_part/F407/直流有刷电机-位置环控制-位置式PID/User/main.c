@@ -32,19 +32,6 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
 {
 	for(; nCount != 0; nCount--);
 }	
-//uint8_t temp[4] = {255, 65, 46, 61};
-//void fun(char c[])
-//{
-//	
-//	float f, f1;
-
-//	//temp = c;
-
-//	f1 = *(float*)& temp[0];
-//	f = *(float *)&c[0];
-
-//	printf("f = %f, f = %f\n", f, f1);
-//}
 	
 /**
   * @brief  主函数
@@ -53,7 +40,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void)
 {
-  int32_t target_location = PPR;
+  int32_t target_location = CIRCLE_PULSES;
   
   /* HAL 库初始化 */
   HAL_Init();
@@ -70,10 +57,8 @@ int main(void)
   /* 初始化串口 */
   DEBUG_USART_Config();
 
-  /* 通用定时器初始化并配置PWM输出功能 */
-  Motor_TIMx_Configuration();
-  
-	set_motor_disable();     // 停止电机 
+  /* 电机初始化 */
+  motor_init();
   
   /* 编码器接口初始化 */
 	Encoder_Init();
@@ -85,8 +70,8 @@ int main(void)
   PID_param_init();
   
 #if defined(PID_ASSISTANT_EN)
-  set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
-  set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &target_location, 1);     // 给通道 1 发送目标值
+  set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
+  set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &target_location, 1);     // 给通道 1 发送目标值
 #endif
 
 	while(1)
@@ -95,7 +80,7 @@ int main(void)
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
     #if defined(PID_ASSISTANT_EN) 
-      set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
+      set_computer_value(SEND_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     #endif
       set_pid_actual(target_location);    // 设置目标值
       set_motor_enable();              // 使能电机
@@ -105,18 +90,18 @@ int main(void)
     if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
     {
       set_motor_disable();     // 停止电机
-      set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
+      set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     }
     
     /* 扫描KEY3 */
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
       /* 增大目标速度 */
-      target_location += PPR;
+      target_location += CIRCLE_PULSES;
       
       set_pid_actual(target_location);
     #if defined(PID_ASSISTANT_EN)
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
     #endif
     }
 
@@ -124,11 +109,11 @@ int main(void)
     if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
     {
       /* 减小目标速度 */
-      target_location -= PPR;
+      target_location -= CIRCLE_PULSES;
       
       set_pid_actual(target_location);
     #if defined(PID_ASSISTANT_EN)
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
     #endif
     }
 	}
