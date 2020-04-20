@@ -26,31 +26,34 @@ static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
 static uint8_t    is_motor_en = 0;             // 电机使能
 
+static void sd_gpio_config(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+  
+  /* 定时器通道功能引脚端口时钟使能 */
+	SHUTDOWN_GPIO_CLK_ENABLE();
+  
+  /* 引脚IO初始化 */
+	/*设置输出类型*/
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	/*设置引脚速率 */ 
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	/*选择要控制的GPIO引脚*/	
+	GPIO_InitStruct.Pin = SHUTDOWN_PIN;
+  
+	/*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
+  HAL_GPIO_Init(SHUTDOWN_GPIO_PORT, &GPIO_InitStruct);
+}
+
+/**
+  * @brief  电机初始化
+  * @param  无
+  * @retval 无
+  */
 void motor_init(void)
 {
-  /*定义一个GPIO_InitTypeDef类型的结构体*/
-  GPIO_InitTypeDef  GPIO_InitStruct;
-
-  /*开启LED相关的GPIO外设时钟*/
-  SHUTDOWN_GPIO_CLK_ENABLE();
-
-  /*选择要控制的GPIO引脚*/															   
-  GPIO_InitStruct.Pin = SHUTDOWN_PIN;	
-
-  /*设置引脚的输出类型为推挽输出*/
-  GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;  
-
-  /*设置引脚为上拉模式*/
-  GPIO_InitStruct.Pull  = GPIO_PULLUP;
-
-  /*设置引脚速率为高速 */   
-  GPIO_InitStruct.Speed = GPIO_SPEED_HIGH; 
-
-  /*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
-  HAL_GPIO_Init(SHUTDOWN_GPIO_PORT, &GPIO_InitStruct);
-  
-  /* 配置定时器输出 PWM */
-  Motor_TIMx_Configuration();
+  Motor_TIMx_Configuration();     // 初始化电机 1
+  sd_gpio_config();
 }
 
 /**
@@ -154,7 +157,7 @@ void motor_pid_control(void)
       set_motor_direction(MOTOR_REV);
     }
     
-    cont_val = (cont_val > PWM_PERIOD_COUNT*0.48) ? PWM_PERIOD_COUNT*0.48 : cont_val;    // 速度上限处理
+    cont_val = (cont_val > PWM_MAX_PERIOD_COUNT*0.48) ? PWM_MAX_PERIOD_COUNT*0.48 : cont_val;    // 速度上限处理
     set_motor_speed(cont_val);                                                         // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)

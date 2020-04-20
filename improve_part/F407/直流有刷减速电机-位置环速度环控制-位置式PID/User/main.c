@@ -33,19 +33,6 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
 {
 	for(; nCount != 0; nCount--);
 }	
-//uint8_t temp[4] = {255, 65, 46, 61};
-//void fun(char c[])
-//{
-//	
-//	float f, f1;
-
-//	//temp = c;
-
-//	f1 = *(float*)& temp[0];
-//	f = *(float *)&c[0];
-
-//	printf("f = %f, f = %f\n", f, f1);
-//}
 	
 /**
   * @brief  主函数
@@ -71,8 +58,8 @@ int main(void)
   /* 初始化串口 */
   DEBUG_USART_Config();
 
-  /* 通用定时器初始化并配置PWM输出功能 */
-  Motor_TIMx_Configuration();
+  /* 电机初始化 */
+  motor_init();
   
 	set_motor_disable();     // 停止电机 
   

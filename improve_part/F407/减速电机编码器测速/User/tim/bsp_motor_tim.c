@@ -102,7 +102,7 @@ static void TIM_PWMOUTPUT_Config(void)
 	HAL_TIM_PWM_Start(&TIM_TimeBaseStructure,PWM_CHANNEL_1);
 	
 	/*配置脉宽*/
-  TIM_OCInitStructure.Pulse = PWM_PERIOD_COUNT/2;    // 默认占空比为50%
+  TIM_OCInitStructure.Pulse = 0;    // 默认占空比为50%
 	/*配置PWM通道*/
   HAL_TIM_PWM_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, PWM_CHANNEL_2);
 	/*开始输出PWM*/

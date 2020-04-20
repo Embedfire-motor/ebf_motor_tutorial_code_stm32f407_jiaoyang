@@ -27,6 +27,36 @@ static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
 static uint8_t    is_motor_en = 0;             // 电机使能
 
+static void sd_gpio_config(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+  
+  /* 定时器通道功能引脚端口时钟使能 */
+	SHUTDOWN_GPIO_CLK_ENABLE();
+  
+  /* 引脚IO初始化 */
+	/*设置输出类型*/
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	/*设置引脚速率 */ 
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	/*选择要控制的GPIO引脚*/	
+	GPIO_InitStruct.Pin = SHUTDOWN_PIN;
+  
+	/*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
+  HAL_GPIO_Init(SHUTDOWN_GPIO_PORT, &GPIO_InitStruct);
+}
+
+/**
+  * @brief  电机初始化
+  * @param  无
+  * @retval 无
+  */
+void motor_init(void)
+{
+  Motor_TIMx_Configuration();     // 初始化电机 1
+  sd_gpio_config();
+}
+
 /**
   * @brief  设置电机速度
   * @param  v: 速度（占空比）
@@ -83,6 +113,7 @@ void set_motor_direction(motor_dir_t dir)
 void set_motor_enable(void)
 {
   is_motor_en = 1;
+  MOTOR_ENABLE_SD();
   MOTOR_FWD_ENABLE();
   MOTOR_REV_ENABLE();
 }
@@ -95,6 +126,7 @@ void set_motor_enable(void)
 void set_motor_disable(void)
 {
   is_motor_en = 0;
+  MOTOR_DISABLE_SD();
   MOTOR_FWD_DISABLE();
   MOTOR_REV_DISABLE();
 }
@@ -134,7 +166,7 @@ void motor_pid_control(void)
       set_motor_direction(MOTOR_REV);
     }
     
-    cont_val = (cont_val > PWM_PERIOD_COUNT) ? PWM_PERIOD_COUNT : cont_val;    // 速度上限处理
+    cont_val = (cont_val > PWM_MAX_PERIOD_COUNT) ? PWM_MAX_PERIOD_COUNT : cont_val;    // 速度上限处理
     set_motor_speed(cont_val);                                                 // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)

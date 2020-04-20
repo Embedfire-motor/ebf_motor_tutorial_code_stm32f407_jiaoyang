@@ -35,7 +35,7 @@
 #define ENCODER_IC2_POLARITY                   TIM_ICPOLARITY_RISING
 
 /* 编码器物理分辨率 */
-#define ENCODER_RESOLUTION                     15
+#define ENCODER_RESOLUTION                     16
 
 /* 经过倍频之后的总分辨率 */
 #if (ENCODER_MODE == TIM_ENCODERMODE_TI12)
@@ -45,7 +45,7 @@
 #endif
 
 /* 减速电机减速比 */
-#define REDUCTION_RATIO                        34
+#define REDUCTION_RATIO                        30
 
 extern __IO int16_t Encoder_Overflow_Count;
 extern TIM_HandleTypeDef TIM_EncoderHandle;
