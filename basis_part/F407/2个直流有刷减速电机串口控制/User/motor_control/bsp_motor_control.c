@@ -200,9 +200,9 @@ void show_help(void)
     printf("——————————————野火直流减速电机驱动演示程序——————————————\n\r");
     printf("输入命令(以回车结束)：\n\r");
     printf("< ? >       -帮助菜单\n\r");
-    printf("v1[data]     -设置电机的速度（范围：0—%d）\n\r", PWM_PERIOD_COUNT);
+    printf("v1[data]     -设置电机的速度（范围：0—%d）\n\r", PWM_MAX_PERIOD_COUNT);
     printf("d1[data]     -设置电机的方向，%d:正向转，%d:反向转\n\r", MOTOR_FWD, MOTOR_REV);
-    printf("v2[data]     -设置电机的速度（范围：0—%d）\n\r", PWM_PERIOD_COUNT);
+    printf("v2[data]     -设置电机的速度（范围：0—%d）\n\r", PWM2_MAX_PERIOD_COUNT);
     printf("d2[data]     -设置电机的方向，%d:正向转，%d:反向转\n\r", MOTOR_FWD, MOTOR_REV);
 }
 
@@ -237,7 +237,7 @@ void deal_serial_data(void)
           if (UART_RxBuffer[2] == ' ')
           {
             speed_temp = atoi((char const *)UART_RxBuffer+3);
-            if(speed_temp>=0 && speed_temp <= PWM_PERIOD_COUNT)
+            if(speed_temp>=0 && speed_temp <= PWM_MAX_PERIOD_COUNT)
             {
               set_motor_speed(speed_temp);
               printf("\n\r电机1速度: %d\n\r", speed_temp);
@@ -251,7 +251,7 @@ void deal_serial_data(void)
           if (UART_RxBuffer[2] == ' ')
           {
             speed_temp = atoi((char const *)UART_RxBuffer+3);
-            if(speed_temp>=0 && speed_temp <= PWM_PERIOD_COUNT)
+            if(speed_temp>=0 && speed_temp <= PWM2_MAX_PERIOD_COUNT)
             {
               set_motor2_speed(speed_temp);
               printf("\n\r电机2速度: %d\n\r", speed_temp);

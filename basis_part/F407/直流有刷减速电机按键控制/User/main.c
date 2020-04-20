@@ -37,7 +37,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t ChannelPulse = 0;
+  __IO uint16_t ChannelPulse = PWM_MAX_PERIOD_COUNT/2;
   uint8_t i = 0;
   
 	/* 初始化系统时钟为168MHz */
@@ -46,11 +46,10 @@ int main(void)
 	/* 初始化按键GPIO */
 	Key_GPIO_Config();
 
-  /* 通用定时器初始化并配置PWM输出功能 */
-  TIMx_Configuration();
+  /* 电机初始化 */
+  motor_init();
   
-	TIM1_SetPWM_pulse(PWM_CHANNEL_1, 0);
-	TIM1_SetPWM_pulse(PWM_CHANNEL_2, 0);
+	set_motor_speed(ChannelPulse);
 	
 	while(1)
 	{
@@ -58,27 +57,40 @@ int main(void)
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
       /* 增大占空比 */
-      ChannelPulse += PWM_PERIOD_COUNT/10;
-      
-      if(ChannelPulse > PWM_PERIOD_COUNT)
-        ChannelPulse = PWM_PERIOD_COUNT;
-      
-      set_motor_speed(ChannelPulse);
+      set_motor_enable();
     }
     
     /* 扫描KEY2 */
     if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
     {
-      if(ChannelPulse < PWM_PERIOD_COUNT/10)
-        ChannelPulse = 0;
-      else
-        ChannelPulse -= PWM_PERIOD_COUNT/10;
-      
-      set_motor_speed(ChannelPulse);
+      set_motor_disable();
     }
     
     /* 扫描KEY3 */
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
+    {
+      /* 增大占空比 */
+      ChannelPulse += PWM_MAX_PERIOD_COUNT/10;
+      
+      if(ChannelPulse > PWM_MAX_PERIOD_COUNT)
+        ChannelPulse = PWM_MAX_PERIOD_COUNT;
+      
+      set_motor_speed(ChannelPulse);
+    }
+    
+    /* 扫描KEY4 */
+    if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
+    {
+      if(ChannelPulse < PWM_MAX_PERIOD_COUNT/10)
+        ChannelPulse = 0;
+      else
+        ChannelPulse -= PWM_MAX_PERIOD_COUNT/10;
+      
+      set_motor_speed(ChannelPulse);
+    }
+    
+    /* 扫描KEY5 */
+    if( Key_Scan(KEY5_GPIO_PORT, KEY5_PIN) == KEY_ON)
     {
       /* 转换方向 */
       set_motor_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);

@@ -13,21 +13,24 @@
 
 /* 累计 TIM_Period个后产生一个更新或者中断*/		
 /* 当定时器从0计数到PWM_PERIOD_COUNT，即为PWM_PERIOD_COUNT+1次，为一个定时周期 */
-#define PWM_PERIOD_COUNT     (5600)
+#define PWM_PERIOD_COUNT                 (5600)
 
 /* 通用控制定时器时钟源TIMxCLK = HCLK=168MHz */
 /* 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1) */
-#define PWM_PRESCALER_COUNT     (2)
+#define PWM_PRESCALER_COUNT               (2)
+
+/* 最大比较值 */
+#define PWM_MAX_PERIOD_COUNT              (PWM_PERIOD_COUNT - 100)
 
 /*PWM引脚*/
-#define PWM_TIM_CH1_GPIO_PORT           GPIOA
-#define PWM_TIM_CH1_PIN                 GPIO_PIN_8
+#define PWM_TIM_CH1_GPIO_PORT              GPIOA
+#define PWM_TIM_CH1_PIN                    GPIO_PIN_8
 
-#define PWM_TIM_CH2_GPIO_PORT           GPIOA
-#define PWM_TIM_CH2_PIN                 GPIO_PIN_9
+#define PWM_TIM_CH2_GPIO_PORT              GPIOA
+#define PWM_TIM_CH2_PIN                    GPIO_PIN_9
 
-#define PWM_TIM_CH3_GPIO_PORT           GPIOA
-#define PWM_TIM_CH3_PIN                 GPIO_PIN_10
+#define PWM_TIM_CH3_GPIO_PORT              GPIOA
+#define PWM_TIM_CH3_PIN                    GPIO_PIN_10
 
 extern TIM_HandleTypeDef  TIM_TimeBaseStructure;
 

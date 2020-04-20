@@ -20,6 +20,9 @@
 /* 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1) */
 #define PWM_PRESCALER_COUNT     (2)
 
+/* 最大比较值 */
+#define PWM_MAX_PERIOD_COUNT              (PWM_PERIOD_COUNT - 100)
+
 /*PWM引脚*/
 #define PWM_TIM_CH1_GPIO_PORT           GPIOA
 #define PWM_TIM_CH1_PIN                 GPIO_PIN_8
@@ -43,6 +46,9 @@
 /* 通用控制定时器时钟源TIMxCLK = HCLK=168MHz */
 /* 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1) */
 #define PWM2_PRESCALER_COUNT     (2)
+
+/* 最大比较值 */
+#define PWM2_MAX_PERIOD_COUNT              (PWM2_PERIOD_COUNT - 100)
 
 /*PWM引脚*/
 #define PWM2_TIM_CH1_GPIO_PORT           GPIOI
