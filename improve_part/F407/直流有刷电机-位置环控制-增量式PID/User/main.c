@@ -53,7 +53,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void)
 {
-  int32_t target_location = PPR;
+  int32_t target_location = CIRCLE_PULSES;
   
   /* HAL 库初始化 */
   HAL_Init();
@@ -112,7 +112,7 @@ int main(void)
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
       /* 增大目标速度 */
-      target_location += PPR;
+      target_location += CIRCLE_PULSES;
       
       set_pid_actual(target_location);
     #if defined(PID_ASSISTANT_EN)
@@ -124,7 +124,7 @@ int main(void)
     if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
     {
       /* 减小目标速度 */
-      target_location -= PPR;
+      target_location -= CIRCLE_PULSES;
       
       set_pid_actual(target_location);
     #if defined(PID_ASSISTANT_EN)

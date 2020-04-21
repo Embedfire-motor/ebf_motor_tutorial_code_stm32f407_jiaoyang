@@ -11,12 +11,12 @@
 
 /* 累计 TIM_Period个后产生一个更新或者中断*/		
 	//当定时器从0计数到BASIC_PERIOD_COUNT-1，即为BASIC_PERIOD_COUNT次，为一个定时周期
-#define BASIC_PERIOD_COUNT    (50*50)
+#define BASIC_PERIOD_COUNT        (50*50)
 
 //定时器时钟源TIMxCLK = 2 * PCLK1  
 //				PCLK1 = HCLK / 4 
 //				=> TIMxCLK=HCLK/2=SystemCoreClock/2=84MHz
-#define BASIC_PRESCALER_COUNT   (1680)
+#define BASIC_PRESCALER_COUNT     (1680)
 
 /* 获取定时器的周期，单位ms */
 //#define __HAL_TIM_GET_PRESCALER(__HANDLE__)      ((__HANDLE__)->Instance->PSC)    // Get TIM Prescaler.

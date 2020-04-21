@@ -13,19 +13,19 @@ _pid pid;
 void PID_param_init()
 {
 		/* 初始化参数 */
-    pid.target_val=PPR;				
+    pid.target_val=CIRCLE_PULSES;				
     pid.actual_val=0.0;
 		pid.err = 0.0;
 		pid.err_last = 0.0;
 		pid.err_next = 0.0;
 		
-		pid.Kp = 80;
-		pid.Ki = 0.4;
-		pid.Kd = 500;
+		pid.Kp = 30;
+		pid.Ki = 0;
+		pid.Kd = 40;
 
 #if defined(PID_ASSISTANT_EN)
-//    float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
-//    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+    float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
+    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
 

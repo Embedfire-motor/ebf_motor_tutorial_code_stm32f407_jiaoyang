@@ -83,7 +83,7 @@ int main(void)
       set_computer_value(SEND_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     #endif
       set_pid_actual(target_location);    // 设置目标值
-      set_motor_enable();              // 使能电机
+      set_motor_enable();                 // 使能电机
     }
     
     /* 扫描KEY2 */
@@ -96,7 +96,7 @@ int main(void)
     /* 扫描KEY3 */
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
-      /* 增大目标速度 */
+      /* 增加一圈 */
       target_location += CIRCLE_PULSES;
       
       set_pid_actual(target_location);
@@ -108,7 +108,7 @@ int main(void)
     /* 扫描KEY4 */
     if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
     {
-      /* 减小目标速度 */
+      /* 减少一圈 */
       target_location -= CIRCLE_PULSES;
       
       set_pid_actual(target_location);

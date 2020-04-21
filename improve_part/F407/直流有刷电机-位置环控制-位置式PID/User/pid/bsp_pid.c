@@ -77,6 +77,11 @@ float PID_realize(float actual_val)
 		/*计算目标值与实际值的误差*/
     pid.err=pid.target_val-actual_val;
   
+//    if (pid.err > -50 && pid.err < 50)
+//    {
+//      pid.err = 0;
+//    }
+  
     pid.integral += pid.err;    // 误差累积
 
 		/*PID算法实现*/

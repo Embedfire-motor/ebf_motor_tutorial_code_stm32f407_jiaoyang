@@ -24,7 +24,7 @@ typedef enum
   MOTOR_REV,
 }motor_dir_t;
 
-#define PPR    (ENCODER_TOTAL_RESOLUTION * REDUCTION_RATIO)    // 编码器一圈可以捕获的脉冲
+#define CIRCLE_PULSES    (ENCODER_TOTAL_RESOLUTION * REDUCTION_RATIO)    // 编码器一圈可以捕获的脉冲
 
 /* 设置速度（占空比） */
 #define SET_FWD_COMPAER(ChannelPulse)     TIM1_SetPWM_pulse(PWM_CHANNEL_1,ChannelPulse)    // 设置比较寄存器的值
