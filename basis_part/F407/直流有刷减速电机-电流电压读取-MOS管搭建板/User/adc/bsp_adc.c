@@ -200,6 +200,18 @@ int32_t get_curr_val(void)
 }
 
 /**
+  * @brief  获取电流电压值
+  * @param  无
+  * @retval 转换得到的电流值
+  */
+float get_curr_v(void)
+{
+  float vdc = GET_ADC_VDC_VAL(curr_adc_mean);      // 获取电压值
+  
+  return vdc;
+}
+
+/**
   * @brief  获取电源电压值
   * @param  无
   * @retval 转换得到的电流值

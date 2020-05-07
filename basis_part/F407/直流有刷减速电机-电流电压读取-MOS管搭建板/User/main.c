@@ -45,7 +45,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t ChannelPulse = PWM_PERIOD_COUNT*0.5;
+  __IO uint16_t ChannelPulse = PWM_MAX_PERIOD_COUNT*0.5;
   uint8_t i = 0;
   uint8_t flag = 0;
 
@@ -60,8 +60,8 @@ int main(void)
   /* 初始化 LED */
   LED_GPIO_Config();
 
-  /* 通用定时器初始化并配置PWM输出功能 */
-  Motor_TIMx_Configuration();
+  /* 电机初始化 */
+  motor_init();
   
   DEBUG_USART_Config();
   
@@ -95,10 +95,10 @@ int main(void)
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
       /* 增大占空比 */
-      ChannelPulse += PWM_PERIOD_COUNT/10;
+      ChannelPulse += PWM_MAX_PERIOD_COUNT/10;
       
-      if(ChannelPulse > PWM_PERIOD_COUNT)
-        ChannelPulse = PWM_PERIOD_COUNT;
+      if(ChannelPulse > PWM_MAX_PERIOD_COUNT)
+        ChannelPulse = PWM_MAX_PERIOD_COUNT;
       
       set_motor_speed(ChannelPulse);
     }
@@ -106,10 +106,10 @@ int main(void)
     /* 扫描KEY4 */
     if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
     {
-      if(ChannelPulse < PWM_PERIOD_COUNT/10)
+      if(ChannelPulse < PWM_MAX_PERIOD_COUNT/10)
         ChannelPulse = 0;
       else
-        ChannelPulse -= PWM_PERIOD_COUNT/10;
+        ChannelPulse -= PWM_MAX_PERIOD_COUNT/10;
       
       set_motor_speed(ChannelPulse);
     }
@@ -126,10 +126,11 @@ int main(void)
       flag = 1;
       int32_t current = get_curr_val();
       
-    #if 0//defined(PID_ASSISTANT_EN)
+    #if defined(PID_ASSISTANT_EN)
       set_computer_value(SEED_FACT_CMD, CURVES_CH1, &current, 1);
     #else
-      printf("电源电压：%.2fV，电流：%dmA\r\n", get_vbus_val(), current); 
+      float get_curr_v(void);
+      printf("电源电压：%.2fV，电流电压：%0.3fmV，电流：%dmA\r\n", get_vbus_val(), get_curr_v()*1000.0, current); 
     #endif
       
     }
@@ -140,7 +141,7 @@ int main(void)
 	}
 }
 
-/**
+/**`
   * @brief  System Clock Configuration
   *         The system Clock is configured as follow : 
   *            System Clock source            = PLL (HSE)

@@ -43,6 +43,9 @@
 #include "./tim/bsp_basic_tim.h"
 #include "./usart/bsp_debug_usart.h"
 
+//接收数组指针
+extern unsigned char UART_RxPtr;
+
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
@@ -194,6 +197,18 @@ void BASIC_TIM_IRQHandler (void)
 
 void DEBUG_USART_IRQHandler(void)
 {
+  //  if(__HAL_UART_GET_FLAG(&UartHandle, USART_IT_IDLE) != RESET)
+  if((((&UartHandle)->Instance->SR & (1 << 4)) == (1 << 4)) != RESET)
+	{
+    /* 读 SR 和 DR 清除空闲中断标志 */
+    UartHandle.Instance->SR;
+    UartHandle.Instance->DR;
+
+    HAL_UART_AbortReceive_IT(&UartHandle);
+
+    HAL_UART_Receive_IT(&UartHandle, UART_RxBuffer, sizeof(UART_RxBuffer));
+  }
+  
   HAL_UART_IRQHandler(&UartHandle);
 }
 

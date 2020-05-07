@@ -184,24 +184,24 @@ static void hall_gpio_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct;
 
-  HALL_INPUT1_GPIO_CLK_ENABLE();
-  HALL_INPUT2_GPIO_CLK_ENABLE();
-  HALL_INPUT3_GPIO_CLK_ENABLE();
+  HALL_INPUTU_GPIO_CLK_ENABLE();
+  HALL_INPUTV_GPIO_CLK_ENABLE();
+  HALL_INPUTW_GPIO_CLK_ENABLE();
   
   /* 定时器通道 1 引脚初始化 */
-  GPIO_InitStruct.Pin = HALL_INPUT1_PIN;
+  GPIO_InitStruct.Pin = HALL_INPUTU_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Alternate = HALL_INPUT1_AF;
-  HAL_GPIO_Init(HALL_INPUT1_GPIO_PORT, &GPIO_InitStruct);
+  GPIO_InitStruct.Alternate = HALL_INPUTU_AF;
+  HAL_GPIO_Init(HALL_INPUTU_GPIO_PORT, &GPIO_InitStruct);
   
   /* 定时器通道 2 引脚初始化 */
-  GPIO_InitStruct.Pin = HALL_INPUT2_PIN;
-  HAL_GPIO_Init(HALL_INPUT2_GPIO_PORT, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = HALL_INPUTV_PIN;
+  HAL_GPIO_Init(HALL_INPUTV_GPIO_PORT, &GPIO_InitStruct);
   
   /* 定时器通道 3 引脚初始化 */
-  GPIO_InitStruct.Pin = HALL_INPUT3_PIN;
-  HAL_GPIO_Init(HALL_INPUT3_GPIO_PORT, &GPIO_InitStruct);
+  GPIO_InitStruct.Pin = HALL_INPUTW_PIN;
+  HAL_GPIO_Init(HALL_INPUTW_GPIO_PORT, &GPIO_InitStruct);
 }
 
 /**
@@ -248,7 +248,7 @@ void hall_enable(void)
 
   LED1_OFF;
   
-//  HAL_TIM_TriggerCallback(&htimx_hall);   // 执行一次换相
+  HAL_TIM_TriggerCallback(&htimx_hall);   // 执行一次换相
 }
 
 /**
@@ -269,22 +269,22 @@ uint8_t get_hall_state(void)
   uint8_t state = 0;
   
 #if 1
-  /* 读取霍尔传感器 1 的状态 */
-  if(HAL_GPIO_ReadPin(HALL_INPUT1_GPIO_PORT,HALL_INPUT1_PIN) != GPIO_PIN_RESET)
+  /* 读取霍尔传感器 U 的状态 */
+  if(HAL_GPIO_ReadPin(HALL_INPUTU_GPIO_PORT, HALL_INPUTU_PIN) != GPIO_PIN_RESET)
   {
-    state |= 0x01U;
+    state |= 0x01U << 0;
   }
   
-  /* 读取霍尔传感器 2 的状态 */
-  if(HAL_GPIO_ReadPin(HALL_INPUT2_GPIO_PORT,HALL_INPUT2_PIN) != GPIO_PIN_RESET)
+  /* 读取霍尔传感器 V 的状态 */
+  if(HAL_GPIO_ReadPin(HALL_INPUTV_GPIO_PORT, HALL_INPUTV_PIN) != GPIO_PIN_RESET)
   {
-    state |= 0x02U;
+    state |= 0x01U << 1;
   }
   
-  /* 读取霍尔传感器 3 的状态 */
-  if(HAL_GPIO_ReadPin(HALL_INPUT3_GPIO_PORT,HALL_INPUT3_PIN) != GPIO_PIN_RESET)
+  /* 读取霍尔传感器 W 的状态 */
+  if(HAL_GPIO_ReadPin(HALL_INPUTW_GPIO_PORT, HALL_INPUTW_PIN) != GPIO_PIN_RESET)
   {
-    state |= 0x04U;
+    state |= 0x01U << 2;
   }
 #else
   state = (GPIOH->IDR >> 10) & 7;    // 读 3 个霍尔传感器的状态
@@ -317,7 +317,7 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
   uint8_t step = 0;
   step = get_hall_state();
 
-  if(get_bldcm_direction() == MOTOR_FWD)
+  if(get_bldcm_direction() != MOTOR_FWD)
   {
     step = 7 - step;        // 根据顺序表的规律可知： CW = 7 - CCW;
   }
@@ -398,14 +398,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (update++ > 1)    // 有一次在产生更新中断前霍尔传感器没有捕获到值
   {
-//    printf("堵转超时\r\n");
-//    update = 0;
-//    
-//    LED1_ON;     // 点亮LED1表示堵转超时停止
-//    
-//    /* 堵转超时停止 PWM 输出 */
-//    hall_disable();       // 禁用霍尔传感器接口
-//    stop_pwm_output();    // 停止 PWM 输出
+    printf("堵转超时\r\n");
+    update = 0;
+    
+    LED1_ON;     // 点亮LED1表示堵转超时停止
+    
+    /* 堵转超时停止 PWM 输出 */
+    hall_disable();       // 禁用霍尔传感器接口
+    stop_pwm_output();    // 停止 PWM 输出
   }
 }
 

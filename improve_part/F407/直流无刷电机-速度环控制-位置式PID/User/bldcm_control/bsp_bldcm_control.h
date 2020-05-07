@@ -19,9 +19,6 @@ typedef struct
   uint8_t is_enable;        // 使能电机
 }bldcm_data_t;
 
-
-#define PID_ASSISTANT_EN    1    // 1:使用PID调试助手显示波形，0：使用串口直接打印数据
-
 void bldcm_init(void);
 void set_bldcm_speed(uint16_t v);
 void set_bldcm_direction(motor_dir_t dir);

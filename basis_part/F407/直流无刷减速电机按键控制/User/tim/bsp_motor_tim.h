@@ -69,22 +69,22 @@ extern TIM_HandleTypeDef htimx_hall;
 #define HALL_PRESCALER_COUNT     (128)
 
 /* TIM5 通道 1 引脚 */
-#define HALL_INPUT1_PIN           		    GPIO_PIN_10
-#define HALL_INPUT1_GPIO_PORT     		    GPIOH
-#define HALL_INPUT1_GPIO_CLK_ENABLE() 	  __GPIOH_CLK_ENABLE()
-#define HALL_INPUT1_AF					          GPIO_AF2_TIM5
+#define HALL_INPUTU_PIN           		    GPIO_PIN_10
+#define HALL_INPUTU_GPIO_PORT     		    GPIOH
+#define HALL_INPUTU_GPIO_CLK_ENABLE() 	  __GPIOH_CLK_ENABLE()
+#define HALL_INPUTU_AF					          GPIO_AF2_TIM5
 
 /* TIM5 通道 2 引脚 */
-#define HALL_INPUT2_PIN           		    GPIO_PIN_11
-#define HALL_INPUT2_GPIO_PORT     		    GPIOH
-#define HALL_INPUT2_GPIO_CLK_ENABLE() 	  __GPIOH_CLK_ENABLE()
-#define HALL_INPUT2_AF					          GPIO_AF2_TIM5
+#define HALL_INPUTV_PIN           		    GPIO_PIN_11
+#define HALL_INPUTV_GPIO_PORT     		    GPIOH
+#define HALL_INPUTV_GPIO_CLK_ENABLE() 	  __GPIOH_CLK_ENABLE()
+#define HALL_INPUTV_AF					          GPIO_AF2_TIM5
 
 /* TIM5 通道 3 引脚 */
-#define HALL_INPUT3_PIN           		    GPIO_PIN_12
-#define HALL_INPUT3_GPIO_PORT     		    GPIOH
-#define HALL_INPUT3_GPIO_CLK_ENABLE() 	  __GPIOH_CLK_ENABLE()
-#define HALL_INPUT3_AF					          GPIO_AF2_TIM5
+#define HALL_INPUTW_PIN           		    GPIO_PIN_12
+#define HALL_INPUTW_GPIO_PORT     		    GPIOH
+#define HALL_INPUTW_GPIO_CLK_ENABLE() 	  __GPIOH_CLK_ENABLE()
+#define HALL_INPUTW_AF					          GPIO_AF2_TIM5
 
 #define HALL_TIM_IRQn                    TIM5_IRQn
 #define HALL_TIM_IRQHandler              TIM5_IRQHandler

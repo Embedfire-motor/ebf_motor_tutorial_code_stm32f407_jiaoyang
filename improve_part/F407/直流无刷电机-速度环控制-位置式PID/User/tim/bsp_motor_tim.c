@@ -321,10 +321,11 @@ static void update_motor_speed(uint32_t time, uint32_t num)
   static int flag = 0;
 
   /* 计算速度：
-     电机每转一圈共用12个脉冲，(1.0/(84000000.0/128.0)为计数器的周期，(1.0/(84000000.0/128.0) * time)为时间长。
+     电机每转一圈共用24个脉冲，(1.0/(84000000.0/128.0)为计数器的周期，(1.0/(84000000.0/128.0) * time)为时间长。
   */
-  speed_group[count++] = (num / 12.0) / ((1.0/(84000000.0/HALL_PRESCALER_COUNT) * time)/60.0);
-
+  speed_group[count++] = (num / 24.0) / ((1.0/(84000000.0/HALL_PRESCALER_COUNT) * time)/60.0);
+//motor_drive.speed = (num / 24.0) / ((1.0/(84000000.0/HALL_PRESCALER_COUNT) * time)/60.0);
+//  return;
   if (count > 9)
   {
     flag = 1;
@@ -345,7 +346,7 @@ static void update_motor_speed(uint32_t time, uint32_t num)
   }
   else
   {
-    for (uint8_t c=0; c<count+1; c++)
+    for (uint8_t c=0; c<count; c++)
     {
       speed_temp += speed_group[c];
     }
@@ -354,6 +355,8 @@ static void update_motor_speed(uint32_t time, uint32_t num)
   }
 }
 
+uint8_t dir = 0;
+
 /**
   * @brief  获取电机转速
   * @param  无
@@ -361,7 +364,81 @@ static void update_motor_speed(uint32_t time, uint32_t num)
   */
 float get_motor_speed(void)
 {
-  return motor_drive.speed;
+  float temp = 0.0;
+  
+//  if(dir != MOTOR_FWD)
+//  {
+//    temp = -motor_drive.speed;     // 反向转时输出负的速度
+//  }
+//  else
+  {
+    temp = motor_drive.speed;
+  }
+  
+  return temp;
+}
+
+/**
+  * @brief  获取电机转速
+  * @param  无
+  * @retval 返回电机转速
+  */
+float get_motor_dir(void)
+{
+  return dir;
+}
+
+/**
+  * @brief  更新电机速度方向
+  * @param  dir_in：霍尔值
+  * @retval 无
+  */
+void update_speed_dir(uint8_t dir_in)
+{
+  uint8_t step[6] = {1, 3, 2, 6, 4, 5};
+
+  static uint8_t num_old = 0;
+  
+  for (uint8_t i=0; i<6; i++)
+  {
+    if (step[i] == dir_in)
+    {
+      if (i == 0)
+      {
+        if (num_old == 1)
+        {
+          dir = MOTOR_FWD;
+        }
+        else if (num_old == 5)
+        {
+          dir = MOTOR_REV;
+        }
+      }
+      else if (i == 5)
+      {
+        if (num_old == 0)
+        {
+          dir = MOTOR_FWD;
+        }
+        else if (num_old == 4)
+        {
+          dir = MOTOR_REV;
+        }
+      }
+      else if (i > num_old)
+      {
+        dir = MOTOR_REV;
+      }
+      else if (i < num_old)
+      {
+        dir = MOTOR_FWD;
+      }
+      
+//      printf("dir = %d\r\n", dir);
+      num_old = i;
+      break;
+    }
+  }
 }
 
 /**
@@ -373,12 +450,11 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 {
   /* 获取霍尔传感器引脚状态,作为换相的依据 */
   uint8_t step = 0;
-  
-  
+
   motor_drive.hall_timer += __HAL_TIM_GET_COMPARE(htim,TIM_CHANNEL_1);     // 获取计数器的值
-  motor_drive.hall_pulse_num ++;  
+  motor_drive.hall_pulse_num ++;
   
-  if (motor_drive.hall_pulse_num >= 2)
+  if (motor_drive.hall_pulse_num >= 3)
   {
     update_motor_speed(motor_drive.hall_timer, motor_drive.hall_pulse_num);     // 更新速度
     
@@ -389,7 +465,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
   
   step = get_hall_state();
 
-  if(get_bldcm_direction() == MOTOR_FWD)
+  update_speed_dir(step);
+
+  if(get_bldcm_direction() != MOTOR_FWD)
   {
     step = 7 - step;        // 根据顺序表的规律可知： CW = 7 - CCW;
   }
@@ -470,7 +548,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if(htim == (&htimx_hall))
   {
-    if (motor_drive.timeout++ > 1)    // 有一次在产生更新中断前霍尔传感器没有捕获到值
+    if (motor_drive.timeout++ > 2)    // 有一次在产生更新中断前霍尔传感器没有捕获到值
     {
       printf("堵转超时\r\n");
       motor_drive.timeout = 0;       
@@ -480,6 +558,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       /* 堵转超时停止 PWM 输出 */
       hall_disable();       // 禁用霍尔传感器接口
       stop_pwm_output();    // 停止 PWM 输出
+      set_bldcm_disable();
     }
   }
   else if(htim == (&TIM_TimeBaseStructure))

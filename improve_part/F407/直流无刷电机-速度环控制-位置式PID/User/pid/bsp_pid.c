@@ -12,28 +12,40 @@ _pid pid;
 void PID_param_init()
 {
 		/* 初始化参数 */
-    printf("PID_init begin \n");
-    pid.target_val=200.0;				
+    pid.target_val=600.0;				
     pid.actual_val=0.0;
     pid.err=0.0;
     pid.err_last=0.0;
     pid.integral=0.0;
 
-		pid.Kp = 0.4;//24
-		pid.Ki = 0.03;
+		pid.Kp = 0.3;//24
+		pid.Ki = 0.2;
 		pid.Kd = 0.0;
 	
-    printf("PID_init end \n");
+#if defined(PID_ASSISTANT_EN)
+    float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
+//    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+#endif
 }
-
+#include ".\bldcm_control\bsp_bldcm_control.h"
 /**
   * @brief  设置目标值
   * @param  val		目标值
 	*	@note 	无
   * @retval 无
   */
-void set_pid_actual(float temp_val)
+void set_pid_target(float temp_val)
 {
+  if (temp_val < 0)
+  {
+    temp_val = -temp_val;
+    set_bldcm_direction(MOTOR_REV);
+  }
+  else
+  {
+    set_bldcm_direction(MOTOR_FWD);
+  }
+    
   pid.target_val = temp_val;    // 设置当前的目标值
 }
 
@@ -43,7 +55,7 @@ void set_pid_actual(float temp_val)
 	*	@note 	无
   * @retval 目标值
   */
-float get_pid_actual(void)
+float get_pid_target(void)
 {
   return pid.target_val;    // 设置当前的目标值
 }

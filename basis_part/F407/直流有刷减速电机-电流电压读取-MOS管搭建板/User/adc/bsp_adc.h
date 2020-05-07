@@ -34,7 +34,7 @@
 #define ADC_DMA_IRQ                     DMA2_Stream0_IRQn
 #define ADC_DMA_IRQ_Handler             DMA2_Stream0_IRQHandler
 
-#define GET_ADC_CURR_VAL(val)           ((float)val/(float)10.0/(float)0.02*(float)1000.0)          // 得到电流值，电压放大10倍，0.02是采样电阻，单位mA。
+#define GET_ADC_CURR_VAL(val)           (((float)val)/(float)8.0/(float)0.02*(float)1000.0)          // 得到电流值，电压放大8倍，0.02是采样电阻，单位mA。
 
 /*********************** 电源电压采集 ******************/
 
@@ -44,7 +44,7 @@
 
 #define VBUS_ADC_CHANNEL                ADC_CHANNEL_8
 
-#define GET_VBUS_VAL(val)               ((float)val * (float)31)      // 电压最大值（测量电压是电源电压的1/31）
+#define GET_VBUS_VAL(val)               (((float)val) / (float)8.0 * (float)323.0)      // 电压最大值（测量电压是电源电压的1/500）
 
 extern DMA_HandleTypeDef DMA_Init_Handle;
 extern ADC_HandleTypeDef ADC_Handle;
@@ -52,7 +52,7 @@ extern ADC_HandleTypeDef ADC_Handle;
 void ADC_Init(void);
 int32_t get_curr_val(void);
 float get_vbus_val(void);
-
+ 
 #endif /* __BSP_ADC_H */
 
 

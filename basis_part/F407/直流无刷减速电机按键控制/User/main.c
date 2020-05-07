@@ -37,7 +37,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t ChannelPulse = 200;
+  __IO uint16_t ChannelPulse = PWM_PERIOD_COUNT/10;
   uint8_t i = 0;
   
 	/* 初始化系统时钟为168MHz */
@@ -60,7 +60,7 @@ int main(void)
 	while(1)
 	{
     /* 扫描KEY1 */
-    if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
+    if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
       /* 使能电机 */
       set_bldcm_speed(ChannelPulse);
@@ -68,40 +68,40 @@ int main(void)
     }
     
     /* 扫描KEY2 */
-    if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
+    if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
+    {
+      /* 停止电机 */
+      set_bldcm_disable();
+    }
+    
+    /* 扫描KEY3 */
+    if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
       /* 增大占空比 */
-      ChannelPulse+=50;
+      ChannelPulse += PWM_PERIOD_COUNT/10;
       
-      if(ChannelPulse>PWM_PERIOD_COUNT)
-        ChannelPulse=PWM_PERIOD_COUNT;
+      if(ChannelPulse > PWM_PERIOD_COUNT)
+        ChannelPulse = PWM_PERIOD_COUNT;
       
       set_bldcm_speed(ChannelPulse);
     }
     
-    /* 扫描KEY3 */
-    if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
+    /* 扫描KEY4 */
+    if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
     {
-      if(ChannelPulse<50)
-        ChannelPulse=0;
+      if(ChannelPulse < PWM_PERIOD_COUNT/10)
+        ChannelPulse = 0;
       else
-        ChannelPulse-=50;
+        ChannelPulse -= PWM_PERIOD_COUNT/10;
 
       set_bldcm_speed(ChannelPulse);
     }
     
     /* 扫描KEY4 */
-    if( Key_Scan(KEY4_GPIO_PORT,KEY4_PIN) == KEY_ON  )
+    if( Key_Scan(KEY5_GPIO_PORT, KEY5_PIN) == KEY_ON)
     {
       /* 转换方向 */
       set_bldcm_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);
-    }
-    
-    /* 扫描KEY4 */
-    if( Key_Scan(KEY5_GPIO_PORT,KEY5_PIN) == KEY_ON  )
-    {
-      /* 停止电机 */
-      set_bldcm_disable();
     }
 	}
 }

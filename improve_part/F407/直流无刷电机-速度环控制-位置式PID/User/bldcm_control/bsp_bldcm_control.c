@@ -91,41 +91,50 @@ void set_bldcm_disable(void)
   bldcm_data.is_enable = 0;
 }
 
-void Transmit_FB( __IO int32_t *Feedback);
-
 /**
   * @brief  电机位置式 PID 控制实现(定时调用)
   * @param  无
   * @retval 无
   */
+extern uint8_t dir;
 void bldcm_pid_control(void)
 {
   if (bldcm_data.is_enable)
   {
     float cont_val = 0;    // 当前控制值
     
-    int actual = get_motor_speed();   // 电机旋转的当前速度
+    int32_t actual = get_motor_speed();   // 电机旋转的当前速度
 
     cont_val = PID_realize(actual);
-    
-    if(cont_val > PWM_PERIOD_COUNT)
+//    printf("控制变量前：%0.2f，", cont_val);
+    if (cont_val < 0)
     {
-      cont_val = PWM_PERIOD_COUNT;
+      cont_val = -cont_val;
     }
-    else if (cont_val < 0)
-    {
-      cont_val = 0;
-    }
+//    else
+//    {
+//      set_bldcm_direction(MOTOR_FWD);
+//    }
     
+    cont_val = cont_val > PWM_PERIOD_COUNT ? PWM_PERIOD_COUNT : cont_val;
     set_bldcm_speed(cont_val);
-  #if PID_ASSISTANT_EN
-    set_computer_value(SET_FACT_CMD, CURVES_CH1, actual);     // 给通道 1 发送实际值
+    
+    float get_motor_dir(void);
+    if (get_motor_dir() != 0)
+    {
+      actual = -actual;
+    }
+    
+  #ifdef PID_ASSISTANT_EN
+    set_computer_value(SEND_FACT_CMD, CURVES_CH1, &actual, 1);     // 给通道 1 发送实际值
   #else
-    printf("实际值：%d. 目标值：%d\n", actual, get_pid_actual());
+//    printf("实际值：%d. 目标值：%d\n", actual, get_pid_target());
+    printf("控制变量：%0.2f，实际值 ：%d, 目标值：%.0f, dir = %d\n", cont_val, actual, get_pid_target(), dir);
   #endif
   }
 }
 
+ 
 ///**
 //  * @brief  定时器每100ms产生一次中断回调函数
 //  * @param  htim：定时器句柄

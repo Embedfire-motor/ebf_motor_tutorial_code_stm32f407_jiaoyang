@@ -30,23 +30,8 @@ static void TIMx_GPIO_Config(void)
  GPIO_InitTypeDef GPIO_InitStruct;
   
   /* 定时器通道功能引脚端口时钟使能 */
-  SD_PORT_CLK_ENABLE();
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-  
-  	/*设置输出类型*/
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	/*设置引脚速率 */ 
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	/*设置复用*/
-  GPIO_InitStruct.Alternate = PWM_TIM_GPIO_AF;
-	
-	/*选择要控制的GPIO引脚*/	
-	GPIO_InitStruct.Pin = SD_PIN;
-	/*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
-  HAL_GPIO_Init(SD_GPIO_PORT, &GPIO_InitStruct);
-  
-  HAL_GPIO_WritePin(SD_GPIO_PORT, SD_PIN, GPIO_PIN_SET);    // SD 脚输出高电平禁用
   
   /* 定时器通道1功能引脚IO初始化 */
 	/*设置输出类型*/
@@ -104,8 +89,8 @@ static void TIM_PWMOUTPUT_Config(void)
 	/*PWM模式配置*/
   TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM1;
 	TIM_OCInitStructure.Pulse = 0;
-	TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_LOW;
-	TIM_OCInitStructure.OCNPolarity = TIM_OCPOLARITY_LOW;
+	TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_HIGH;
+	TIM_OCInitStructure.OCNPolarity = TIM_OCPOLARITY_HIGH;
 	TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_SET;
 	TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET;
   TIM_OCInitStructure.OCFastMode = TIM_OCFAST_DISABLE;

@@ -49,6 +49,7 @@ int main(void)
   /* 电机初始化 */
   motor_init();
   
+  set_motor_disable();
 	set_motor_speed(ChannelPulse);
 	
 	while(1)
@@ -56,7 +57,7 @@ int main(void)
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
-      /* 增大占空比 */
+      /* 使能电机 */
       set_motor_enable();
     }
     
