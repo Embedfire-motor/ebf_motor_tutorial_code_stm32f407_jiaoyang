@@ -19,6 +19,9 @@
 /* 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1) */
 #define PWM_PRESCALER_COUNT     (2)
 
+/* 最大比较值 */
+#define PWM_MAX_PERIOD_COUNT              (PWM_PERIOD_COUNT - 100)
+
 /*PWM引脚*/
 #define PWM_TIM_CH1_GPIO_PORT           GPIOA
 #define PWM_TIM_CH1_PIN                 GPIO_PIN_8
@@ -28,11 +31,6 @@
 
 #define PWM_TIM_CH3_GPIO_PORT           GPIOA
 #define PWM_TIM_CH3_PIN                 GPIO_PIN_10
-
-/* SD 引脚 */
-#define SD_GPIO_PORT                    GPIOG
-#define SD_PIN                          GPIO_PIN_12
-#define SD_PORT_CLK_ENABLE()            __HAL_RCC_GPIOG_CLK_ENABLE();
 
 extern TIM_HandleTypeDef  TIM_TimeBaseStructure;
 

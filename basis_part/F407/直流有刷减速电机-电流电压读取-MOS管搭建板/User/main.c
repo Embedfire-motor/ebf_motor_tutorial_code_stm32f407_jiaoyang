@@ -63,12 +63,11 @@ int main(void)
   /* 电机初始化 */
   motor_init();
   
+  /* 串口初始化 */
   DEBUG_USART_Config();
   
+  /* ADC 始化 */
   ADC_Init();
-  
-	TIM1_SetPWM_pulse(PWM_CHANNEL_1, 0);
-	TIM1_SetPWM_pulse(PWM_CHANNEL_2, 0);
   
   set_motor_speed(ChannelPulse);
   set_motor_disable();    // 禁用电机
@@ -129,8 +128,7 @@ int main(void)
     #if defined(PID_ASSISTANT_EN)
       set_computer_value(SEED_FACT_CMD, CURVES_CH1, &current, 1);
     #else
-      float get_curr_v(void);
-      printf("电源电压：%.2fV，电流电压：%0.3fmV，电流：%dmA\r\n", get_vbus_val(), get_curr_v()*1000.0, current); 
+      printf("电源电压：%.2fV，电流电压：%0.3fmV，电流：%dmA\r\n", get_vbus_val(), current); 
     #endif
       
     }

@@ -8,8 +8,9 @@ DMA_HandleTypeDef DMA_Init_Handle;
 ADC_HandleTypeDef ADC_Handle;
 
 static int16_t adc_buff[ADC_NUM_MAX];
-static int16_t curr_adc_mean = 0;    // 电流 ACD 采样结果平均值
 static int16_t vbus_adc_mean = 0;    // 电源电压 ACD 采样结果平均值
+static uint32_t adc_mean_sum = 0;        // 平均值累加
+static uint32_t adc_mean_count = 0;      // 累加计数
 
 /**
   * @brief  ADC 通道引脚初始化
@@ -174,7 +175,6 @@ static uint16_t flag_num = 0;
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
   int32_t adc_mean = 0;
-  curr_adc_mean = 0;    // 复位平均值
   
   HAL_ADC_Stop_DMA(hadc);       // 停止 ADC 采样，处理完一次数据在继续采样
   
@@ -184,7 +184,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
     adc_mean += (int32_t)adc_buff[count];
   }
   
-  curr_adc_mean = adc_mean / (ADC_NUM_MAX / 2);    // 保存平均值
+  adc_mean_sum += adc_mean / (ADC_NUM_MAX / 2);    // 累加电压
+  adc_mean_count++;
   
 #if 1
   
@@ -197,7 +198,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
   }
   
   vbus_adc_mean = adc_mean / (ADC_NUM_MAX / 2);    // 保存平均值
-  
   
 #else
   vbus_adc_mean = adc_buff[1];
@@ -223,18 +223,38 @@ void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
     set_motor_disable();
     flag_num = 0;
     LED1_ON;
-    
-//    printf("电源电压超过设定范围!\r\n");
+    printf("电源电压超过限制！请检查原因，复位开发板在试！\r\n");
+    while(1);
   }
 }
 
 /**
-  * @brief  获取电流值
+  * @brief  获取电流值（应定时调用）
   * @param  无
   * @retval 转换得到的电流值
   */
 int32_t get_curr_val(void)
 {
+  static uint8_t flag = 0;
+  static uint32_t adc_offset = 0;    // 偏置电压
+  int16_t curr_adc_mean = 0;         // 电流 ACD 采样结果平均值
+  
+  curr_adc_mean = adc_mean_sum / adc_mean_count;    // 保存平均值
+  
+  if (adc_mean_count > 10)
+  {
+    adc_mean_count = 0;
+    adc_mean_sum = 0;
+    
+    if (flag == 0)
+    {
+      adc_offset = curr_adc_mean;    // 记录偏置电压
+      flag = 1;
+    }
+    
+    curr_adc_mean -= adc_offset;                     // 减去偏置电压
+  }
+
   float vdc = GET_ADC_VDC_VAL(curr_adc_mean);      // 获取电压值
   
   return GET_ADC_CURR_VAL(vdc);
@@ -249,7 +269,7 @@ float get_vbus_val(void)
 {
   float vdc = GET_ADC_VDC_VAL(vbus_adc_mean);      // 获取电压值
   
-  return (vdc*(float)21.615);
+  return GET_VBUS_VAL(vdc);
 }
 
 /*********************************** END OF FILE *********************************************/

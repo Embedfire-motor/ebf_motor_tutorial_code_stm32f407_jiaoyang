@@ -25,19 +25,9 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./adc/bsp_adc.h"
 
-int pulse_num=0;
+/* 宏定义 */
+#define CURR_MAX    200    // 最大电流（单位mA）
 
-// ADC1转换的电压值通过MDA方式传到SRAM
-extern __IO uint16_t ADC_ConvertedValue;
-
-// 局部变量，用于保存转换计算后的电压值 	 
-float ADC_Vol; 
-	
-void Delay(__IO uint32_t nCount)	 //简单的延时函数
-{
-	for(; nCount != 0; nCount--);
-}	
-  
 /**
   * @brief  主函数
   * @param  无
@@ -45,9 +35,10 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t ChannelPulse = PWM_PERIOD_COUNT*0.5;
-  uint8_t i = 0;
+  __IO uint16_t ChannelPulse = PWM_MAX_PERIOD_COUNT*0.5;
+  uint8_t curr_max_count = 0;
   uint8_t flag = 0;
+  uint8_t dir = 0;
 
   HAL_Init();
   
@@ -60,20 +51,19 @@ int main(void)
   /* 初始化 LED */
   LED_GPIO_Config();
 
-  /* 通用定时器初始化并配置PWM输出功能 */
-  Motor_TIMx_Configuration();
+  /* 电机初始化 */
+  motor_init();
   
+  /* 串口初始化 */
   DEBUG_USART_Config();
   
+  /* ADC 始化 */
   ADC_Init();
-  
-	TIM1_SetPWM_pulse(PWM_CHANNEL_1, 0);
-	TIM1_SetPWM_pulse(PWM_CHANNEL_2, 0);
   
   set_motor_speed(ChannelPulse);
   set_motor_disable();    // 禁用电机
   
-  printf("野火直流有刷电机电流读取实验\r\n");
+  printf("野火直流有刷电机-限流-过压-欠压保护实验\r\n");
 	
 	while(1)
 	{
@@ -95,10 +85,10 @@ int main(void)
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
       /* 增大占空比 */
-      ChannelPulse += PWM_PERIOD_COUNT/10;
+      ChannelPulse += PWM_MAX_PERIOD_COUNT/10;
       
-      if(ChannelPulse > PWM_PERIOD_COUNT)
-        ChannelPulse = PWM_PERIOD_COUNT;
+      if(ChannelPulse > PWM_MAX_PERIOD_COUNT)
+        ChannelPulse = PWM_MAX_PERIOD_COUNT;
       
       set_motor_speed(ChannelPulse);
     }
@@ -106,10 +96,10 @@ int main(void)
     /* 扫描KEY4 */
     if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
     {
-      if(ChannelPulse < PWM_PERIOD_COUNT/10)
+      if(ChannelPulse < PWM_MAX_PERIOD_COUNT/10)
         ChannelPulse = 0;
       else
-        ChannelPulse -= PWM_PERIOD_COUNT/10;
+        ChannelPulse -= PWM_MAX_PERIOD_COUNT/10;
       
       set_motor_speed(ChannelPulse);
     }
@@ -118,19 +108,31 @@ int main(void)
     if( Key_Scan(KEY5_GPIO_PORT, KEY5_PIN) == KEY_ON)
     {
       /* 转换方向 */
-      set_motor_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);
+      set_motor_direction( (++dir % 2) ? MOTOR_FWD : MOTOR_REV);
     }
     
     if (HAL_GetTick()%50 == 0 && flag == 0)    // 每50毫秒读取一次电流、电压
     {
       flag = 1;
       int32_t current = get_curr_val();
-      
+
     #if 0//defined(PID_ASSISTANT_EN)
       set_computer_value(SEED_FACT_CMD, CURVES_CH1, &current, 1);
     #else
       printf("电源电压：%.2fV，电流：%dmA\r\n", get_vbus_val(), current); 
     #endif
+      
+      if (current > CURR_MAX)    // 判断是不是超过限定的值
+      {
+        if (curr_max_count++ > 5)    // 连续5次超过
+        {
+          LED2_ON;
+          set_motor_disable();
+          curr_max_count = 0;
+          printf("电流超过限制！请检查原因，复位开发板在试！\r\n");
+          while(1);
+        }
+      }
       
     }
     else if (HAL_GetTick()%50 != 0 && flag == 1)

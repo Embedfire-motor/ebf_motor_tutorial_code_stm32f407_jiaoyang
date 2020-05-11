@@ -10,7 +10,7 @@
 #define ADC_VBUS_IRQ                     ADC_IRQn
 #define ADC_VBUS_IRQHandler              ADC_IRQHandler
 
-#define VREF                            3.248f     // 参考电压，理论上是3.3，可通过实际测量得3.258
+#define VREF                            3.3f     // 参考电压，理论上是3.3，可通过实际测量得3.258
 #define ADC_NUM_MAX                     2048       // ADC 转换结果缓冲区最大值
 
 #define GET_ADC_VDC_VAL(val)            ((float)val/(float)4096*VREF)          // 得到电压值
@@ -34,7 +34,7 @@
 #define ADC_DMA_IRQ                     DMA2_Stream0_IRQn
 #define ADC_DMA_IRQ_Handler             DMA2_Stream0_IRQHandler
 
-#define GET_ADC_CURR_VAL(val)           ((float)val/(float)10.0/(float)0.02*(float)1000.0)          // 得到电流值，电压放大10倍，0.02是采样电阻，单位mA。
+#define GET_ADC_CURR_VAL(val)           (((float)val)/(float)8.0/(float)0.02*(float)1000.0)          // 得到电流值，电压放大8倍，0.02是采样电阻，单位mA。
 
 /*********************** 电源电压采集 ******************/
 
@@ -47,8 +47,10 @@
 #define VBUS_MAX                        14    // 电压最大值
 #define VBUS_MIN                        10    // 电压最小值
 
-#define VBUS_HEX_MAX                    (VBUS_MAX/21.615/VREF*4096)    // 电压最大值（测量电压是电源电压的1/31）31.0
-#define VBUS_HEX_MIN                    (VBUS_MIN/21.615/VREF*4096)    // 电压最小值（测量电压是电源电压的1/31）31.0
+#define VBUS_HEX_MAX                    ((VBUS_MAX/301.0*8.0+0.5)/VREF*4096)    // 电压最大值（测量电压是电源电压的1/31）31.0
+#define VBUS_HEX_MIN                    ((VBUS_MIN/301.0*8.0+0.5)/VREF*4096)    // 电压最小值（测量电压是电源电压的1/31）31.0
+
+#define GET_VBUS_VAL(val)               (((float)val-(float)0.5) / (float)8.0 * (float)301.0)      // 电源电压值（测量电压是电源电压的1/301）
 
 extern DMA_HandleTypeDef DMA_Init_Handle;
 extern ADC_HandleTypeDef ADC_Handle;
