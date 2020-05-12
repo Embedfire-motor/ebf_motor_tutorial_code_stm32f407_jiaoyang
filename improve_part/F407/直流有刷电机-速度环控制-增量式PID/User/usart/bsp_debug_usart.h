@@ -58,12 +58,12 @@ typedef __packed struct
 #define CURVES_CH5      0x05
 
 /* 指令(下位机 -> 上位机) */
-#define SEED_TARGET_CMD      0x01     // 发送上位机通道的目标值
-#define SEED_FACT_CMD        0x02     // 发送通道实际值
-#define SEED_P_I_D_CMD       0x03     // 发送 PID 值（同步上位机显示的值）
-#define SEED_START_CMD       0x04     // 发送启动指令（同步上位机按钮状态）
-#define SEED_STOP_CMD        0x05     // 发送停止指令（同步上位机按钮状态）
-#define SEED_PERIOD_CMD      0x06     // 发送周期（同步上位机显示的值）
+#define SEND_TARGET_CMD      0x01     // 发送上位机通道的目标值
+#define SEND_FACT_CMD        0x02     // 发送通道实际值
+#define SEND_P_I_D_CMD       0x03     // 发送 PID 值（同步上位机显示的值）
+#define SEND_START_CMD       0x04     // 发送启动指令（同步上位机按钮状态）
+#define SEND_STOP_CMD        0x05     // 发送停止指令（同步上位机按钮状态）
+#define SEND_PERIOD_CMD      0x06     // 发送周期（同步上位机显示的值）
 
 /* 指令(上位机 -> 下位机) */
 #define SET_P_I_D_CMD        0x10     // 设置 PID 值
