@@ -9,15 +9,15 @@
 #define T1_FREQ           (SystemCoreClock/(TIM_PRESCALER+1)) // 频率ft值
 
 /*电机单圈参数*/
-#define STEP_ANGLE				1.8f                 //步进电机的步距角 单位：度
-#define FSPR              (360.0f/STEP_ANGLE)  //步进电机的一圈所需脉冲数
+#define STEP_ANGLE				1.8f                        //步进电机的步距角 单位：度
+#define FSPR              ((float)(360.0f/STEP_ANGLE))//步进电机的一圈所需脉冲数
 
-#define MICRO_STEP        32          				 //细分器细分数 
-#define SPR               (FSPR*MICRO_STEP)    //细分后一圈所需脉冲数
+#define MICRO_STEP        32          				        //细分器细分数 
+#define SPR               (FSPR*MICRO_STEP)           //细分后一圈所需脉冲数
 
-#define PULSE_RATIO       (float)(SPR/ENCODER_TOTAL_RESOLUTION)//步进电机单圈脉冲数与编码器单圈脉冲的比值
-
-#define TARGET_SPEED      1                  //步进电机运动时的目标转速，单位：转/秒
+#define PULSE_RATIO       ((float)(SPR/ENCODER_TOTAL_RESOLUTION))//步进电机单圈脉冲数与编码器单圈脉冲的比值
+#define TARGET_SPEED      1                        //步进电机运动时的目标转速，单位：转/秒
+#define SAMPLING_PERIOD   50                          //采样周期，单位Hz
 
 /*是否开启上位机通信*/
 #define PID_ASSISTANT_EN  1

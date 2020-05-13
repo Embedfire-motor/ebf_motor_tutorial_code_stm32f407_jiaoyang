@@ -51,19 +51,24 @@ int main(void)
 	Key_GPIO_Config();	
 	/*led初始化*/
 	LED_GPIO_Config();
-	/* PID算法参数初始化 */
-  PID_param_init();	
   /* 初始化基本定时器定时，20ms产生一次中断 */
 	TIMx_Configuration();
 	/*步进电机初始化*/
 	stepper_Init();
-  /* 编码器接口初始化 */
-	Encoder_Init();
   /* 上电默认停止电机 */
   MOTOR_EN(OFF);
+  Set_Stepper_Stop();
+  /* 编码器接口初始化 */
+	Encoder_Init();
+  /* PID算法参数初始化 */
+  PID_param_init();	
 
+  /* 目标速度转换为编码器的脉冲数作为pid目标值 */
+  pid.target_val = TARGET_SPEED * ENCODER_TOTAL_RESOLUTION / SAMPLING_PERIOD;
+    
 #if PID_ASSISTANT_EN
-  int Temp = 0;    // 上位机需要整数参数，转换一下
+  int Temp = pid.target_val;    // 上位机需要整数参数，转换一下
+  set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
   set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &Temp, 1);// 给通道 1 发送目标值
 #endif
 
@@ -73,15 +78,15 @@ int main(void)
 		{
       pid_status=!pid_status;//取反状态
     #if PID_ASSISTANT_EN
-      if (!pid_status)
+      if (pid_status)
       {
-        set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
         Set_Stepper_Start();
+        set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
       }
       else
       {
-        set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
         Set_Stepper_Stop();
+        set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
       }
     #else
       if (!pid_status)
@@ -93,7 +98,7 @@ int main(void)
         Set_Stepper_Stop();
       }         
     #endif
-		} 
+		}
 	}
 } 	
 

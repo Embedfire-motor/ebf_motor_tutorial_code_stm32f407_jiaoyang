@@ -17,6 +17,7 @@
   
 #include "./tim/bsp_basic_tim.h"
 #include "./usart/bsp_debug_usart.h"
+#include "./stepper/bsp_stepper_ctrl.h"
 
 TIM_HandleTypeDef TIM_PIDHandle;
  /**
@@ -27,7 +28,7 @@ TIM_HandleTypeDef TIM_PIDHandle;
 static void TIMx_NVIC_Configuration(void)
 {
 	//设置抢占优先级，子优先级
-	HAL_NVIC_SetPriority(BASIC_TIM_IRQn, 1, 3);
+	HAL_NVIC_SetPriority(BASIC_TIM_IRQn, 0, 0);
 	// 设置中断来源
 	HAL_NVIC_EnableIRQ(BASIC_TIM_IRQn);
 }
@@ -80,7 +81,7 @@ void TIMx_Configuration(void)
   
 	TIM_Mode_Config();
   
-#if defined(PID_ASSISTANT_EN)
+#if PID_ASSISTANT_EN
   uint32_t temp = GET_BASIC_TIM_PERIOD();     // 计算周期，单位ms 
   set_computer_value(SEED_PERIOD_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
 #endif

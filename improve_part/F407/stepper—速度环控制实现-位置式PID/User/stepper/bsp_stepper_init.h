@@ -129,11 +129,11 @@ extern void TIM8_SetPWM_pulse(int channel,int compare);
 
 	
 /************************************************************/
-#define HIGH 1	//高电平
-#define LOW  0	//低电平
+#define HIGH GPIO_PIN_SET	  //高电平
+#define LOW  GPIO_PIN_RESET	//低电平
 
-#define ON  0	//开
-#define OFF 1	//关
+#define ON  GPIO_PIN_RESET	//开
+#define OFF GPIO_PIN_SET	  //关
 
 #define CLOCKWISE 			1//顺时针
 #define ANTI_CLOCKWISE	0//逆时针

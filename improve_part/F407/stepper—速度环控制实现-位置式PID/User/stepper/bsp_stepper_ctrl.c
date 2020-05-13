@@ -93,9 +93,10 @@ void Set_Stepper_Dir(int dir)
 void Stepper_Speed_Ctrl(void)
 {
   /* 编码器相关变量 */
-  __IO int32_t capture_per_unit = 0;
+  __IO int16_t capture_per_unit = 0;
   __IO int32_t capture_count = 0;
   static __IO int32_t last_count = 0;
+  
   /* 经过pid计算后的期望值 */
   __IO float cont_val = 0;
   
@@ -103,27 +104,29 @@ void Stepper_Speed_Ctrl(void)
   if((sys_status.MSD_ENA == 1) && (sys_status.stepper_running == 1))
   {
     /* 计算单个采样时间内的编码器脉冲数 */
-    capture_count =__HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (encoder_overflow_count * ENCODER_TIM_PERIOD);
+    capture_count = __HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (encoder_overflow_count * ENCODER_TIM_PERIOD);
     capture_per_unit = capture_count - last_count;
     last_count = capture_count;
-
-    /* 目标速度转换为编码器的脉冲数作为pid目标值 */
-    pid.target_val = TARGET_SPEED * ENCODER_TOTAL_RESOLUTION / 50;
     
     /* 单位时间内的编码器脉冲数作为实际值传入pid控制器 */
     cont_val = PID_realize((float)capture_per_unit);// 进行 PID 计算
-    
+//    if(capture_per_unit == 0)
+//    {
+//      Set_Stepper_Stop();
+//    }
+    if(cont_val < 0)
+    {
+      MOTOR_DIR(HIGH);
+    }
+
     /* 对计算得出的期望值取绝对值 */
     cont_val = fabsf(cont_val);
     
     /* 计算比较计数器的值 */
-    OC_Pulse_num = ((uint16_t)(T1_FREQ / (cont_val * 50 * PULSE_RATIO))) >> 1;
-        
+    OC_Pulse_num = ((uint16_t)(T1_FREQ / (cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
+    
    #if PID_ASSISTANT_EN
-    int Temp = pid.target_val;    // 上位机需要整数参数，转换一下
-    set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &Temp, 1);// 给通道 1 发送目标值
-    Temp = capture_per_unit;    // 上位机需要整数参数，转换一下
-    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &Temp, 1);  // 给通道 1 发送实际值
+    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &capture_per_unit, 1);  // 给通道 1 发送实际值
    #else
     printf("实际值：%d，目标值：%.0f\r\n", capture_per_unit, pid.target_val);// 打印实际值和目标值
    #endif
@@ -133,7 +136,7 @@ void Stepper_Speed_Ctrl(void)
     capture_per_unit = 0;
     cont_val = 0;
     pid.actual_val = 0;
-    pid.target_val = 0;
+//    pid.target_val = 0;
     pid.err = 0;
     pid.err_last = 0;
     pid.integral = 0;

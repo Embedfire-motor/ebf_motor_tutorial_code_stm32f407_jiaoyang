@@ -65,7 +65,6 @@ static void Stepper_GPIO_Config(void)
 	GPIO_InitStruct.Pin = MOTOR_EN_PIN;	
 	HAL_GPIO_Init(MOTOR_EN_GPIO_PORT, &GPIO_InitStruct);	
 
-
 	/* 定时器通道1功能引脚IO初始化 */
 	/*设置输出类型*/
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
