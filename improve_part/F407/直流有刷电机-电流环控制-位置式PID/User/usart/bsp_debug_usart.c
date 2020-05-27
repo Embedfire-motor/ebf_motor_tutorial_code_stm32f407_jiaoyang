@@ -55,7 +55,7 @@ void DEBUG_USART_Config(void)
   
   HAL_UART_Receive_IT(&UartHandle, UART_RxBuffer, sizeof(UART_RxBuffer));
   
-  HAL_NVIC_SetPriority(DEBUG_USART_IRQ, 2, 0);	// 抢占优先级0，子优先级1
+  HAL_NVIC_SetPriority(DEBUG_USART_IRQ, 0, 0);	// 抢占优先级0，子优先级0
   HAL_NVIC_EnableIRQ(DEBUG_USART_IRQ );		      // 使能USART1中断通道 
 }
 
@@ -205,7 +205,7 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
   packet.cmd = UART_RxBuffer[CMD_INDEX_VAL];
   packet.len  = COMPOUND_32BIT(&UART_RxBuffer[LEN_INDEX_VAL]);     // 合成长度
   packet.head = COMPOUND_32BIT(&UART_RxBuffer[HEAD_INDEX_VAL]);    // 合成包头
-  
+  LED1_TOGGLE;
   if (packet.head == PACKET_HEAD)    // 检查包头
   {
     /* 包头正确 */

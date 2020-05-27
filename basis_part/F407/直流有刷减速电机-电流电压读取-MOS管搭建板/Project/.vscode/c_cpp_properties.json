@@ -1,0 +1,45 @@
+{
+    "configurations": [
+        {
+            "name": "keil",
+            "includePath": [
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\Libraries\\CMSIS\\Include",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\Libraries\\CMSIS\\Device\\ST\\STM32F4xx\\Include",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\Libraries\\STM32F4xx_HAL_Driver\\Inc",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\User",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\User\\led",
+                "C:\\Keil_v5\\ARM\\ARMCC\\include",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\Libraries\\CMSIS\\Device\\ST\\STM32F4xx\\Source\\Templates\\arm",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\Libraries\\CMSIS\\Device\\ST\\STM32F4xx\\Source\\Templates",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\Libraries\\STM32F4xx_HAL_Driver\\Src",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\User\\key",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\User\\motor_control",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\User\\tim",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\User\\adc",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\User\\usart",
+                "d:\\电机开发\\base_code\\basis_part\\F407\\直流有刷减速电机-电流电压读取-MOS管搭建板\\Project\\..\\Doc"
+            ],
+            "defines": [
+                "__CC_ARM",
+                "__forceinline=",
+                "__inline=",
+                "__asm(x)=",
+                "__declspec(x)=",
+                "__attribute__(x)=",
+                "__nonnull__(x)=",
+                "__int64=int",
+                "__irq=",
+                "__swi=",
+                "__weak=",
+                "__register=",
+                "__pure=",
+                "__value_in_regs=",
+                "USE_HAL_DRIVER",
+                "STM32F407xx",
+                "PID_ASSISTANT_EN"
+            ],
+            "intelliSenseMode": "${default}"
+        }
+    ],
+    "version": 4
+}

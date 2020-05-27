@@ -54,7 +54,7 @@ void DEBUG_USART_Config(void)
   
   HAL_UART_Receive_IT(&UartHandle, UART_RxBuffer, sizeof(UART_RxBuffer));
   
-  HAL_NVIC_SetPriority(DEBUG_USART_IRQ, 2, 0);	// 抢占优先级0，子优先级1
+  HAL_NVIC_SetPriority(DEBUG_USART_IRQ, 0, 0);	// 抢占优先级0，子优先级1
   HAL_NVIC_EnableIRQ(DEBUG_USART_IRQ );		      // 使能USART1中断通道 
 }
 
@@ -204,6 +204,7 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
   packet.cmd = UART_RxBuffer[CMD_INDEX_VAL];
   packet.len  = COMPOUND_32BIT(&UART_RxBuffer[LEN_INDEX_VAL]);     // 合成长度
   packet.head = COMPOUND_32BIT(&UART_RxBuffer[HEAD_INDEX_VAL]);    // 合成包头
+  packet.ch = UART_RxBuffer[CHX_INDEX_VAL];
   
   if (packet.head == PACKET_HEAD)    // 检查包头
   {
@@ -224,7 +225,14 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
           i_temp = *(float *)&temp1;
           d_temp = *(float *)&temp2;
           
-          set_p_i_d(p_temp, i_temp, d_temp);    // 设置 P I D
+          if (packet.ch == CURVES_CH1)
+          {
+            set_p_i_d(&pid_speed, p_temp, i_temp, d_temp);    // 设置 P I D
+          }
+          else if (packet.ch == CURVES_CH2)
+          {
+            set_p_i_d(&pid_curr, p_temp, i_temp, d_temp);    // 设置 P I D
+          }
         }
         break;
 
@@ -232,7 +240,11 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
         {
           int actual_temp = COMPOUND_32BIT(&UART_RxBuffer[13]);    // 得到数据
           
-          set_pid_target(actual_temp);    // 设置目标值
+          /* 只设置速度的目标值，电流的目标置是由速度pid的输出决定的 */
+          if (packet.ch == CURVES_CH1)    
+          {
+            set_pid_target(&pid_speed, actual_temp);    // 设置目标值
+          }
         }
         break;
         
@@ -257,7 +269,15 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
         case SET_PERIOD_CMD:
         {
           uint32_t temp = COMPOUND_32BIT(&UART_RxBuffer[13]);     // 周期数
-          SET_BASIC_TIM_PERIOD(temp);                             // 设置定时器周期1~1000ms
+          
+          if (packet.ch == CURVES_CH1)
+          {
+            SET_BASIC_TIM_PERIOD(temp);                             // 设置定时器周期1~1000ms
+          }
+          else if (packet.ch == CURVES_CH2)
+          {
+            SET_BASIC_TIM_PERIOD(temp);                             // 设置定时器周期1~1000ms
+          }
         }
         break;
       }

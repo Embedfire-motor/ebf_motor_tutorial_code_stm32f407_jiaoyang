@@ -1,5 +1,6 @@
 #ifndef __BSP_PID_H
 #define	__BSP_PID_H
+
 #include "stm32f4xx.h"
 #include "./usart/bsp_debug_usart.h"
 #include <stdio.h>
@@ -16,11 +17,14 @@ typedef struct
     float integral;          		//定义积分值
 }_pid;
 
+extern _pid pid_curr;
+extern _pid pid_speed;
+
 extern void PID_param_init(void);
-extern void set_pid_target(float temp_val);
-extern float get_pid_target(void);
-extern void set_p_i_d(float p, float i, float d);
-extern float PID_realize(float actual_val);
-extern void time_period_fun(void);
+extern void set_pid_target(_pid *pid, float temp_val);
+extern float get_pid_target(_pid *pid);
+extern void set_p_i_d(_pid *pid, float p, float i, float d);
+extern float curr_pid_realize(_pid *pid, float actual_val);
+extern float speed_pid_realize(_pid *pid, float actual_val);
 
 #endif

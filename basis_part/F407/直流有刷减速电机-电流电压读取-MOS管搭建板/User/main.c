@@ -125,10 +125,10 @@ int main(void)
       flag = 1;
       int32_t current = get_curr_val();
       
-    #if defined(PID_ASSISTANT_EN)
+    #if 0//defined(PID_ASSISTANT_EN)
       set_computer_value(SEED_FACT_CMD, CURVES_CH1, &current, 1);
     #else
-      printf("电源电压：%.2fV，电流电压：%0.3fmV，电流：%dmA\r\n", get_vbus_val(), current); 
+      printf("电源电压：%.2fV，电流：%dmA\r\n", get_vbus_val(), current); 
     #endif
       
     }

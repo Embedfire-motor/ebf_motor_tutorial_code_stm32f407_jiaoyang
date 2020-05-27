@@ -100,6 +100,8 @@ float location_pid_realize(_pid *pid, float actual_val)
       pid->err = 0;
       pid->integral = 0;
     }
+    
+    pid->integral += pid->err;    // 误差累积
 
 		/*PID算法实现*/
     pid->actual_val = pid->Kp*pid->err+pid->Ki*pid->integral+pid->Kd*(pid->err-pid->err_last);

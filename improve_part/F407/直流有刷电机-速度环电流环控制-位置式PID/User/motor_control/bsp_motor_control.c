@@ -20,12 +20,15 @@
 #include "./pid/bsp_pid.h"
 #include "./tim/bsp_basic_tim.h"
 #include "./Encoder/bsp_encoder.h"
+#include "./adc/bsp_adc.h"
 #include <math.h>
 #include <stdlib.h>
 
 static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
 static uint8_t    is_motor_en = 0;             // 电机使能
+
+#define TARGET_CURRENT_MAX    350    // 目标电流的最大值 mA
 
 static void sd_gpio_config(void)
 {
@@ -138,6 +141,9 @@ void set_motor_disable(void)
   */
 void motor_pid_control(void)
 {
+  static uint32_t location_timer = 0;         // 速度环周期
+  int32_t actual_current = get_curr_val();    // 读取当前电流值
+  
   if (is_motor_en == 1)     // 电机在使能状态下才进行控制处理
   {
     float cont_val = 0;                       // 当前控制值
@@ -154,23 +160,45 @@ void motor_pid_control(void)
     /* 记录当前总计数值，供下一时刻计算使用 */
     Last_Count = Capture_Count;
     
-    cont_val = PID_realize(actual_speed);    // 进行 PID 计算
-    
-    if (cont_val > 0)    // 判断电机方向
+    if (location_timer++%2 == 0)
     {
-      set_motor_direction(MOTOR_FWD);
-    }
-    else
-    {
-      cont_val = -cont_val;
-      set_motor_direction(MOTOR_REV);
+      cont_val = speed_pid_realize(&pid_speed, actual_speed);    // 进行 PID 计算
+
+      if (cont_val > 0)    // 判断电机方向
+      {
+        set_motor_direction(MOTOR_FWD);
+      }
+      else
+      {
+        cont_val = -cont_val;
+        set_motor_direction(MOTOR_REV);
+      }
+      
+      cont_val = (cont_val > TARGET_CURRENT_MAX) ? TARGET_CURRENT_MAX : cont_val;    // 电流上限处理
+      set_pid_target(&pid_curr, cont_val);    // 设定电流的目标值
+      
+    #if defined(PID_ASSISTANT_EN)
+      int32_t temp = cont_val;
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
+    #endif
     }
     
-    cont_val = (cont_val > PWM_MAX_PERIOD_COUNT) ? PWM_MAX_PERIOD_COUNT : cont_val;    // 速度上限处理
+    cont_val = curr_pid_realize(&pid_curr, actual_current);    // 进行 PID 计算
+    
+    if (cont_val < 0)
+    {
+      cont_val = 0;    // 下限处理
+    }
+    else if (cont_val > PWM_MAX_PERIOD_COUNT)
+    {
+      cont_val = PWM_MAX_PERIOD_COUNT;    // 速度上限处理
+    }
+
     set_motor_speed(cont_val);                                                 // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)
     set_computer_value(SEND_FACT_CMD, CURVES_CH1, &actual_speed, 1);                // 给通道 1 发送实际值
+    set_computer_value(SEND_FACT_CMD, CURVES_CH2, &actual_current, 1);                // 给通道 1 发送实际值
   #else
     printf("实际值：%d. 目标值：%.0f\n", actual_speed, get_pid_actual());      // 打印实际值和目标值
   #endif

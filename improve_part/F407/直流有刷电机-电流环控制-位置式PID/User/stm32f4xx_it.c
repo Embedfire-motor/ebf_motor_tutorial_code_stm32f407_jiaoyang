@@ -188,7 +188,7 @@ void SysTick_Handler(void)
 void DEBUG_USART_IRQHandler(void)
 {
   //  if(__HAL_UART_GET_FLAG(&UartHandle, USART_IT_IDLE) != RESET)
-  if((((&UartHandle)->Instance->SR & (1 << 4)) == (1 << 4)) != RESET)
+  if(((&UartHandle)->Instance->SR >> 4) & 1)
 	{
     /* 读 SR 和 DR 清除空闲中断标志 */
     UartHandle.Instance->SR;

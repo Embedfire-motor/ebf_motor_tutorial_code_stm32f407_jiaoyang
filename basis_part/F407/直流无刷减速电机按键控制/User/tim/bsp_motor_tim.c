@@ -121,13 +121,23 @@ static void TIM_Mode_Config(void)
   HAL_TIM_PWM_ConfigChannel(&htimx_bldcm,&TIM_OCInitStructure,TIM_CHANNEL_3);    // 初始化通道 3 输出 PWM
 
   /* 关闭定时器通道1输出PWM */
-  HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_1);
+//  HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_1);
+
+//  /* 关闭定时器通道2输出PWM */
+//  HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_2);
+
+//  /* 关闭定时器通道3输出PWM */
+//  HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_3);
+  
+    /* 关闭定时器通道1输出PWM */
+  HAL_TIM_PWM_Start(&htimx_bldcm,TIM_CHANNEL_1);
 
   /* 关闭定时器通道2输出PWM */
-  HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htimx_bldcm,TIM_CHANNEL_2);
 
   /* 关闭定时器通道3输出PWM */
-  HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htimx_bldcm,TIM_CHANNEL_3);
+  set_pwm_pulse(0);
 }
 
 /**
@@ -326,62 +336,74 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
   {
     case 1://W+ U-
       /*  Channe2 configuration  */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_2);     // 停止上桥臂 PWM 输出
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_2,0);
+//      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_2);     // 停止上桥臂 PWM 输出
       HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
     
       /*  Channe3 configuration */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_3);    // 开始上桥臂 PWM 输出
+//      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_3);    // 开始上桥臂 PWM 输出
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_3,PWM_PERIOD_COUNT/10);
       HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_SET);      // 开启下桥臂
       break;
     
     case 2: //U+  V-
       /*  Channe3 configuration */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_3);
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_3,0);
+//      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_3);
       HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_RESET);
     
       /*  Channel configuration  */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_1);
+//      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_1);
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_1,PWM_PERIOD_COUNT/10);
       HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_SET);
       break;
     
     case 3:// W+ V-
       /*  Channel configuration */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_1);
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_1,0);
+//      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_1);
       HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_RESET);
  
       /*  Channe3 configuration  */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_3);
+//      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_3);
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_3,PWM_PERIOD_COUNT/10);
       HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_SET);
       break;
     
     case 4:// V+ W-
       /*  Channel configuration */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_1);
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_1,0);
+//      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_1);
       HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_RESET);
 
       /*  Channe2 configuration */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_2);
+//      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_2);
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_2,PWM_PERIOD_COUNT/10);
       HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_SET);    
       break;
     
     case 5: // V+ U-
       /*  Channe3 configuration */       
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_3);
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_3,0);
+//      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_3);
       HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_RESET);
     
       /*  Channe2 configuration */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_2);
+//      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_2);
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_2,PWM_PERIOD_COUNT/10);
     
       HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_SET);
       break;
     
     case 6: // U+ W-
       /*  Channe2 configuration */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_2);
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_2,0);
+//      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_2);
       HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_RESET);
     
       /*  Channel configuration */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_1); 
+//      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_1); 
+    __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_1,PWM_PERIOD_COUNT/10);
       HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_SET);
       break;
   }
@@ -404,8 +426,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     LED1_ON;     // 点亮LED1表示堵转超时停止
     
     /* 堵转超时停止 PWM 输出 */
-    hall_disable();       // 禁用霍尔传感器接口
-    stop_pwm_output();    // 停止 PWM 输出
+//    hall_disable();       // 禁用霍尔传感器接口
+//    stop_pwm_output();    // 停止 PWM 输出
   }
 }
 

@@ -25,6 +25,7 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./Encoder/bsp_encoder.h"
 #include "./tim/bsp_basic_tim.h"
+#include "./adc/bsp_adc.h"
 
 int pulse_num=0;
 	
@@ -40,7 +41,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void)
 {
-  int32_t target_speed = 100;
+  int32_t target_speed = 200;
   
   /* HAL 库初始化 */
   HAL_Init();
@@ -65,11 +66,16 @@ int main(void)
   /* 编码器接口初始化 */
 	Encoder_Init();
   
+  /* ADC 始化 */
+  ADC_Init();
+  
   /* 初始化基本定时器，用于处理定时任务 */
   TIMx_Configuration();
   
   /* PID 参数初始化 */
   PID_param_init();
+  
+  set_pid_target(&pid_speed, target_speed);    // 设置目标值
   
 #if defined(PID_ASSISTANT_EN)
   set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
@@ -84,7 +90,7 @@ int main(void)
     #if defined(PID_ASSISTANT_EN) 
       set_computer_value(SEND_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     #endif
-      set_pid_target(target_speed);    // 设置目标值
+      set_pid_target(&pid_speed, target_speed);    // 设置目标值
       set_motor_enable();              // 使能电机
     }
     
@@ -106,9 +112,9 @@ int main(void)
       if(target_speed > 350)
         target_speed = 350;
       
-      set_pid_target(target_speed);
+      set_pid_target(&pid_speed, target_speed);
     #if defined(PID_ASSISTANT_EN)
-      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &target_speed, 1);     // 给通道 1 发送目标值
     #endif
     }
 
@@ -121,9 +127,9 @@ int main(void)
       if(target_speed < -350)
         target_speed = -350;
       
-      set_pid_target(target_speed);
+      set_pid_target(&pid_speed, target_speed);
     #if defined(PID_ASSISTANT_EN)
-      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &target_speed, 1);     // 给通道 1 发送目标值
     #endif
     }
 	}

@@ -146,10 +146,10 @@ static void ADC_Mode_Config(void)
     }
     
     // 外设中断优先级配置和使能中断配置
-    HAL_NVIC_SetPriority(ADC_DMA_IRQ, 1, 1);
+    HAL_NVIC_SetPriority(ADC_DMA_IRQ, 4, 0);
     HAL_NVIC_EnableIRQ(ADC_DMA_IRQ);
     
-    HAL_NVIC_SetPriority(ADC_VBUS_IRQ, 0, 1);
+    HAL_NVIC_SetPriority(ADC_VBUS_IRQ, 3, 0);
     HAL_NVIC_EnableIRQ(ADC_VBUS_IRQ);
 
     HAL_ADC_Start_DMA(&ADC_Handle, (uint32_t*)&adc_buff, ADC_NUM_MAX);

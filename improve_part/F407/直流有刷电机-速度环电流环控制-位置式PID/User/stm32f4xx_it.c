@@ -44,6 +44,7 @@
 #include "./encoder/bsp_encoder.h"
 #include "./tim/bsp_basic_tim.h"
 #include ".\motor_control\bsp_motor_control.h"
+#include "./adc/bsp_adc.h"
 
 //接收数组指针
 extern unsigned char UART_RxPtr;
@@ -244,6 +245,25 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   }
 }
 
+/**
+  * @brief  This function handles DMA interrupt request.
+  * @param  None
+  * @retval None
+  */
+void ADC_DMA_IRQ_Handler(void)
+{
+  HAL_DMA_IRQHandler(&DMA_Init_Handle);
+}
+
+/**
+  * @brief  This function handles ADC interrupt request.
+  * @param  None
+  * @retval None
+  */
+void ADC_VBUS_IRQHandler(void)
+{
+  HAL_ADC_IRQHandler(&ADC_Handle);
+}
 
 /**
   * @}

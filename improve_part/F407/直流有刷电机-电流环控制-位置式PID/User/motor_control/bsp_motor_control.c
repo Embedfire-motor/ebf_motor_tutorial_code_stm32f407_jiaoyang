@@ -143,22 +143,18 @@ void motor_pid_control(void)
   if (is_motor_en == 1)     // 电机在使能状态下才进行控制处理
   {
     float cont_val = 0;                       // 当前控制值
-    static __IO int32_t Capture_Count = 0;    // 当前时刻总计数值
-    static __IO int32_t Last_Count = 0;       // 上一时刻总计数值
 
     cont_val = PID_realize(actual_current);    // 进行 PID 计算
     
-    if (cont_val > 0)    // 判断电机方向
+    if (cont_val < 0)
     {
-      //set_motor_direction(MOTOR_FWD);
+      cont_val = 0;    // 下限处理
     }
-    else
+    else if (cont_val > PWM_MAX_PERIOD_COUNT)
     {
-      cont_val = -cont_val;
-      //set_motor_direction(MOTOR_REV);
+      cont_val = PWM_MAX_PERIOD_COUNT;    // 速度上限处理
     }
-    
-    cont_val = (cont_val > PWM_MAX_PERIOD_COUNT) ? PWM_MAX_PERIOD_COUNT : cont_val;    // 速度上限处理
+
     set_motor_speed(cont_val);                                                 // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)
