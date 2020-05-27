@@ -81,3 +81,7 @@ settings
 *.log
 *.ld
 
+#VSCode files
+
+.vscode
+
