@@ -143,7 +143,7 @@ void motor_pid_control(void)
   static uint32_t location_timer = 0;         // 位置环周期
   int32_t actual_current = get_curr_val();    // 读取当前电流值
   
-  if (is_motor_en == 1)              // 电机在使能状态下才进行控制处理
+  if (is_motor_en == 1)                  // 电机在使能状态下才进行控制处理
   {
     static int32_t Capture_Count = 0;    // 当前时刻总计数值
     static int32_t Last_Count = 0;       // 上一时刻总计数值
