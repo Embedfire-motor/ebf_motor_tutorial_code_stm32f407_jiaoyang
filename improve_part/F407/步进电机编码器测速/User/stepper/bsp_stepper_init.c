@@ -15,13 +15,9 @@
   ******************************************************************************
   */
 #include "./stepper/bsp_stepper_init.h"
-#include "./delay/core_delay.h"   
-#include "stm32f4xx.h"
 
-void TIM_SetTIMxCompare(TIM_TypeDef *TIMx,uint32_t channel,uint32_t compare);
-void TIM_SetPWM_period(TIM_TypeDef* TIMx,uint32_t TIM_period);
+TIM_HandleTypeDef TIM_StepperHandle;
 
-TIM_HandleTypeDef TIM_TimeBaseStructure;
 //__IO uint16_t OC_Pulse_num = 500;     //比较输出的计数值
 __IO uint16_t OC_Pulse_num = 100;     //比较输出的计数值
 
@@ -100,21 +96,21 @@ void TIM_PWMOUTPUT_Config(void)
 	/*使能定时器*/
 	MOTOR_PUL_CLK_ENABLE();
 
-	TIM_TimeBaseStructure.Instance = MOTOR_PUL_TIM;    
+	TIM_StepperHandle.Instance = MOTOR_PUL_TIM;    
 	/* 累计 TIM_Period个后产生一个更新或者中断*/		
 	//当定时器从0计数到10000，即为10000次，为一个定时周期
-	TIM_TimeBaseStructure.Init.Period = TIM_PERIOD; 
+	TIM_StepperHandle.Init.Period = TIM_PERIOD; 
 	// 通用控制定时器时钟源TIMxCLK = HCLK/2=84MHz 
 	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)=1MHz
-	TIM_TimeBaseStructure.Init.Prescaler = 84-1;                
+	TIM_StepperHandle.Init.Prescaler = 84-1;                
 
 	/*计数方式*/
-	TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;            
+	TIM_StepperHandle.Init.CounterMode = TIM_COUNTERMODE_UP;            
 	/*采样时钟分频*/	
-	TIM_TimeBaseStructure.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;   
-	TIM_TimeBaseStructure.Init.RepetitionCounter = 0 ;  		
+	TIM_StepperHandle.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;   
+	TIM_StepperHandle.Init.RepetitionCounter = 0 ;  		
 	/*初始化定时器*/
-	HAL_TIM_OC_Init(&TIM_TimeBaseStructure);
+	HAL_TIM_OC_Init(&TIM_StepperHandle);
 
 	/*PWM模式配置--这里配置为输出比较模式*/
 	TIM_OCInitStructure.OCMode = TIM_OCMODE_TOGGLE; 
@@ -130,15 +126,14 @@ void TIM_PWMOUTPUT_Config(void)
 	TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_RESET;  
 	/*互补通道设置*/
 	TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET; 
-	HAL_TIM_OC_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, MOTOR_PUL_CHANNEL_x);
+	HAL_TIM_OC_ConfigChannel(&TIM_StepperHandle, &TIM_OCInitStructure, MOTOR_PUL_CHANNEL_x);
 
 	/* 确定定时器 */
-	HAL_TIM_Base_Start(&TIM_TimeBaseStructure);
+	HAL_TIM_Base_Start(&TIM_StepperHandle);
 	/* 启动比较输出并使能中断 */
-	HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
+	HAL_TIM_OC_Start_IT(&TIM_StepperHandle,MOTOR_PUL_CHANNEL_x);
 	/*使能比较通道*/
 	TIM_CCxChannelCmd(MOTOR_PUL_TIM,MOTOR_PUL_CHANNEL_x,TIM_CCx_ENABLE);
-
 }
 
 /**
@@ -148,7 +143,7 @@ void TIM_PWMOUTPUT_Config(void)
   */
 void MOTOR_PUL_IRQHandler(void)
 {
-  HAL_TIM_IRQHandler(&TIM_TimeBaseStructure);
+  HAL_TIM_IRQHandler(&TIM_StepperHandle);
 }
 
 /**
@@ -160,35 +155,12 @@ void MOTOR_PUL_IRQHandler(void)
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
   uint32_t count;
-  __IO uint32_t temp_val;
+
 	/*获取当前计数*/
-  count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
-	/*计算比较数值*/
-  temp_val = TIM_PERIOD & (count+OC_Pulse_num); 
-		
+  count = __HAL_TIM_GET_COUNTER(htim);
 	/*设置比较数值*/
-  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,temp_val);
-	
+  __HAL_TIM_SET_COMPARE(&TIM_StepperHandle, MOTOR_PUL_CHANNEL_x, count + OC_Pulse_num);
 }
-
-/**
-  * @brief  设置TIM通道的占空比
-	* @param  channel		通道	（1,2,3,4）
-	* @param  compare		占空比
-	*	@note 	无
-  * @retval 无
-  */
-void TIM8_SetPWM_pulse(int channel,int compare)
-{
-	switch(channel)
-	{
-		case 1:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_1,compare);break;
-		case 2:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_2,compare);break;
-		case 3:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_3,compare);break;
-		case 4:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_4,compare);break;
-	}
-}
-
 
 
 /**

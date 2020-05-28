@@ -134,7 +134,7 @@ void Encoder_Init(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* 判断当前计数器计数方向 */
-  if(__HAL_TIM_IS_TIM_COUNTING_DOWN(&TIM_EncoderHandle))
+  if(__HAL_TIM_IS_TIM_COUNTING_DOWN(htim))
     /* 下溢 */
     Encoder_Overflow_Count--;
   else

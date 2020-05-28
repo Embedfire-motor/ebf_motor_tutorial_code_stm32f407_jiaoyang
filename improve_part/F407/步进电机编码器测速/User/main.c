@@ -23,7 +23,7 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./delay/core_delay.h"
 #include "./stepper/bsp_stepper_init.h"
-#include "./key/bsp_exti.h"
+#include "./key/bsp_key.h"
 #include "./led/bsp_led.h"
 #include "./Encoder/bsp_encoder.h"
 
@@ -54,23 +54,41 @@ int main(void)
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
 	DEBUG_USART_Config();
 	printf("欢迎使用野火 电机开发板 步进电机 编码器测速 例程\r\n");
-	printf("按下按键1修改旋转方向、按键2使能\r\n");	
+	printf("按下按键1启动电机、按键2停止、按键3改变方向\r\n");	
   /* 初始化时间戳 */
   HAL_InitTick(5);
-	/*按键中断初始化*/
-	EXTI_Key_Config();	
+	/*按键初始化*/
+	Key_GPIO_Config();	
 	/*led初始化*/
 	LED_GPIO_Config();
 	/*步进电机初始化*/
 	stepper_Init();
+  /* 上电默认停止电机，按键1启动 */
+  MOTOR_EN(OFF);
   /* 编码器接口初始化 */
 	Encoder_Init();
-  /* 上电默认停止电机，按键2启动 */
-  MOTOR_EN(OFF);
   
 	while(1)
-	{ /* 20ms计算一次 */
+	{
+    /* 扫描KEY1，启动电机 */
+    if(Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON)
+    {
+      MOTOR_EN(ON);
+    }
+    /* 扫描KEY2，停止电机 */
+    if(Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON)
+    {
+      MOTOR_EN(OFF);
+    }
+    /* 扫描KEY3，改变方向 */
+    if(Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON)
+    {
+      static int j = 0;
+      j > 0 ? MOTOR_DIR(CCW) : MOTOR_DIR(CW);
+      j=!j;
+    }
     
+    /* 20ms计算一次 */
     /* 电机旋转方向 = 计数器计数方向 */
     motor_direction = __HAL_TIM_IS_TIM_COUNTING_DOWN(&TIM_EncoderHandle);
     
