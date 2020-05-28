@@ -17,6 +17,7 @@
   
 #include "./tim/bsp_basic_tim.h"
 #include "./usart/bsp_debug_usart.h"
+#include "./protocol/protocol.h"
 
 TIM_HandleTypeDef TIM_TimeBaseStructure;
  /**

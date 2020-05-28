@@ -24,7 +24,7 @@ void PID_param_init()
 
 #if defined(PID_ASSISTANT_EN)
     float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
-//    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
 

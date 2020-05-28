@@ -44,10 +44,7 @@
 #include "./encoder/bsp_encoder.h"
 #include "./tim/bsp_basic_tim.h"
 #include ".\motor_control\bsp_motor_control.h"
-
-//接收数组指针
-extern unsigned char UART_RxPtr;
-extern TIM_HandleTypeDef TIM_EncoderHandle;
+#include "./protocol/protocol.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -188,19 +185,9 @@ void SysTick_Handler(void)
 
 void DEBUG_USART_IRQHandler(void)
 {
-  //  if(__HAL_UART_GET_FLAG(&UartHandle, USART_IT_IDLE) != RESET)
-  if((((&UartHandle)->Instance->SR & (1 << 4)) == (1 << 4)) != RESET)
-	{
-    /* 读 SR 和 DR 清除空闲中断标志 */
-    UartHandle.Instance->SR;
-    UartHandle.Instance->DR;
-
-    HAL_UART_AbortReceive_IT(&UartHandle);
-
-    HAL_UART_Receive_IT(&UartHandle, UART_RxBuffer, sizeof(UART_RxBuffer));
-  }
-  
-  HAL_UART_IRQHandler(&UartHandle);
+  uint8_t dr = __HAL_UART_FLUSH_DRREGISTER(&UartHandle);
+	protocol_data_recv(&dr, 1);
+	HAL_UART_IRQHandler(&UartHandle);
 }
 
 /**
