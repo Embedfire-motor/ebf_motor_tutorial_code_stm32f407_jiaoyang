@@ -67,6 +67,9 @@ int main(void)
   /* 初始化 LED */
   LED_GPIO_Config();
   
+  /* 协议初始化 */
+  protocol_init();
+  
   /* 初始化串口 */
   DEBUG_USART_Config();
 
@@ -91,13 +94,16 @@ int main(void)
 
 	while(1)
 	{
+    /* 接收数据处理 */
+    receiving_process();
+    
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
     #if defined(PID_ASSISTANT_EN) 
       set_computer_value(SEND_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     #endif
-      set_pid_actual(target_speed);    // 设置目标值
+      set_pid_target(target_speed);    // 设置目标值
       set_motor_enable();              // 使能电机
     }
     
@@ -117,7 +123,7 @@ int main(void)
       if(target_speed > 280)
         target_speed = 280;
       
-      set_pid_actual(target_speed);
+      set_pid_target(target_speed);
     #if defined(PID_ASSISTANT_EN)
       set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
     #endif
@@ -132,7 +138,7 @@ int main(void)
       if(target_speed < -280)
         target_speed = -280;
       
-      set_pid_actual(target_speed);
+      set_pid_target(target_speed);
     #if defined(PID_ASSISTANT_EN)
       set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
     #endif
