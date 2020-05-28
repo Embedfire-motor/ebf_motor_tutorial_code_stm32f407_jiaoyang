@@ -198,7 +198,7 @@ void motor_pid_control(void)
     
   #if defined(PID_ASSISTANT_EN)
     set_computer_value(SEND_FACT_CMD, CURVES_CH1, &actual_speed, 1);                // 给通道 1 发送实际值
-    set_computer_value(SEND_FACT_CMD, CURVES_CH2, &actual_current, 1);                // 给通道 1 发送实际值
+//    set_computer_value(SEND_FACT_CMD, CURVES_CH2, &actual_current, 1);                // 给通道 1 发送实际值
   #else
     printf("实际值：%d. 目标值：%.0f\n", actual_speed, get_pid_actual());      // 打印实际值和目标值
   #endif

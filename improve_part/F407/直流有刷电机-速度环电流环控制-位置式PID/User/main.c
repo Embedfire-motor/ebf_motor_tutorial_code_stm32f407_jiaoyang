@@ -26,6 +26,7 @@
 #include "./Encoder/bsp_encoder.h"
 #include "./tim/bsp_basic_tim.h"
 #include "./adc/bsp_adc.h"
+#include "./protocol/protocol.h"
 
 int pulse_num=0;
 	
@@ -54,6 +55,9 @@ int main(void)
   
   /* 初始化 LED */
   LED_GPIO_Config();
+  
+  /* 协议初始化 */
+  protocol_init();
   
   /* 初始化串口 */
   DEBUG_USART_Config();
@@ -84,6 +88,9 @@ int main(void)
 
 	while(1)
 	{
+    /* 接收数据处理 */
+    receiving_process();
+    
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {

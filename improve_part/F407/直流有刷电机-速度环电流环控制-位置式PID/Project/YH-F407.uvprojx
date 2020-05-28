@@ -798,6 +798,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\adc\bsp_adc.c</FilePath>
             </File>
+            <File>
+              <FileName>protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\protocol\protocol.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
