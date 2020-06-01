@@ -257,7 +257,7 @@ int32_t get_curr_val(void)
 
   float vdc = GET_ADC_VDC_VAL(curr_adc_mean);      // 获取电压值
   
-  return GET_ADC_CURR_VAL(vdc);
+  return GET_ADC_CURR_VAL(vdc);    // 返回电流值
 }
 
 /**

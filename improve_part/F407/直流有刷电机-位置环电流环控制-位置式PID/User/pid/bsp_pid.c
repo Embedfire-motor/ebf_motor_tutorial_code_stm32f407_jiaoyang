@@ -1,5 +1,4 @@
 #include "./pid/bsp_pid.h"
-#include ".\motor_control\bsp_motor_control.h"
 
 //定义全局变量
 
@@ -14,15 +13,15 @@ _pid pid_curr;
 void PID_param_init(void)
 {
 		/* 位置相关初始化参数 */
-    pid_location.target_val=PER_CYCLE_PULSES;				
+    pid_location.target_val=0.0;				
     pid_location.actual_val=0.0;
     pid_location.err=0.0;
     pid_location.err_last=0.0;
     pid_location.integral=0.0;
   
-		pid_location.Kp = 0.5;
+		pid_location.Kp = 0.1;
 		pid_location.Ki = 0.0;
-		pid_location.Kd = 0.2;
+		pid_location.Kd = 0.1;
   
   	/* 速度相关初始化参数 */
     pid_curr.target_val=100.0;				
@@ -92,22 +91,38 @@ void set_p_i_d(_pid *pid, float p, float i, float d)
 float location_pid_realize(_pid *pid, float actual_val)
 {
 		/*计算目标值与实际值的误差*/
-    pid->err=pid->target_val-actual_val;
+    pid->err = pid->target_val - actual_val;
   
-    /* 设定闭环死区 */
+    /* 限定闭环死区 */
     if((pid->err >= -20) && (pid->err <= 20))
     {
       pid->err = 0;
       pid->integral = 0;
     }
     
-    pid->integral += pid->err;    // 误差累积
+    /* 积分分离，偏差较大时去掉积分作用 */
+    if (pid->err > -1500 && pid->err < 1500)
+    {
+      pid->integral += pid->err;    // 误差累积
+      
+      /* 限定积分范围，防止积分饱和 */
+      if (pid->integral > 4000) 
+      {
+        pid->integral = 4000;
+      }
+      else if (pid->integral < -4000) 
+      {
+        pid->integral = -4000;
+      }
+    }
 
 		/*PID算法实现*/
-    pid->actual_val = pid->Kp*pid->err+pid->Ki*pid->integral+pid->Kd*(pid->err-pid->err_last);
+    pid->actual_val = pid->Kp * pid->err + 
+                      pid->Ki * pid->integral + 
+                      pid->Kd * (pid->err - pid->err_last);
   
 		/*误差传递*/
-    pid->err_last=pid->err;
+    pid->err_last = pid->err;
     
 		/*返回当前实际值*/
     return pid->actual_val;
@@ -123,15 +138,18 @@ float curr_pid_realize(_pid *pid, float actual_val)
 {
 		/*计算目标值与实际值的误差*/
     pid->err=pid->target_val-actual_val;
-  
-//    /* 设定闭环死区 */
-//    if((pid->err >= -20) && (pid->err <= 20))
-//    {
-//      pid->err = 0;
-//      pid->integral = 0;
-//    }
-  
+
     pid->integral += pid->err;    // 误差累积
+  
+    /* 限定积分范围，防止积分饱和 */
+    if (pid->integral > 2000) 
+    {
+        pid->integral = 2000;
+    }
+    else if (pid->integral < -2000) 
+    {
+        pid->integral = -2000;
+    }
 
 		/*PID算法实现*/
     pid->actual_val = pid->Kp*pid->err+pid->Ki*pid->integral+pid->Kd*(pid->err-pid->err_last);
@@ -143,4 +161,4 @@ float curr_pid_realize(_pid *pid, float actual_val)
     return pid->actual_val;
 }
 
-/************************************ END OF FIER *******************************************************/
+/************************************ END OF FILE *******************************************************/

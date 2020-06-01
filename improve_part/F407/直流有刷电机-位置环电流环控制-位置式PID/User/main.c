@@ -27,6 +27,7 @@
 #include "./tim/bsp_basic_tim.h"
 #include "./pid/bsp_pid.h"
 #include "./adc/bsp_adc.h"
+#include "./protocol/protocol.h"
 
 int pulse_num=0;
 	
@@ -56,6 +57,9 @@ int main(void)
   /* 初始化 LED */
   LED_GPIO_Config();
   
+  /* 协议初始化 */
+  protocol_init();
+  
   /* 初始化串口 */
   DEBUG_USART_Config();
 
@@ -76,6 +80,8 @@ int main(void)
   /* PID 参数初始化 */
   PID_param_init();
   
+  set_pid_target(&pid_location, target_location);    // 设置目标值
+  
 #if defined(PID_ASSISTANT_EN)
   set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
   set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &target_location, 1);     // 给通道 1 发送目标值
@@ -83,6 +89,9 @@ int main(void)
 
 	while(1)
 	{
+    /* 接收数据处理 */
+    receiving_process();
+    
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
@@ -103,7 +112,7 @@ int main(void)
     /* 扫描KEY3 */
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
-      /* 增大目标速度 */
+      /* 增大目标位置 */
       target_location += PER_CYCLE_PULSES;
       
       set_pid_target(&pid_location, target_location);
@@ -115,7 +124,7 @@ int main(void)
     /* 扫描KEY4 */
     if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
     {
-      /* 减小目标速度 */
+      /* 减小目标位置 */
       target_location -= PER_CYCLE_PULSES;
       
       set_pid_target(&pid_location, target_location);
