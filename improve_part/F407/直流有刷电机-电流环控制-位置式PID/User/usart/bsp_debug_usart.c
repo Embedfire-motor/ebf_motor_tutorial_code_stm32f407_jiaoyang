@@ -205,13 +205,12 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
   packet.cmd = UART_RxBuffer[CMD_INDEX_VAL];
   packet.len  = COMPOUND_32BIT(&UART_RxBuffer[LEN_INDEX_VAL]);     // 合成长度
   packet.head = COMPOUND_32BIT(&UART_RxBuffer[HEAD_INDEX_VAL]);    // 合成包头
-  LED1_TOGGLE;
+
   if (packet.head == PACKET_HEAD)    // 检查包头
   {
     /* 包头正确 */
     if (check_sum(0, UART_RxBuffer, packet.len - 1) == UART_RxBuffer[packet.len - 1])    // 检查校验和是否正确
     {
-      LED3_TOGGLE;
       switch(packet.cmd)
       {
         case SET_P_I_D_CMD:

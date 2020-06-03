@@ -19,9 +19,9 @@ void PID_param_init(void)
     pid_location.err_last=0.0;
     pid_location.integral=0.0;
   
-		pid_location.Kp = 0.1;
+		pid_location.Kp = 0.11;
 		pid_location.Ki = 0.0;
-		pid_location.Kd = 0.1;
+		pid_location.Kd = 0.12;
   
   	/* 速度相关初始化参数 */
     pid_curr.target_val=100.0;				
@@ -94,7 +94,7 @@ float location_pid_realize(_pid *pid, float actual_val)
     pid->err = pid->target_val - actual_val;
   
     /* 限定闭环死区 */
-    if((pid->err >= -20) && (pid->err <= 20))
+    if((pid->err >= -40) && (pid->err <= 40))
     {
       pid->err = 0;
       pid->integral = 0;
