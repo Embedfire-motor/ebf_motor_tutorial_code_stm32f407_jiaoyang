@@ -241,7 +241,7 @@ int32_t get_curr_val(void)
   
   curr_adc_mean = adc_mean_sum / adc_mean_count;    // 保存平均值
   
-  if (adc_mean_count > 10)
+  if (adc_mean_count > 7)
   {
     adc_mean_count = 0;
     adc_mean_sum = 0;

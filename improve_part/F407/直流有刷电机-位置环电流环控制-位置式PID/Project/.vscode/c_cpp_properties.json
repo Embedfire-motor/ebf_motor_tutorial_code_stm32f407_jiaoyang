@@ -19,6 +19,7 @@
                 "d:\\电机开发\\base_code\\improve_part\\F407\\直流有刷电机-位置环电流环控制-位置式PID\\Project\\..\\User\\motor_control",
                 "d:\\电机开发\\base_code\\improve_part\\F407\\直流有刷电机-位置环电流环控制-位置式PID\\Project\\..\\User\\encoder",
                 "d:\\电机开发\\base_code\\improve_part\\F407\\直流有刷电机-位置环电流环控制-位置式PID\\Project\\..\\User\\adc",
+                "d:\\电机开发\\base_code\\improve_part\\F407\\直流有刷电机-位置环电流环控制-位置式PID\\Project\\..\\User\\protocol",
                 "d:\\电机开发\\base_code\\improve_part\\F407\\直流有刷电机-位置环电流环控制-位置式PID\\Project\\..\\Doc"
             ],
             "defines": [
@@ -36,6 +37,9 @@
                 "__register=",
                 "__pure=",
                 "__value_in_regs=",
+                "__va_start(x)=",
+                "__va_arg(x)=",
+                "__va_end(x)=",
                 "USE_HAL_DRIVER",
                 "STM32F407xx",
                 "PID_ASSISTANT_EN"

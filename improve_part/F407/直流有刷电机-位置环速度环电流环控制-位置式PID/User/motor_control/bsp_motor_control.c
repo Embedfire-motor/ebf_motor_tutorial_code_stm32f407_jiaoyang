@@ -28,6 +28,7 @@ static uint16_t    dutyfactor = 0;             // 记录占空比
 static uint8_t    is_motor_en = 0;             // 电机使能
 
 #define TARGET_CURRENT_MAX    130    // 目标电流的最大值 mA
+#define TARGET_SPEED_MAX      200    // 目标速度的最大值 r/m
 
 static void sd_gpio_config(void)
 {
@@ -140,20 +141,52 @@ void set_motor_disable(void)
   */
 void motor_pid_control(void)
 {
-  static uint32_t location_timer = 0;         // 位置环周期
+  static uint32_t louter_ring_timer = 0;      // 外环环周期（电流环计算周期为定时器周期T，速度环为2T，位置环为3T）
   int32_t actual_current = get_curr_val();    // 读取当前电流值
   
   if (is_motor_en == 1)                  // 电机在使能状态下才进行控制处理
   {
     static int32_t Capture_Count = 0;    // 当前时刻总计数值
+    static int32_t Last_Count = 0;       // 上一时刻总计数值
     float cont_val = 0;                  // 当前控制值
     
     /* 当前时刻总计数值 = 计数器值 + 计数溢出次数 * ENCODER_TIM_PERIOD  */
     Capture_Count = __HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (Encoder_Overflow_Count * ENCODER_TIM_PERIOD);
     
-    if (location_timer++%2 == 0)
+    /* 位置环计算 */
+    if (louter_ring_timer % 3 == 0)
     {
       cont_val = location_pid_realize(&pid_location, Capture_Count);    // 进行 PID 计算
+
+      /* 目标速度上限处理 */
+      if (cont_val > TARGET_SPEED_MAX)
+      {
+        cont_val = TARGET_SPEED_MAX;
+      }
+      else if (cont_val < -TARGET_SPEED_MAX)
+      {
+        cont_val = -TARGET_SPEED_MAX;
+      }
+   
+      set_pid_target(&pid_speed, cont_val);    // 设定速度的目标值
+      
+    #if defined(PID_ASSISTANT_EN)
+      int32_t temp = cont_val;
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
+    #endif
+    }
+
+    /* 速度环计算 */
+    static int32_t actual_speed = 0;                 // 实际测得速度
+    if (louter_ring_timer++ % 2 == 0)
+    {
+      /* 转轴转速 = 单位时间内的计数值 / 编码器总分辨率 * 时间系数  */
+      actual_speed = ((float)(Capture_Count - Last_Count) / ENCODER_TOTAL_RESOLUTION / REDUCTION_RATIO) / (GET_BASIC_TIM_PERIOD()*2/1000.0/60.0);
+        
+      /* 记录当前总计数值，供下一时刻计算使用 */
+      Last_Count = Capture_Count;
+      
+      cont_val = speed_pid_realize(&pid_speed, actual_speed);    // 进行 PID 计算
 
       if (cont_val > 0)    // 判断电机方向
       {
@@ -164,16 +197,17 @@ void motor_pid_control(void)
         cont_val = -cont_val;
         set_motor_direction(MOTOR_REV);
       }
-      
+   
       cont_val = (cont_val > TARGET_CURRENT_MAX) ? TARGET_CURRENT_MAX : cont_val;    // 电流上限处理
-      set_pid_target(&pid_curr, cont_val);    // 设定速度的目标值
+      set_pid_target(&pid_curr, cont_val);    // 设定电流的目标值
       
     #if defined(PID_ASSISTANT_EN)
       int32_t temp = cont_val;
-      set_computer_value(SEND_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH3, &temp, 1);     // 给通道 3 发送目标值  
     #endif
     }
     
+    /* 电流环计算 */
     cont_val = curr_pid_realize(&pid_curr, actual_current);    // 进行 PID 计算
     
     if (cont_val < 0)
@@ -188,10 +222,11 @@ void motor_pid_control(void)
     set_motor_speed(cont_val);                                                 // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)
-    set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Capture_Count,  1);          // 给通道 1 发送实际值
-    set_computer_value(SEND_FACT_CMD, CURVES_CH2, &actual_current, 1);         // 给通道 2 发送实际值
+//    set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Capture_Count,  1);         // 给通道 1 发送实际值
+    set_computer_value(SEND_FACT_CMD, CURVES_CH2, &actual_speed,   1);         // 给通道 2 发送实际值
+//    set_computer_value(SEND_FACT_CMD, CURVES_CH3, &actual_current, 1);         // 给通道 3 发送实际值
   #else
-    printf("实际值：%d. 目标值：%.0f. 差值：%.0f. 控制值：%.0f\n", Capture_Count, get_pid_target(&pid_location), (float)Capture_Count - get_pid_target(&pid_location), cont_val);      // 打印实际值和目标值
+    printf("1.电流：实际值：%d. 目标值：%.0f.\n", Capture_Count, get_pid_target(&pid_location));      // 打印实际值和目标值
   #endif
   }
 }

@@ -324,6 +324,10 @@ int8_t receiving_process(void)
         }
         else if (packet.ch == CURVES_CH2)
         {
+          set_p_i_d(&pid_speed, temp_p.f, temp_i.f, temp_d.f);    // 设置 P I D
+        }
+        else if (packet.ch == CURVES_CH3)
+        {
           set_p_i_d(&pid_curr, temp_p.f, temp_i.f, temp_d.f);    // 设置 P I D
         }
       }
@@ -334,10 +338,14 @@ int8_t receiving_process(void)
         int target_temp = COMPOUND_32BIT(&frame_data[13]);    // 得到数据
         packet.ch = frame_data[CHX_INDEX_VAL];
         
-        /* 只设置速度的目标值，电流的目标置是由速度pid的输出决定的 */
+        /* 只设置位置的目标值，电流的目标置是由速度pid的输出决定的 */
         if (packet.ch == CURVES_CH1)    
         {
           set_pid_target(&pid_location, target_temp);    // 设置目标值
+        }
+        else if (packet.ch == CURVES_CH2)
+        {
+          set_pid_target(&pid_speed, target_temp);    // 设置目标值
         }
       }
       break;
@@ -365,14 +373,7 @@ int8_t receiving_process(void)
         uint32_t temp = COMPOUND_32BIT(&frame_data[13]);     // 周期数
         packet.ch = frame_data[CHX_INDEX_VAL];
         
-        if (packet.ch == CURVES_CH1)
-        {
-          SET_BASIC_TIM_PERIOD(temp);                             // 设置定时器周期1~1000ms
-        }
-        else if (packet.ch == CURVES_CH2)
-        {
-          SET_BASIC_TIM_PERIOD(temp);                             // 设置定时器周期1~1000ms
-        }
+        SET_BASIC_TIM_PERIOD(temp);                             // 设置定时器周期1~1000ms
       }
       break;
 

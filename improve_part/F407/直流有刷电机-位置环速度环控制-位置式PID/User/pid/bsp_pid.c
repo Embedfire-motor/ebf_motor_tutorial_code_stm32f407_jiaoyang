@@ -21,7 +21,7 @@ void PID_param_init(void)
     pid_location.integral=0.0;
   
 		pid_location.Kp = 0.158;
-		pid_location.Ki = 0.12;
+		pid_location.Ki = 0.0;
 		pid_location.Kd = 0.0;
   
   	/* 速度相关初始化参数 */

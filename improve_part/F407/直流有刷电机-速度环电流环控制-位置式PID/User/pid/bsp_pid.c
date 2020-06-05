@@ -42,7 +42,7 @@ void PID_param_init(void)
   pid_temp[0] = pid_speed.Kp;
   pid_temp[1] = pid_speed.Ki;
   pid_temp[2] = pid_speed.Kd;
-  set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 2 发送 P I D 值
+//  set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 2 发送 P I D 值
 #endif
 } 
 

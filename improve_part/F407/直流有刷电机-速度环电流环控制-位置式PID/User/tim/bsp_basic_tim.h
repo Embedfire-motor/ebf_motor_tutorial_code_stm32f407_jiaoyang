@@ -11,7 +11,7 @@
 
 /* 累计 TIM_Period个后产生一个更新或者中断*/		
 	//当定时器从0计数到BASIC_PERIOD_COUNT-1，即为BASIC_PERIOD_COUNT次，为一个定时周期
-#define BASIC_PERIOD_COUNT    (50*25)
+#define BASIC_PERIOD_COUNT    (50*20)
 
 //定时器时钟源TIMxCLK = 2 * PCLK1  
 //				PCLK1 = HCLK / 4 
