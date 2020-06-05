@@ -4,6 +4,7 @@
 #include "stm32f4xx.h"
 #include "./tim/bsp_motor_tim.h"
 #include "./pid/bsp_pid.h"
+#include "./Encoder/bsp_encoder.h"
 #include "main.h"
 
 //Òý½Å¶¨Òå

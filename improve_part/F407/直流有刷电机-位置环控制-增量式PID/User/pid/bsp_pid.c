@@ -25,7 +25,7 @@ void PID_param_init()
 
 #if defined(PID_ASSISTANT_EN)
     float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
-    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
 
@@ -35,7 +35,7 @@ void PID_param_init()
 	*	@note 	无
   * @retval 无
   */
-void set_pid_actual(float temp_val)
+void set_pid_target(float temp_val)
 {
   pid.target_val = temp_val;    // 设置当前的目标值
 }
@@ -46,7 +46,7 @@ void set_pid_actual(float temp_val)
 	*	@note 	无
   * @retval 目标值
   */
-float get_pid_actual(void)
+float get_pid_target(void)
 {
   return pid.target_val;    // 设置当前的目标值
 }
@@ -83,12 +83,13 @@ float PID_realize(float actual_val)
   }
   
 	/*PID算法实现*/
-	pid.actual_val += pid.Kp*(pid.err - pid.err_next) 
-                 + pid.Ki*pid.err 
-                 + pid.Kd*(pid.err - 2 * pid.err_next + pid.err_last);
+	pid.actual_val += pid.Kp * (pid.err - pid.err_next) + 
+                    pid.Ki * pid.err + 
+                    pid.Kd * (pid.err - 2 * pid.err_next + pid.err_last);
 	/*传递误差*/
 	pid.err_last = pid.err_next;
 	pid.err_next = pid.err;
+  
 	/*返回当前实际值*/
 	return pid.actual_val;
 }

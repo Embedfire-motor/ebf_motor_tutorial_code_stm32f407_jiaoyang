@@ -26,13 +26,6 @@
 #include "./Encoder/bsp_encoder.h"
 #include "./tim/bsp_basic_tim.h"
 #include "./pid/bsp_pid.h"
-
-int pulse_num=0;
-	
-void Delay(__IO uint32_t nCount)	 //简单的延时函数
-{
-	for(; nCount != 0; nCount--);
-}	
 	
 /**
   * @brief  主函数
@@ -54,6 +47,9 @@ int main(void)
   
   /* 初始化 LED */
   LED_GPIO_Config();
+  
+  /* 协议初始化 */
+  protocol_init();
   
   /* 初始化串口 */
   DEBUG_USART_Config();
@@ -79,6 +75,9 @@ int main(void)
 
 	while(1)
 	{
+    /* 接收数据处理 */
+    receiving_process();
+    
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {

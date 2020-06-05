@@ -139,7 +139,7 @@ void motor_pid_control(void)
 {
   if (is_motor_en == 1)     // 电机在使能状态下才进行控制处理
   {
-    static float cont_val = 0;    // 当前控制值
+    float cont_val = 0;    // 当前控制值
     int32_t Capture_Count = 0;    // 当前时刻总计数值
     int temp_val = 0;             // 当前控制值
     
@@ -161,9 +161,9 @@ void motor_pid_control(void)
     set_motor_speed(temp_val);                                                                     // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)
-    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &Capture_Count, 1);          // 给通道 1 发送实际值
+    set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Capture_Count, 1);          // 给通道 1 发送实际值
   #else
-    printf("实际值：%d. 目标值：%.0f\n", actual_speed, get_pid_actual());      // 打印实际值和目标值
+    printf("实际值：%d. 目标值：%.0f\n", actual_speed, get_pid_target());      // 打印实际值和目标值
   #endif
   }
 }

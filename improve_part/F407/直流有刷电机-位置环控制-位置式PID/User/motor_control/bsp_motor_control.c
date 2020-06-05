@@ -19,6 +19,7 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./pid/bsp_pid.h"
 #include "./tim/bsp_basic_tim.h"
+#include "./Encoder/bsp_encoder.h"
 #include <math.h>
 #include <stdlib.h>
 
@@ -163,7 +164,7 @@ void motor_pid_control(void)
   #if defined(PID_ASSISTANT_EN)
     set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Capture_Count, 1);                // 给通道 1 发送实际值
   #else
-    printf("实际值：%d. 目标值：%.0f\n", actual_speed, get_pid_actual());      // 打印实际值和目标值
+    printf("实际值：%d. 目标值：%.0f\n", actual_speed, get_pid_target());      // 打印实际值和目标值
   #endif
   }
 }

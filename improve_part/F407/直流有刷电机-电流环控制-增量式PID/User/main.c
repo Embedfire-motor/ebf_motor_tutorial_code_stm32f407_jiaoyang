@@ -56,6 +56,9 @@ int main(void)
   
   /* 初始化串口 */
   DEBUG_USART_Config();
+  
+  /* 协议初始化 */
+  protocol_init();
 
   /* 电机初始化 */
   motor_init();
@@ -78,6 +81,9 @@ int main(void)
 
 	while(1)
 	{
+    /* 接收数据处理 */
+    receiving_process();
+    
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {

@@ -26,26 +26,6 @@
 #include "./Encoder/bsp_encoder.h"
 #include "./tim/bsp_basic_tim.h"
 
-int pulse_num=0;
-	
-void Delay(__IO uint32_t nCount)	 //简单的延时函数
-{
-	for(; nCount != 0; nCount--);
-}	
-//uint8_t temp[4] = {255, 65, 46, 61};
-//void fun(char c[])
-//{
-//	
-//	float f, f1;
-
-//	//temp = c;
-
-//	f1 = *(float*)& temp[0];
-//	f = *(float *)&c[0];
-
-//	printf("f = %f, f = %f\n", f, f1);
-//}
-	
 /**
   * @brief  主函数
   * @param  无
@@ -67,6 +47,9 @@ int main(void)
   /* 初始化 LED */
   LED_GPIO_Config();
   
+  /* 协议初始化 */
+  protocol_init();
+  
   /* 初始化串口 */
   DEBUG_USART_Config();
 
@@ -85,19 +68,22 @@ int main(void)
   PID_param_init();
   
 #if defined(PID_ASSISTANT_EN)
-  set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
-  set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &target_location, 1);     // 给通道 1 发送目标值
+  set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
+  set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &target_location, 1);     // 给通道 1 发送目标值
 #endif
 
 	while(1)
 	{
+    /* 接收数据处理 */
+    receiving_process();
+    
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
     {
     #if defined(PID_ASSISTANT_EN) 
-      set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
+      set_computer_value(SEND_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     #endif
-      set_pid_actual(target_location);    // 设置目标值
+      set_pid_target(target_location);    // 设置目标值
       set_motor_enable();              // 使能电机
     }
     
@@ -105,7 +91,7 @@ int main(void)
     if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
     {
       set_motor_disable();     // 停止电机
-      set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
+      set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
     }
     
     /* 扫描KEY3 */
@@ -114,9 +100,9 @@ int main(void)
       /* 增大目标速度 */
       target_location += CIRCLE_PULSES;
       
-      set_pid_actual(target_location);
+      set_pid_target(target_location);
     #if defined(PID_ASSISTANT_EN)
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
     #endif
     }
 
@@ -126,9 +112,9 @@ int main(void)
       /* 减小目标速度 */
       target_location -= CIRCLE_PULSES;
       
-      set_pid_actual(target_location);
+      set_pid_target(target_location);
     #if defined(PID_ASSISTANT_EN)
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_location, 1);     // 给通道 1 发送目标值
     #endif
     }
 	}
