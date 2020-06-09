@@ -194,7 +194,7 @@ void MOTOR_PUL_IRQHandler(void)
   * @param  None
   * @retval None
   */	
-void  BASIC_TIM_IRQHandler (void)
+void BASIC_TIM_IRQHandler (void)
 {
 	HAL_TIM_IRQHandler(&TIM_PIDHandle);	 	
 }

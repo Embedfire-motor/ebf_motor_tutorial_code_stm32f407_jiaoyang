@@ -17,7 +17,6 @@
   
 #include "./tim/bsp_basic_tim.h"
 #include "./usart/bsp_debug_usart.h"
-#include "./stepper/bsp_stepper_ctrl.h"
 
 TIM_HandleTypeDef TIM_PIDHandle;
  /**

@@ -16,8 +16,6 @@
   */ 
 
 #include "./Encoder/bsp_encoder.h"
-#include "./tim/bsp_basic_tim.h"
-#include "./pid/bsp_pid.h"
 
 /* 定时器溢出次数 */
 __IO int16_t encoder_overflow_count = 0;

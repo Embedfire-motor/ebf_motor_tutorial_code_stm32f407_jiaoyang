@@ -74,26 +74,6 @@ void Set_Stepper_Start(void)
 }
 
 /**
-  * @brief  步进电机方向
-  * @param  无
-  * @retval 无
-  */
-void Set_Stepper_Dir(int dir)
-{
-//  Set_Stepper_Stop();
-//  capture_per_unit = 0;
-//  cont_val = 0;
-//  pid.actual_val = 0;
-//  pid.target_val = 0;
-//  pid.err = 0;
-//  pid.err_last = 0;
-//  pid.err_next = 0;
-//  MOTOR_DIR(dir);
-//  sys_status.stepper_dir = dir;
-//  Set_Stepper_Start();
-}
-
-/**
   * @brief  步进电机速度闭环控制
   * @retval 无
   * @note   基本定时器中断内调用
@@ -105,7 +85,9 @@ void Stepper_Speed_Ctrl(void)
   __IO int32_t capture_count = 0;
   __IO int32_t capture_per_unit = 0;
   /* 经过pid计算后的期望值 */
-  static __IO float cont_val = 0;
+  static __IO float cont_val = 0.0f;
+  
+  __IO float timer_delay = 0.0f;
   
   /* 当电机运动时才启动pid计算 */
   if((sys_status.MSD_ENA == 1) && (sys_status.stepper_running == 1))
@@ -115,32 +97,32 @@ void Stepper_Speed_Ctrl(void)
     capture_per_unit = capture_count - last_count;
     last_count = capture_count;
     
-    //capture_per_unit = abs(capture_per_unit);
-
     /* 单位时间内的编码器脉冲数作为实际值传入pid控制器 */
     cont_val += PID_realize((float)capture_per_unit);// 进行 PID 计算
     
-    /* 对计算得出的期望值取绝对值 */
-    cont_val = fabsf(cont_val);
+    /* 判断速度方向 */
+    cont_val > 0 ? (MOTOR_DIR(CW)) : (MOTOR_DIR(CCW));
+    
+    /* 计算得出的期望值取绝对值 */
+    timer_delay = fabsf(cont_val);
     
     /* 计算比较计数器的值 */
-    OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (cont_val * PULSE_RATIO * 50))) >> 1;
-        
-   #if PID_ASSISTANT_EN
-    int Temp = pid.target_val;    // 上位机需要整数参数，转换一下
-    set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &Temp, 1);// 给通道 1 发送目标值
-    Temp = capture_per_unit;    // 上位机需要整数参数，转换一下
-    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &Temp, 1);  // 给通道 1 发送实际值
-   #else
-    printf("实际值：%d，目标值：%.0f\r\n", capture_per_unit, pid.target_val);// 打印实际值和目标值 
-   #endif
+    OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (timer_delay * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
+    
+    #if PID_ASSISTANT_EN
+     int Temp = capture_per_unit;    // 上位机需要整数参数，转换一下
+     set_computer_value(SEED_FACT_CMD, CURVES_CH1, &Temp, 1);  // 给通道 1 发送实际值
+    #else
+     printf("实际值：%d，目标值：%.0f\r\n", capture_per_unit, pid.target_val);// 打印实际值和目标值 
+    #endif
   }
   else
-  { /*停机状态所有参数清零*/
+  {
+    /*停机状态所有参数清零*/
+//    OC_Pulse_num = 0xFFFF;
     last_count = 0;
     cont_val = 0;
     pid.actual_val = 0;
-    pid.target_val = 0;
     pid.err = 0;
     pid.err_last = 0;
     pid.err_next = 0;

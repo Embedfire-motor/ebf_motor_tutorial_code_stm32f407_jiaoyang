@@ -17,9 +17,8 @@
 
 #define PULSE_RATIO       (float)(SPR/ENCODER_TOTAL_RESOLUTION)//步进电机单圈脉冲数与编码器单圈脉冲的比值
 
-#define TARGET_SPEED      4                   //步进电机运动时的目标转速，单位：转/秒
-//#define SAMPLES_PER_SEC   50                  //每秒采样次数 = 1000ms / 采样周期，
-#define PID_ASSISTANT_EN  1
+#define TARGET_SPEED      1                   //步进电机运动时的目标转速，单位：转/秒
+#define SAMPLING_PERIOD   50                  //PID采样频率，单位Hz
 
 typedef struct {
   unsigned char stepper_dir : 1;               //步进电机方向
@@ -31,7 +30,6 @@ typedef struct {
 void MSD_ENA(int NewState);
 void Set_Stepper_Stop(void);
 void Set_Stepper_Start(void);
-void Set_Stepper_Dir(int dir);
 void Stepper_Speed_Ctrl(void);
 
 #endif /* __STEP_MOTOR_CTRL_H */

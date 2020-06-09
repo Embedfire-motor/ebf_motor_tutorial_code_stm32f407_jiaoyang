@@ -15,16 +15,10 @@
   ******************************************************************************
   */
 #include "./stepper/bsp_stepper_init.h"
-#include "./delay/core_delay.h"   
-#include "stm32f4xx.h"
-
-void TIM_SetTIMxCompare(TIM_TypeDef *TIMx,uint32_t channel,uint32_t compare);
-void TIM_SetPWM_period(TIM_TypeDef* TIMx,uint32_t TIM_period);
 
 TIM_HandleTypeDef TIM_StepperHandle;
 
 __IO uint16_t OC_Pulse_num = 65535;     //比较输出的计数值
-
 
  /**
   * @brief  中断优先级配置
@@ -94,7 +88,7 @@ static void Stepper_GPIO_Config(void)
  * TIM_RepetitionCounter TIMx,x[1,8]才有(高级定时器)
  *-----------------------------------------------------------------------------
  */
-void TIM_PWMOUTPUT_Config(void)
+static void TIM_PWMOUTPUT_Config(void)
 {
 	TIM_OC_InitTypeDef  TIM_OCInitStructure;  	
 	/*使能定时器*/
@@ -150,12 +144,11 @@ void TIM_PWMOUTPUT_Config(void)
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
   __IO uint16_t count;
-  __IO uint16_t temp_val;
   
 	/*获取当前计数*/
   count=__HAL_TIM_GET_COUNTER(htim);
 	/*设置比较数值*/
-  __HAL_TIM_SET_COMPARE(htim, MOTOR_PUL_CHANNEL_x, (uint16_t)(count+OC_Pulse_num));
+  __HAL_TIM_SET_COMPARE(htim, MOTOR_PUL_CHANNEL_x, count + OC_Pulse_num);
 }
 
 /**

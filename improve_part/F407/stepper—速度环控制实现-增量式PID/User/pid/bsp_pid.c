@@ -18,7 +18,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "./pid/bsp_pid.h"
 #include "math.h"
-#include "./stepper/bsp_stepper_ctrl.h"
 
 /* 定义全局变量 */
 _pid pid;
@@ -97,10 +96,7 @@ float PID_realize(float temp_val)
 	pid.actual_val = temp_val;
 	/*计算目标值与实际值的误差*/
   pid.err=pid.target_val-pid.actual_val;
-  
-  if((pid.err < 2.0f) && (pid.err > -2.0f))
-    pid.err = 0; 
-  
+
 	/*PID算法实现*/
 	float increment_val = pid.Kp*(pid.err - pid.err_next) + pid.Ki*pid.err + pid.Kd*(pid.err - 2 * pid.err_next + pid.err_last);
 	/*传递误差*/
@@ -109,23 +105,3 @@ float PID_realize(float temp_val)
 	/*返回增量值*/
 	return increment_val;
 }
-
-///**
-//  * @brief  定时器周期调用函数
-//  * @param  无
-//	*	@note 	无
-//  * @retval 无
-//  */
-//void time_period_fun()
-//{
-//	if(!pid_status)
-//	{
-//		float val=PID_realize(set_point);
-
-//    #if PID_ASSISTANT_EN
-//    int temp = val;    // 上位机需要整数参数，转换一下
-//    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送实际值
-//    #endif
-//	}
-//}
-

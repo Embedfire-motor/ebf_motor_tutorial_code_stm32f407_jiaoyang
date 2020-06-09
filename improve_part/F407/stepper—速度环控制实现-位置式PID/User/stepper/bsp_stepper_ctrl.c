@@ -73,19 +73,6 @@ void Set_Stepper_Start(void)
 }
 
 /**
-  * @brief  步进电机方向
-  * @param  无
-  * @retval 无
-  */
-void Set_Stepper_Dir(int dir)
-{
-  if(sys_status.stepper_dir != dir)
-  {
-    Set_Stepper_Stop();
-  }
-}
-
-/**
   * @brief  步进电机位置式PID控制
   * @retval 无
   * @note   基本定时器中断内调用
@@ -99,7 +86,7 @@ void Stepper_Speed_Ctrl(void)
   
   /* 经过pid计算后的期望值 */
   __IO float cont_val = 0;
-  
+
   /* 当电机运动时才启动pid计算 */
   if((sys_status.MSD_ENA == 1) && (sys_status.stepper_running == 1))
   {
@@ -110,23 +97,18 @@ void Stepper_Speed_Ctrl(void)
     
     /* 单位时间内的编码器脉冲数作为实际值传入pid控制器 */
     cont_val = PID_realize((float)capture_per_unit);// 进行 PID 计算
-//    if(capture_per_unit == 0)
-//    {
-//      Set_Stepper_Stop();
-//    }
-    if(cont_val < 0)
-    {
-      MOTOR_DIR(HIGH);
-    }
+    
+    /* 判断速度方向 */
+    cont_val > 0 ? (MOTOR_DIR(CW)) : (MOTOR_DIR(CCW));
 
     /* 对计算得出的期望值取绝对值 */
     cont_val = fabsf(cont_val);
-    
     /* 计算比较计数器的值 */
     OC_Pulse_num = ((uint16_t)(T1_FREQ / (cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
-    
+
    #if PID_ASSISTANT_EN
-    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &capture_per_unit, 1);  // 给通道 1 发送实际值
+    int temp = capture_per_unit;
+    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &temp, 1);  // 给通道 1 发送实际值
    #else
     printf("实际值：%d，目标值：%.0f\r\n", capture_per_unit, pid.target_val);// 打印实际值和目标值
    #endif
@@ -136,7 +118,6 @@ void Stepper_Speed_Ctrl(void)
     capture_per_unit = 0;
     cont_val = 0;
     pid.actual_val = 0;
-//    pid.target_val = 0;
     pid.err = 0;
     pid.err_last = 0;
     pid.integral = 0;

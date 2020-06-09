@@ -196,7 +196,7 @@ void MOTOR_PUL_IRQHandler(void)
   */	
 void  BASIC_TIM_IRQHandler (void)
 {
-	HAL_TIM_IRQHandler(&TIM_TimeBaseStructure);	 	
+	HAL_TIM_IRQHandler(&TIM_PIDHandle);	 	
 }
 
 /**

@@ -39,7 +39,7 @@ void PID_param_init()
   pid.err_last=0.0;
   pid.integral=0.0;
   pid.Kp = 0.14;
-  pid.Ki = 0.04;
+  pid.Ki = 0.09;
   pid.Kd = 0.09;
 
   #if PID_ASSISTANT_EN
@@ -97,11 +97,7 @@ float PID_realize(float actual_val)
   pid.actual_val = actual_val;
   /*计算目标值与实际值的误差*/
   pid.err = pid.target_val - pid.actual_val;
-  
-  /*误差小于0.5不处理*/
-  if((pid.err<=0.5f)&&(pid.err>=-0.5f))
-  pid.err = 0;  
-  
+
   /*误差累积*/
   pid.integral += pid.err;
   /*PID算法实现*/

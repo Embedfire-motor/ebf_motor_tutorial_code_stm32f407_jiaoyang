@@ -6,7 +6,7 @@
 
 /*宏定义*/
 /*******************************************************/
-#define T1_FREQ           (SystemCoreClock/(TIM_PRESCALER+1)) // 频率ft值
+#define T1_FREQ           (SystemCoreClock/TIM_PRESCALER) // 频率ft值
 
 /*电机单圈参数*/
 #define STEP_ANGLE				1.8f                        //步进电机的步距角 单位：度
@@ -16,11 +16,8 @@
 #define SPR               (FSPR*MICRO_STEP)           //细分后一圈所需脉冲数
 
 #define PULSE_RATIO       ((float)(SPR/ENCODER_TOTAL_RESOLUTION))//步进电机单圈脉冲数与编码器单圈脉冲的比值
-#define TARGET_SPEED      1                        //步进电机运动时的目标转速，单位：转/秒
-#define SAMPLING_PERIOD   50                          //采样周期，单位Hz
-
-/*是否开启上位机通信*/
-#define PID_ASSISTANT_EN  1
+#define TARGET_SPEED      1                           //步进电机运动时的目标转速，单位：转/秒
+#define SAMPLING_PERIOD   50                          //PID采样频率，单位Hz
 
 typedef struct {
   unsigned char stepper_dir : 1;               //步进电机方向
@@ -32,7 +29,6 @@ typedef struct {
 void MSD_ENA(int NewState);
 void Set_Stepper_Stop(void);
 void Set_Stepper_Start(void);
-void Set_Stepper_Dir(int dir);
 void Stepper_Speed_Ctrl(void);
 
 #endif /* __STEP_MOTOR_CTRL_H */

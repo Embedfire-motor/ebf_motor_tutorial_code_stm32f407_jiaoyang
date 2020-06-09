@@ -14,11 +14,10 @@
   *
   ******************************************************************************
   */
-  
 #include "./tim/bsp_basic_tim.h"
 #include "./usart/bsp_debug_usart.h"
 
-TIM_HandleTypeDef TIM_TimeBaseStructure;
+TIM_HandleTypeDef TIM_PIDHandle;
  /**
   * @brief  基本定时器 TIMx,x[6,7]中断优先级配置
   * @param  无
@@ -49,24 +48,24 @@ static void TIM_Mode_Config(void)
 	// 开启TIMx_CLK,x[6,7] 
 	BASIC_TIM_CLK_ENABLE(); 
 
-	TIM_TimeBaseStructure.Instance = BASIC_TIM;
+	TIM_PIDHandle.Instance = BASIC_TIM;
 	/* 累计 TIM_Period个后产生一个更新或者中断*/		
 	//当定时器从0计数到BASIC_PERIOD_COUNT，即为BASIC_PERIOD_COUNT+1次，为一个定时周期
-	TIM_TimeBaseStructure.Init.Period = BASIC_PERIOD_COUNT - 1;
+	TIM_PIDHandle.Init.Period = BASIC_PERIOD_COUNT - 1;
 
 	//定时器时钟源TIMxCLK = 2 * PCLK1  
 	//				PCLK1 = HCLK / 4 
 	//				=> TIMxCLK=HCLK/2=SystemCoreClock/2=84MHz
 	// 设定定时器频率为=TIMxCLK/(Prescaler+1)=10000Hz
-	TIM_TimeBaseStructure.Init.Prescaler = BASIC_PRESCALER_COUNT - 1;	
-  TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;           // 向上计数
-  TIM_TimeBaseStructure.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;     // 时钟分频
+	TIM_PIDHandle.Init.Prescaler = BASIC_PRESCALER_COUNT - 1;	
+  TIM_PIDHandle.Init.CounterMode = TIM_COUNTERMODE_UP;           // 向上计数
+  TIM_PIDHandle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;     // 时钟分频
 
 	// 初始化定时器TIMx, x[2,3,4,5]
-	HAL_TIM_Base_Init(&TIM_TimeBaseStructure);
+	HAL_TIM_Base_Init(&TIM_PIDHandle);
 
 	// 开启定时器更新中断
-	HAL_TIM_Base_Start_IT(&TIM_TimeBaseStructure);	
+	HAL_TIM_Base_Start_IT(&TIM_PIDHandle);	
 }
 
 /**

@@ -336,7 +336,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,STM32F407xx,PID_ASSISTANT_EN,__TARGET_FPU_VFP</Define>
+              <Define>USE_HAL_DRIVER,STM32F407xx,__TARGET_FPU_VFP,PID_ASSISTANT_EN</Define>
               <Undefine></Undefine>
               <IncludePath>..\Libraries\CMSIS\Include;..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\Libraries\STM32F4xx_HAL_Driver\Inc;..\User;..\User\led</IncludePath>
             </VariousControls>
@@ -756,11 +756,6 @@
               <FileName>bsp_debug_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\usart\bsp_debug_usart.c</FilePath>
-            </File>
-            <File>
-              <FileName>core_delay.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\delay\core_delay.c</FilePath>
             </File>
             <File>
               <FileName>bsp_stepper_init.c</FileName>

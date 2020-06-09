@@ -19,6 +19,7 @@
 #include "./pid/bsp_pid.h"
 #include "./led/bsp_led.h"
 #include "./tim/bsp_basic_tim.h"
+#include "./stepper/bsp_stepper_ctrl.h"
 
 extern _pid pid;
 UART_HandleTypeDef UartHandle;
@@ -241,13 +242,13 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *husart)
         
         case START_CMD:
         {
-          pid_status = 0;              // Æô¶¯
+          Set_Stepper_Start();             // Æô¶¯
         }
         break;
         
         case STOP_CMD:
         {
-          pid_status = 1;              // Í£Ö¹
+          Set_Stepper_Stop();              // Í£Ö¹
         }
         break;
         

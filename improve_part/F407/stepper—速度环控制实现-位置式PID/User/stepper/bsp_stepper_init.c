@@ -15,16 +15,10 @@
   ******************************************************************************
   */
 #include "./stepper/bsp_stepper_init.h"
-#include "./delay/core_delay.h"   
-#include "stm32f4xx.h"
-
-void TIM_SetTIMxCompare(TIM_TypeDef *TIMx,uint32_t channel,uint32_t compare);
-void TIM_SetPWM_period(TIM_TypeDef* TIMx,uint32_t TIM_period);
 
 TIM_HandleTypeDef TIM_StepperHandle;
 
 __IO uint16_t OC_Pulse_num = 65535;     //比较输出的计数值
-
 
  /**
   * @brief  中断优先级配置
@@ -104,8 +98,8 @@ void TIM_PWMOUTPUT_Config(void)
 	//当定时器从0计数到TIM_PERIOD，即为TIM_PERIOD次，为一个定时周期
 	TIM_StepperHandle.Init.Period = TIM_PERIOD; 
 	// 高级控制定时器时钟源TIMxCLK = HCLK=168MHz 
-	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)
-	TIM_StepperHandle.Init.Prescaler = TIM_PRESCALER-1;
+	// 设定定时器频率为=TIMxCLK/(TIMx_Prescaler+1)
+	TIM_StepperHandle.Init.Prescaler = TIM_PRESCALER;
 
 	/*计数方式*/
 	TIM_StepperHandle.Init.CounterMode = TIM_COUNTERMODE_UP;            
@@ -148,15 +142,6 @@ void TIM_PWMOUTPUT_Config(void)
   */
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
-//  uint32_t count;
-//  __IO uint32_t temp_val;
-//	/*获取当前计数*/
-//  count=__HAL_TIM_GET_COUNTER(&TIM_StepperHandle);
-//	/*计算比较数值*/
-//  temp_val = TIM_PERIOD & (count+OC_Pulse_num);
-//	/*设置比较数值*/
-//  __HAL_TIM_SET_COMPARE(&TIM_StepperHandle,MOTOR_PUL_CHANNEL_x,temp_val);
-  
   __IO uint16_t count;
   
 	/*获取当前计数*/

@@ -21,7 +21,6 @@
 #include "main.h"
 #include "stm32f4xx.h"
 #include "./usart/bsp_debug_usart.h"
-#include "./delay/core_delay.h"
 #include "./key/bsp_key.h" 
 #include "./led/bsp_led.h"
 #include "./Encoder/bsp_encoder.h"
@@ -43,8 +42,8 @@ int main(void)
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
 	DEBUG_USART_Config();
-	printf("欢迎使用野火 电机开发板 步进电机 编码器测速 例程\r\n");
-	printf("按下按键1修改旋转方向、按键2使能\r\n");	
+	printf("欢迎使用野火 电机开发板 步进电机 速度闭环控制 位置式PID例程\r\n");
+	printf("按下按键1启动电机、按键2停止、按键3增加目标值、按键4减少目标值\r\n");	
   /* 初始化时间戳 */
   HAL_InitTick(5);
 	/*按键中断初始化*/
@@ -53,16 +52,15 @@ int main(void)
 	LED_GPIO_Config();
   /* 初始化基本定时器定时，20ms产生一次中断 */
 	TIMx_Configuration();
+  /* 编码器接口初始化 */
+	Encoder_Init();
 	/*步进电机初始化*/
 	stepper_Init();
   /* 上电默认停止电机 */
-  MOTOR_EN(OFF);
   Set_Stepper_Stop();
-  /* 编码器接口初始化 */
-	Encoder_Init();
   /* PID算法参数初始化 */
-  PID_param_init();	
-
+  PID_param_init();
+  
   /* 目标速度转换为编码器的脉冲数作为pid目标值 */
   pid.target_val = TARGET_SPEED * ENCODER_TOTAL_RESOLUTION / SAMPLING_PERIOD;
     
@@ -74,33 +72,50 @@ int main(void)
 
 	while(1)
 	{
+    /* 扫描KEY1，启动电机 */
+    if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
+		{
+    #if PID_ASSISTANT_EN
+      Set_Stepper_Start();
+      set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
+    #else
+      Set_Stepper_Start();
+    #endif
+		}
+    /* 扫描KEY2，停止电机 */
+    if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
+		{
+    #if PID_ASSISTANT_EN
+      Set_Stepper_Stop();
+      set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
+    #else
+      Set_Stepper_Stop();     
+    #endif
+		}
+    /* 扫描KEY3，增大目标速度 */
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
 		{
-      pid_status=!pid_status;//取反状态
+      /* 目标速度增加48，对应电机转速增加1 */
+      pid.target_val += 48;
+      
     #if PID_ASSISTANT_EN
-      if (pid_status)
-      {
-        Set_Stepper_Start();
-        set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
-      }
-      else
-      {
-        Set_Stepper_Stop();
-        set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
-      }
-    #else
-      if (!pid_status)
-      {
-        Set_Stepper_Start();
-      }
-      else
-      {
-        Set_Stepper_Stop();
-      }         
+      int temp = pid.target_val;
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送目标值
+    #endif
+		}
+    /* 扫描KEY4，减小目标速度 */
+    if( Key_Scan(KEY4_GPIO_PORT,KEY4_PIN) == KEY_ON  )
+		{
+      /* 目标速度减小48，对应电机转速减少1 */
+      pid.target_val -= 48;
+      
+    #if PID_ASSISTANT_EN
+      int temp = pid.target_val;
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送目标值
     #endif
 		}
 	}
-} 	
+}
 
 /**
   * @brief  定时器更新事件回调函数
