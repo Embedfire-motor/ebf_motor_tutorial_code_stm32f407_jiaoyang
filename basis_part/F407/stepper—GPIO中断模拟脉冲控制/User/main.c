@@ -21,9 +21,12 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./delay/core_delay.h"
 #include "./stepper/bsp_stepper_init.h"
-#include "./key/bsp_exti.h"
+#include "./key/bsp_key.h"
 #include "./led/bsp_led.h"  
 
+int i=0,j=0;
+int dir_val=0;
+int en_val=0;
 /**
   * @brief  主函数
   * @param  无
@@ -32,23 +35,40 @@
 int main(void) 
 {
 
-	/* 初始化系统时钟为168MHz */
-	SystemClock_Config();
-	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
-	DEBUG_USART_Config();
-	printf("欢迎使用野火 电机开发板 步进电机 IO口模拟控制 例程\r\n");
-	printf("按下按键1、2可修改旋转方向和使能\r\n");
+  /* 初始化系统时钟为168MHz */
+  SystemClock_Config();
+  /*初始化USART 配置模式为 115200 8-N-1，中断接收*/
+  DEBUG_USART_Config();
+  printf("欢迎使用野火 电机开发板 步进电机 IO口模拟控制 例程\r\n");
+  printf("按下按键1、2可修改旋转方向和使能\r\n");
 	/*按键中断初始化*/
-	EXTI_Key_Config();	
-	/*步进电机初始化*/
-	stepper_Init();	
+	Key_GPIO_Config();	
+  /*步进电机初始化*/
+  stepper_Init();	
 
-	MOTOR_EN(0);
+  MOTOR_EN(0);
 
-	while(1)
-	{     
+  while(1)
+  {     
+    if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
+		{
+			// LED2 取反		
+			LED2_TOGGLE;
+			
+			/*改变方向*/
+			dir_val=(++i % 2) ? CW : CCW;
+			MOTOR_DIR(dir_val);
+		}
+    if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
+		{
+			// LED1 取反		
+			LED1_TOGGLE;
 
-	}
+			/*改变使能*/
+			en_val=(++j % 2) ? CW : CCW;
+			MOTOR_EN(en_val);
+		}
+  }
 } 	
 
 /**
@@ -71,7 +91,7 @@ int main(void)
   * @param  None
   * @retval None
   */
- void SystemClock_Config(void)
+void SystemClock_Config(void)
 {
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_OscInitTypeDef RCC_OscInitStruct;
@@ -80,8 +100,8 @@ int main(void)
   __HAL_RCC_PWR_CLK_ENABLE();
   
   /* The voltage scaling allows optimizing the power consumption when the device is 
-     clocked below the maximum system frequency, to update the voltage scaling value 
-     regarding system frequency refer to product datasheet.  */
+    clocked below the maximum system frequency, to update the voltage scaling value 
+    regarding system frequency refer to product datasheet.  */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
   
   /* Enable HSE Oscillator and activate PLL with HSE as source */
