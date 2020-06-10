@@ -6,20 +6,20 @@
 //引脚定义
 /*******************************************************/
 
-#define LED1_PIN                  GPIO_PIN_15                
-#define LED1_GPIO_PORT            GPIOA                     
+#define LED1_PIN                  GPIO_PIN_15
+#define LED1_GPIO_PORT            GPIOA
 #define LED1_GPIO_CLK_ENABLE()    __GPIOA_CLK_ENABLE()
 
-#define LED2_PIN                  GPIO_PIN_2                 
-#define LED2_GPIO_PORT            GPIOE                      
+#define LED2_PIN                  GPIO_PIN_2
+#define LED2_GPIO_PORT            GPIOE
 #define LED2_GPIO_CLK_ENABLE()    __GPIOE_CLK_ENABLE()
 
-#define LED3_PIN                  GPIO_PIN_15               
-#define LED3_GPIO_PORT            GPIOG                       
+#define LED3_PIN                  GPIO_PIN_15
+#define LED3_GPIO_PORT            GPIOG
 #define LED3_GPIO_CLK_ENABLE()    __GPIOG_CLK_ENABLE()
 
-#define LED4_PIN                  GPIO_PIN_8               
-#define LED4_GPIO_PORT            GPIOB                       
+#define LED4_PIN                  GPIO_PIN_8
+#define LED4_GPIO_PORT            GPIOB
 #define LED4_GPIO_CLK_ENABLE()    __GPIOB_CLK_ENABLE()
 
 
@@ -43,14 +43,14 @@
 					LED2(a);\
 					LED3(a);\
 					LED4(a)
-					
+
 #define LED_ON		0
 #define LED_OFF		!0
 
 
 
 /* 直接操作寄存器的方法控制IO */
-#define	digitalHi(p,i)			{p->BSRR=i;}			  //设置为高电平		
+#define	digitalHi(p,i)			{p->BSRR=i;}			  //设置为高电平
 #define digitalLo(p,i)			{p->BSRR=(uint32_t)i << 16;}				//输出低电平
 #define digitalToggle(p,i)		{p->ODR ^=i;}			//输出反转状态
 

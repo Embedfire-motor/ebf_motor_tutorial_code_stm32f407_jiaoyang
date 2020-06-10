@@ -7,11 +7,11 @@
 #define GET_CPU_ClkFreq()       HAL_RCC_GetSysClockFreq()
 #define CPU_MHZ									168
 #define SysClockFreq            (CPU_MHZ*1000000)
-/* 为方便使用，在延时函数内部调用CPU_TS_TmrInit函数初始化时间戳寄存器，
-   这样每次调用函数都会初始化一遍。
-   把本宏值设置为0，然后在main函数刚运行时调用CPU_TS_TmrInit可避免每次都初始化 */  
+/*为方便使用，在延时函数内部调用CPU_TS_TmrInit函数初始化时间戳寄存器，
+  这样每次调用函数都会初始化一遍。
+  把本宏值设置为0，然后在main函数刚运行时调用CPU_TS_TmrInit可避免每次都初始化 */
 
-#define CPU_TS_INIT_IN_DELAY_FUNCTION   0  
+#define CPU_TS_INIT_IN_DELAY_FUNCTION   0
 
 
 /*******************************************************************************
@@ -25,7 +25,7 @@ uint32_t HAL_GetTick(void);
 void CPU_TS_Tmr_Delay_US(uint32_t us);
 #define HAL_Delay(ms)     					CPU_TS_Tmr_Delay_US(ms*1000)
 #define CPU_TS_Tmr_Delay_S(s)       CPU_TS_Tmr_Delay_MS(s*1000)
-		
+
 #define delay_ms(ms)	CPU_TS_Tmr_Delay_US(1000*ms)
 #define delay_us(us)	CPU_TS_Tmr_Delay_US(us)
 
