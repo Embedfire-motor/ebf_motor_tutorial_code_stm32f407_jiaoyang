@@ -24,9 +24,7 @@
 #include "./key/bsp_key.h"
 #include "./led/bsp_led.h"  
 
-int i=0,j=0;
-int dir_val=0;
-int en_val=0;
+
 /**
   * @brief  主函数
   * @param  无
@@ -34,6 +32,9 @@ int en_val=0;
   */
 int main(void) 
 {
+	int i=0,j=0;
+	int dir_val=0;
+	int en_val=0;
 
   /* 初始化系统时钟为168MHz */
   SystemClock_Config();
