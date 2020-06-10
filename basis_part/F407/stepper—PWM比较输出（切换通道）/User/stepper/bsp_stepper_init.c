@@ -158,16 +158,12 @@ void MOTOR_PUL_IRQHandler(void)
   */
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  uint32_t count;
-  __IO uint32_t temp_val;
-  /*获取当前计数*/
-  count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
-  /*计算比较数值*/
-  temp_val = TIM_PERIOD & (count+OC_Pulse_num);
-
-  /*设置比较数值*/
-  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x,temp_val);
-
+  __IO uint16_t count;
+  
+	/*获取当前计数*/
+  count=__HAL_TIM_GET_COUNTER(htim);
+	/*设置比较数值*/
+  __HAL_TIM_SET_COMPARE(htim, MOTOR_PUL_CHANNEL_x, count + OC_Pulse_num);
 }
 
 /**
