@@ -15,15 +15,15 @@
 #define MOTOR_EN_PIN                  	GPIO_PIN_0
 #define MOTOR_EN_GPIO_PORT            	GPIOE                       
 #define MOTOR_EN_GPIO_CLK_ENABLE()    	__HAL_RCC_GPIOE_CLK_ENABLE()
-	
+  
 //Motor 脉冲		
 
 #define MOTOR_PUL_TIM                   TIM8
-#define MOTOR_PUL_CLK_ENABLE()  		__TIM8_CLK_ENABLE()
+#define MOTOR_PUL_CLK_ENABLE()  		    __TIM8_CLK_ENABLE()
 
 #define GENERAL_TIM_CH1_GPIO_PORT       GPIOI
 #define GENERAL_TIM_CH1_PIN             GPIO_PIN_5
-#define MOTOR_PUL_GPIO_CLK_ENABLE()		__HAL_RCC_GPIOI_CLK_ENABLE()
+#define MOTOR_PUL_GPIO_CLK_ENABLE()		  __HAL_RCC_GPIOI_CLK_ENABLE()
 
 #define MOTOR_PUL_GPIO_AF               GPIO_AF3_TIM8
 #define MOTOR_PUL_CHANNEL_x             TIM_CHANNEL_1
@@ -34,16 +34,16 @@
 extern void TIMx_Configuration(void);
 extern void TIM2_SetPWM_pulse(int channel,int compare);
 
-	
+  
 /************************************************************/
-#define HIGH 1	//高电平
-#define LOW 0		//低电平
+#define HIGH GPIO_PIN_SET	      //高电平
+#define LOW  GPIO_PIN_RESET	    //低电平
 
-#define ON 1	//开
-#define OFF 0		//关
+#define ON  LOW	                //开
+#define OFF HIGH	              //关
 
-#define CLOCKWISE 			1//顺时针
-#define ANTI_CLOCKWISE	0//逆时针
+#define CW 	HIGH		            //顺时针
+#define CCW LOW      	          //逆时针
 
 
 

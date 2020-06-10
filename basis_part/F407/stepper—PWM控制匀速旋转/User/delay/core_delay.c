@@ -54,16 +54,16 @@
   */
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 {
-    /* 使能DWT外设 */
-    DEM_CR |= (uint32_t)DEM_CR_TRCENA;                
+  /* 使能DWT外设 */
+  DEM_CR |= (uint32_t)DEM_CR_TRCENA;                
 
-    /* DWT CYCCNT寄存器计数清0 */
-    DWT_CYCCNT = (uint32_t)0u;
+  /* DWT CYCCNT寄存器计数清0 */
+  DWT_CYCCNT = (uint32_t)0u;
 
-    /* 使能Cortex-M DWT CYCCNT寄存器 */
-    DWT_CR |= (uint32_t)DWT_CR_CYCCNTENA;
-  
-    return HAL_OK;
+  /* 使能Cortex-M DWT CYCCNT寄存器 */
+  DWT_CR |= (uint32_t)DWT_CR_CYCCNTENA;
+
+  return HAL_OK;
 }
 
 /**

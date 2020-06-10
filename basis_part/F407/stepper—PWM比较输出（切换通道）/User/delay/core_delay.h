@@ -23,7 +23,7 @@ uint32_t HAL_GetTick(void);
 //使用以下函数前必须先调用CPU_TS_TmrInit函数使能计数器，或使能宏CPU_TS_INIT_IN_DELAY_FUNCTION
 //最大延时值为8秒
 void CPU_TS_Tmr_Delay_US(uint32_t us);
-#define HAL_Delay(ms)     					CPU_TS_Tmr_Delay_US(ms*1000)
+#define HAL_Delay(ms)     				CPU_TS_Tmr_Delay_US(ms*1000)
 #define CPU_TS_Tmr_Delay_S(s)       CPU_TS_Tmr_Delay_MS(s*1000)
 		
 #define delay_ms(ms)	CPU_TS_Tmr_Delay_US(1000*ms)
