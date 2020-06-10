@@ -20,7 +20,7 @@
 UART_HandleTypeDef UartHandle;
 //extern uint8_t ucTemp;  
 
- /**
+/**
   * @brief  DEBUG_USART GPIO 配置,工作模式配置。115200 8-N-1
   * @param  无
   * @retval 无
@@ -74,7 +74,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
   GPIO_InitStruct.Pin = DEBUG_USART_RX_PIN;
   GPIO_InitStruct.Alternate = DEBUG_USART_RX_AF;
   HAL_GPIO_Init(DEBUG_USART_RX_GPIO_PORT, &GPIO_InitStruct); 
- 
+
   HAL_NVIC_SetPriority(DEBUG_USART_IRQ ,0,1);	//抢占优先级0，子优先级1
   HAL_NVIC_EnableIRQ(DEBUG_USART_IRQ );		    //使能USART1中断通道  
 }
@@ -86,8 +86,8 @@ void Usart_SendString(uint8_t *str)
 	unsigned int k=0;
   do 
   {
-      HAL_UART_Transmit(&UartHandle,(uint8_t *)(str + k) ,1,1000);
-      k++;
+    HAL_UART_Transmit(&UartHandle,(uint8_t *)(str + k) ,1,1000);
+    k++;
   } while(*(str + k)!='\0');
   
 }

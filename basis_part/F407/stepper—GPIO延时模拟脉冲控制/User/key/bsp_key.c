@@ -58,34 +58,34 @@ void Key_GPIO_Config(void)
 
 uint8_t Key_Scan(GPIO_TypeDef* GPIOx,uint16_t GPIO_Pin)
 {			
-	/*检测是否有按键按下 */
-	if(HAL_GPIO_ReadPin(GPIOx,GPIO_Pin) == KEY_ON )  
-	{	 
-		/*等待按键释放 */
-		while(HAL_GPIO_ReadPin(GPIOx,GPIO_Pin) == KEY_ON);   
-		return 	KEY_ON;	 
-	}
-	else
-		return KEY_OFF;
+  /*检测是否有按键按下 */
+  if(HAL_GPIO_ReadPin(GPIOx,GPIO_Pin) == KEY_ON )  
+  {	 
+    /*等待按键释放 */
+    while(HAL_GPIO_ReadPin(GPIOx,GPIO_Pin) == KEY_ON);   
+    return 	KEY_ON;	 
+  }
+  else
+    return KEY_OFF;
 }
 
 /**
   * @brief  返回键值
-	*	@note 		无
+  *	@note 		无
   * @retval 无
   */
 int ret_key_num()
 {
-		int ret=0;
+    int ret=0;
     if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
     {
-				ret=1;
+        ret=1;
     }
     else if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
     {
-				ret=2;
+        ret=2;
     }
-		return ret;
+    return ret;
 }
 
 /*********************************************END OF FILE**********************/

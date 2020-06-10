@@ -23,14 +23,14 @@
 #define MOTOR_PUL_GPIO_CLK_ENABLE()   	__HAL_RCC_GPIOI_CLK_ENABLE()
 
 /************************************************************/
-#define HIGH 1	//高电平
-#define LOW 0		//低电平
+#define HIGH GPIO_PIN_SET	      //高电平
+#define LOW  GPIO_PIN_RESET	    //低电平
 
-#define ON 0	//开
-#define OFF !0		//关
+#define ON  LOW	                //开
+#define OFF HIGH	              //关
 
-#define CLOCKWISE 			1//顺时针
-#define ANTI_CLOCKWISE	0//逆时针
+#define CW 	HIGH		            //顺时针
+#define CCW LOW      	          //逆时针
 
 
 //控制使能引脚

@@ -19,7 +19,7 @@
 #include "./led/bsp_led.h"   
 #include "./stepper/bsp_stepper_init.h"
 
- /**
+/**
   * @brief  配置 PA0 为线中断口，并设置中断优先级
   * @param  无
   * @retval 无
@@ -63,37 +63,37 @@ int en_val=0;
 void KEY1_IRQHandler(void)
 {
   //确保是否产生了EXTI Line中断
-	if(__HAL_GPIO_EXTI_GET_IT(KEY1_INT_GPIO_PIN) != RESET) 
-	{
-		// LED2 取反		
-		LED2_TOGGLE;
-		/*关掉步进使能*/
-		MOTOR_EN(OFF);
-		/*切换方向*/
-		dir_val=(++i % 2) ? CLOCKWISE : ANTI_CLOCKWISE;
-		MOTOR_DIR(dir_val);
-				
+  if(__HAL_GPIO_EXTI_GET_IT(KEY1_INT_GPIO_PIN) != RESET) 
+  {
+    // LED2 取反		
+    LED2_TOGGLE;
+    /*关掉步进使能*/
+    MOTOR_EN(OFF);
+    /*切换方向*/
+    dir_val=(++i % 2) ? CLOCKWISE : ANTI_CLOCKWISE;
+    MOTOR_DIR(dir_val);
+        
     //清除中断标志位
-		__HAL_GPIO_EXTI_CLEAR_IT(KEY1_INT_GPIO_PIN);     
-	}  
-	
+    __HAL_GPIO_EXTI_CLEAR_IT(KEY1_INT_GPIO_PIN);     
+  }  
+  
 }
 
 void KEY2_IRQHandler(void)
 {
   //确保是否产生了EXTI Line中断
-	if(__HAL_GPIO_EXTI_GET_IT(KEY2_INT_GPIO_PIN) != RESET) 
-	{
-		// LED1 取反		
-		LED1_TOGGLE;
+  if(__HAL_GPIO_EXTI_GET_IT(KEY2_INT_GPIO_PIN) != RESET) 
+  {
+    // LED1 取反		
+    LED1_TOGGLE;
 
-		/*改变使能*/
-		en_val=(++j % 2) ? ON : OFF;
-		MOTOR_EN(en_val);
-		
+    /*改变使能*/
+    en_val=(++j % 2) ? ON : OFF;
+    MOTOR_EN(en_val);
+    
     //清除中断标志位
-		__HAL_GPIO_EXTI_CLEAR_IT(KEY2_INT_GPIO_PIN);     
-	}  
+    __HAL_GPIO_EXTI_CLEAR_IT(KEY2_INT_GPIO_PIN);     
+  }  
 }
 
 /*********************************************END OF FILE**********************/
