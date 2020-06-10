@@ -40,7 +40,7 @@ int main(void)
   /*初始化USART 配置模式为 115200 8-N-1，中断接收*/
   DEBUG_USART_Config();
   printf("欢迎使用野火 电机开发板 步进电机 IO口模拟控制 例程\r\n");
-  printf("按下按键1可修改旋转方向、按下按键2可修改旋转角度\r\n");
+  printf("按下按键2可修改旋转方向、按下按键3可修改旋转角度\r\n");
   /*按键初始化*/
   Key_GPIO_Config();
   /*步进电机初始化*/
@@ -48,28 +48,31 @@ int main(void)
   /*开启步进电机使能*/
   while(1)
   {     
-    /*获取键值*/
-    key_val=ret_key_num();
-    /*有按键按下*/
-    if(key_val)
-    {
-      if(key_val==1)
-      {
-        /*改变方向*/
-        dir_val=(++i % 2) ? CW : CCW;
-      }
-      else if(key_val==2)
-      {
-        /*增加旋转角度*/
-        angle_val=angle_val+90;
-      }    
-      stepper_turn(1000,angle_val,32,dir_val);
-      /*打印状态*/
-      if(dir_val)
-        printf("顺时针旋转 %d 度\r\n",angle_val);
-      else
-        printf("逆时针旋转 %d 度\r\n",angle_val);
+    if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
+		{
+			/*改变方向*/
+			dir_val=(++i % 2) ? CW : CCW;
+			MOTOR_DIR(dir_val);
+			key_val = ON;
+		}
+		if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
+		{
+			/*改变角度*/
+      angle_val=angle_val+90;
+			key_val = ON;
     }
+		if( key_val == ON  )
+		{
+			/*打印状态*/
+		  if(dir_val)
+        printf("顺时针旋转 %d 度,",angle_val);
+      else
+        printf("逆时针旋转 %d 度,",angle_val);
+			
+			printf("正在运行中......\r\n");
+			stepper_turn(1000,angle_val,32,dir_val);
+			key_val = OFF;
+		}
   }
 } 
 

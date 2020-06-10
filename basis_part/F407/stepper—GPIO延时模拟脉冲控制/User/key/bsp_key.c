@@ -15,7 +15,8 @@
   ******************************************************************************
   */ 
 
- 
+  
+
 #include ".\key\bsp_key.h" 
 
 /**
@@ -30,23 +31,43 @@ void Key_GPIO_Config(void)
     /*开启按键GPIO口的时钟*/
     KEY1_GPIO_CLK_ENABLE();
     KEY2_GPIO_CLK_ENABLE();
+    KEY3_GPIO_CLK_ENABLE();
+    KEY4_GPIO_CLK_ENABLE();
+    KEY5_GPIO_CLK_ENABLE();
+  
     /*选择按键的引脚*/	
     GPIO_InitStructure.Pin = KEY1_PIN; 
     /*设置引脚为输入模式*/
     GPIO_InitStructure.Mode = GPIO_MODE_INPUT; 
     /*设置引脚不上拉也不下拉*/
-    GPIO_InitStructure.Pull = GPIO_NOPULL;
+    GPIO_InitStructure.Pull = GPIO_PULLDOWN;
     /*使用上面的结构体初始化按键*/
     HAL_GPIO_Init(KEY1_GPIO_PORT, &GPIO_InitStructure);
+  
     /*选择按键的引脚*/
     GPIO_InitStructure.Pin = KEY2_PIN; 
     /*使用上面的结构体初始化按键*/
     HAL_GPIO_Init(KEY2_GPIO_PORT, &GPIO_InitStructure);
+    
+    /*选择按键的引脚*/
+    GPIO_InitStructure.Pin = KEY3_PIN; 
+    /*使用上面的结构体初始化按键*/
+    HAL_GPIO_Init(KEY3_GPIO_PORT, &GPIO_InitStructure);
+    
+    /*选择按键的引脚*/
+    GPIO_InitStructure.Pin = KEY4_PIN; 
+    /*使用上面的结构体初始化按键*/
+    HAL_GPIO_Init(KEY4_GPIO_PORT, &GPIO_InitStructure);
+    
+    /*选择按键的引脚*/
+    GPIO_InitStructure.Pin = KEY5_PIN; 
+    /*使用上面的结构体初始化按键*/
+    HAL_GPIO_Init(KEY5_GPIO_PORT, &GPIO_InitStructure);
 }
 
 
 
-/*
+/**
   * @brief   检测是否有按键按下
   * @param   具体的端口和端口位
   *		@arg GPIOx: x可以是（A...G） 
@@ -58,34 +79,15 @@ void Key_GPIO_Config(void)
 
 uint8_t Key_Scan(GPIO_TypeDef* GPIOx,uint16_t GPIO_Pin)
 {			
-  /*检测是否有按键按下 */
-  if(HAL_GPIO_ReadPin(GPIOx,GPIO_Pin) == KEY_ON )  
-  {	 
-    /*等待按键释放 */
-    while(HAL_GPIO_ReadPin(GPIOx,GPIO_Pin) == KEY_ON);   
-    return 	KEY_ON;	 
-  }
-  else
-    return KEY_OFF;
-}
-
-/**
-  * @brief  返回键值
-  *	@note 		无
-  * @retval 无
-  */
-int ret_key_num()
-{
-    int ret=0;
-    if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
-    {
-        ret=1;
-    }
-    else if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
-    {
-        ret=2;
-    }
-    return ret;
+	/*检测是否有按键按下 */
+	if(HAL_GPIO_ReadPin(GPIOx,GPIO_Pin) == KEY_ON )  
+	{	 
+		/*等待按键释放 */
+		while(HAL_GPIO_ReadPin(GPIOx,GPIO_Pin) == KEY_ON);   
+		return 	KEY_ON;	 
+	}
+	else
+		return KEY_OFF;
 }
 
 /*********************************************END OF FILE**********************/
