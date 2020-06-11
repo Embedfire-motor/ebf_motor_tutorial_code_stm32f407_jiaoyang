@@ -8,7 +8,7 @@ DMA_HandleTypeDef DMA_Init_Handle;
 ADC_HandleTypeDef ADC_Handle;
 
 static uint16_t adc_buff[ADC_NUM_MAX];
-static uint16_t vbus_adc_mean = 0;    // 电源电压 ACD 采样结果平均值
+static uint16_t vbus_adc_mean = 0;    // 电源电压 ADC 采样结果平均值
 static uint32_t adc_mean_sum = 0;        // 平均值累加
 static uint32_t adc_mean_count = 0;      // 累加计数
 

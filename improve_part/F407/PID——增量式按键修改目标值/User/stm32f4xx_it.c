@@ -41,6 +41,7 @@
 #include "./led/bsp_led.h"
 #include "./tim/bsp_basic_tim.h"
 #include "./pid/bsp_pid.h"
+#include "./usart/bsp_debug_usart.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -183,12 +184,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if(htim==(&TIM_TimeBaseStructure))
     {
         LED1_TOGGLE;  //红灯周期闪烁
-				time_period_fun();
+		time_period_fun();
     }
 }
 /**
   * @}
   */ 
+// 串口中断服务函数
+
+void DEBUG_USART_IRQHandler(void)
+{
+  uint8_t dr = __HAL_UART_FLUSH_DRREGISTER(&UartHandle);
+	protocol_data_recv(&dr, 1);
+	HAL_UART_IRQHandler(&UartHandle);
+}
 
 /**
   * @}

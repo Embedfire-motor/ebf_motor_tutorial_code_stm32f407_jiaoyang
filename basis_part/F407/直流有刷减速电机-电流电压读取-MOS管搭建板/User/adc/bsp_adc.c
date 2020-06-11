@@ -213,9 +213,10 @@ int32_t get_curr_val(void)
       flag = 1;
     }
     
-    curr_adc_mean = curr_adc_mean - adc_offset;                     // 减去偏置电压
   }
-  
+
+  curr_adc_mean = curr_adc_mean - adc_offset;                     // 减去偏置电压
+
   float vdc = GET_ADC_VDC_VAL(curr_adc_mean);      // 获取电压值
   
   return GET_ADC_CURR_VAL(vdc);
