@@ -75,8 +75,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
   GPIO_InitStruct.Alternate = DEBUG_USART_RX_AF;
   HAL_GPIO_Init(DEBUG_USART_RX_GPIO_PORT, &GPIO_InitStruct); 
 
-  HAL_NVIC_SetPriority(DEBUG_USART_IRQ ,0,1);	//抢占优先级0，子优先级1
-  HAL_NVIC_EnableIRQ(DEBUG_USART_IRQ );		    //使能USART1中断通道  
+  HAL_NVIC_SetPriority(DEBUG_USART_IRQ ,0,1); //抢占优先级0，子优先级1
+  HAL_NVIC_EnableIRQ(DEBUG_USART_IRQ );       //使能USART1中断通道  
 }
 
 
@@ -95,7 +95,7 @@ void Usart_SendString(uint8_t *str)
 int fputc(int ch, FILE *f)
 {
   /* 发送一个字节数据到串口DEBUG_USART */
-  HAL_UART_Transmit(&UartHandle, (uint8_t *)&ch, 1, 1000);	
+  HAL_UART_Transmit(&UartHandle, (uint8_t *)&ch, 1, 1000);  
   
   return (ch);
 }
@@ -105,7 +105,7 @@ int fgetc(FILE *f)
 {
     
   int ch;
-  HAL_UART_Receive(&UartHandle, (uint8_t *)&ch, 1, 1000);	
+  HAL_UART_Receive(&UartHandle, (uint8_t *)&ch, 1, 1000); 
   return (ch);
 }
 /*********************************************END OF FILE**********************/

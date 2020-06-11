@@ -54,8 +54,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
   GPIO_InitTypeDef  GPIO_InitStruct;
   
   DEBUG_USART_CLK_ENABLE();
-	
-	DEBUG_USART_RX_GPIO_CLK_ENABLE();
+  
+  DEBUG_USART_RX_GPIO_CLK_ENABLE();
   DEBUG_USART_TX_GPIO_CLK_ENABLE();
   
 /**USART1 GPIO Configuration    
@@ -75,15 +75,15 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart)
   GPIO_InitStruct.Alternate = DEBUG_USART_RX_AF;
   HAL_GPIO_Init(DEBUG_USART_RX_GPIO_PORT, &GPIO_InitStruct); 
 
-  HAL_NVIC_SetPriority(DEBUG_USART_IRQ ,0,1);	//抢占优先级0，子优先级1
-  HAL_NVIC_EnableIRQ(DEBUG_USART_IRQ );		    //使能USART1中断通道  
+  HAL_NVIC_SetPriority(DEBUG_USART_IRQ ,0,1); //抢占优先级0，子优先级1
+  HAL_NVIC_EnableIRQ(DEBUG_USART_IRQ );       //使能USART1中断通道  
 }
 
 
 /*****************  发送字符串 **********************/
 void Usart_SendString(uint8_t *str)
 {
-	unsigned int k=0;
+  unsigned int k=0;
   do 
   {
     HAL_UART_Transmit(&UartHandle,(uint8_t *)(str + k) ,1,1000);
@@ -94,18 +94,18 @@ void Usart_SendString(uint8_t *str)
 ///重定向c库函数printf到串口DEBUG_USART，重定向后可使用printf函数
 int fputc(int ch, FILE *f)
 {
-	/* 发送一个字节数据到串口DEBUG_USART */
-	HAL_UART_Transmit(&UartHandle, (uint8_t *)&ch, 1, 1000);	
-	
-	return (ch);
+  /* 发送一个字节数据到串口DEBUG_USART */
+  HAL_UART_Transmit(&UartHandle, (uint8_t *)&ch, 1, 1000);  
+  
+  return (ch);
 }
 
 ///重定向c库函数scanf到串口DEBUG_USART，重写向后可使用scanf、getchar等函数
 int fgetc(FILE *f)
 {
-		
-	int ch;
-	HAL_UART_Receive(&UartHandle, (uint8_t *)&ch, 1, 1000);	
-	return (ch);
+    
+  int ch;
+  HAL_UART_Receive(&UartHandle, (uint8_t *)&ch, 1, 1000); 
+  return (ch);
 }
 /*********************************************END OF FILE**********************/

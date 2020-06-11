@@ -87,7 +87,7 @@ static void Stepper_GPIO_Config(void)
  * 另外三个成员是通用定时器和高级定时器才有.
  *-----------------------------------------------------------------------------
  * TIM_Prescaler         都有
- * TIM_CounterMode			 TIMx,x[6,7]没有，其他都有（基本定时器）
+ * TIM_CounterMode       TIMx,x[6,7]没有，其他都有（基本定时器）
  * TIM_Period            都有
  * TIM_ClockDivision     TIMx,x[6,7]没有，其他都有(基本定时器)
  * TIM_RepetitionCounter TIMx,x[1,8]才有(高级定时器)
@@ -142,7 +142,7 @@ void TIM_PWMOUTPUT_Config(void)
 
 /**
   * @brief  定时器中断函数
-  *	@note 		无
+  * @note     无
   * @retval 无
   */
 void MOTOR_PUL_IRQHandler(void)
@@ -153,34 +153,34 @@ void MOTOR_PUL_IRQHandler(void)
 /**
   * @brief  定时器比较中断
   * @param  htim：定时器句柄指针
-  *	@note 		无
+  * @note     无
   * @retval 无
   */
 void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
 {
   __IO uint16_t count;
   
-	/*获取当前计数*/
+  /*获取当前计数*/
   count=__HAL_TIM_GET_COUNTER(htim);
-	/*设置比较数值*/
+  /*设置比较数值*/
   __HAL_TIM_SET_COMPARE(htim, MOTOR_PUL_CHANNEL_x, count + OC_Pulse_num);
 }
 
 /**
   * @brief  设置TIM通道的占空比
-  * @param  channel		通道	（1,2,3,4）
-  * @param  compare		占空比
-  *	@note 	无
+  * @param  channel   通道  （1,2,3,4）
+  * @param  compare   占空比
+  * @note   无
   * @retval 无
   */
 void TIM8_SetPWM_pulse(int channel,int compare)
 {
   switch(channel)
   {
-    case 1:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_1,compare);break;
-    case 2:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_2,compare);break;
-    case 3:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_3,compare);break;
-    case 4:	  __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_4,compare);break;
+    case 1:   __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_1,compare);break;
+    case 2:   __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_2,compare);break;
+    case 3:   __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_3,compare);break;
+    case 4:   __HAL_TIM_SET_COMPARE(&TIM_TimeBaseStructure,TIM_CHANNEL_4,compare);break;
   }
 }
 

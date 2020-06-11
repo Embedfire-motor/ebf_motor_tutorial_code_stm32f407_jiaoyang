@@ -38,10 +38,10 @@ int main(void)
   /*初始化USART 配置模式为 115200 8-N-1，中断接收*/
   DEBUG_USART_Config();
   printf("欢迎使用野火 电机开发板 步进电机 PWM控制旋转 例程\r\n");
-  printf("按下按键2可修改旋转方向，按下按键3可修改使能\r\n");	
-  printf("支持四个通道，切换宏定义即可\r\n");	
+  printf("按下按键2可修改旋转方向，按下按键3可修改使能\r\n");  
+  printf("支持四个通道，切换宏定义即可\r\n"); 
   /*按键中断初始化*/
-  Key_GPIO_Config();	
+  Key_GPIO_Config();  
   /*led初始化*/
   LED_GPIO_Config();
   /*步进电机初始化*/
@@ -51,7 +51,7 @@ int main(void)
   {     
     if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
     {
-      // LED2 取反		
+      // LED2 取反    
       LED2_TOGGLE;
       
       /*改变方向*/
@@ -60,7 +60,7 @@ int main(void)
     }
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
     {
-      // LED1 取反		
+      // LED1 取反    
       LED1_TOGGLE;
 
       /*改变使能*/
@@ -68,7 +68,7 @@ int main(void)
       MOTOR_EN(en_val);
     }
   }
-} 	
+}   
 
 /**
   * @brief  System Clock Configuration

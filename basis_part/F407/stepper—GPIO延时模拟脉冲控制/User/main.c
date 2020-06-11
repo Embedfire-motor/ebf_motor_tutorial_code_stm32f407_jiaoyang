@@ -34,7 +34,7 @@ int main(void)
   int i=0;
   int dir_val=0;
   int angle_val=90;
-	
+  
   /* 初始化系统时钟为168MHz */
   SystemClock_Config();
   /*初始化USART 配置模式为 115200 8-N-1，中断接收*/
@@ -49,30 +49,30 @@ int main(void)
   while(1)
   {     
     if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
-		{
-			/*改变方向*/
-			dir_val=(++i % 2) ? CW : CCW;
-			MOTOR_DIR(dir_val);
-			key_val = ON;
-		}
-		if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
-		{
-			/*改变角度*/
-      angle_val=angle_val+90;
-			key_val = ON;
+    {
+      /*改变方向*/
+      dir_val=(++i % 2) ? CW : CCW;
+      MOTOR_DIR(dir_val);
+      key_val = ON;
     }
-		if( key_val == ON  )
-		{
-			/*打印状态*/
-		  if(dir_val)
+    if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
+    {
+      /*改变角度*/
+      angle_val=angle_val+90;
+      key_val = ON;
+    }
+    if( key_val == ON  )
+    {
+      /*打印状态*/
+      if(dir_val)
         printf("顺时针旋转 %d 度,",angle_val);
       else
         printf("逆时针旋转 %d 度,",angle_val);
-			
-			printf("正在运行中......\r\n");
-			stepper_turn(1000,angle_val,32,dir_val);
-			key_val = OFF;
-		}
+      
+      printf("正在运行中......\r\n");
+      stepper_turn(1000,angle_val,32,dir_val);
+      key_val = OFF;
+    }
   }
 } 
 

@@ -19,19 +19,19 @@
 #include "stm32f4xx.h"
 /**
   * @brief  步进电机旋转
-  * @param  tim					方波周期 单位MS	周期越短频率越高，转速越快 细分为1时最少10ms
-  * @param  angle				需要转动的角度值
-  * @param  dir				选择正反转(取值范围：0,1)	
-  * @param  subdivide	 	细分值
-  *	@note 	无
+  * @param  tim         方波周期 单位MS 周期越短频率越高，转速越快 细分为1时最少10ms
+  * @param  angle       需要转动的角度值
+  * @param  dir       选择正反转(取值范围：0,1) 
+  * @param  subdivide   细分值
+  * @note   无
   * @retval 无
   */
-void stepper_turn(int tim,float angle,float subdivide,uint8_t dir)	
+void stepper_turn(int tim,float angle,float subdivide,uint8_t dir)  
 {
   int n,i;
   /*根据细分数求得步距角被分成多少个方波*/
   n=(int)(angle/(1.8/subdivide));
-  if(dir==CW)	//顺时针
+  if(dir==CW) //顺时针
   {
     MOTOR_DIR(CW);
   }
@@ -43,7 +43,7 @@ void stepper_turn(int tim,float angle,float subdivide,uint8_t dir)
   MOTOR_EN(ON);
   /*模拟方波*/
   for(i=0;i<n;i++)
-  {		
+  {   
     MOTOR_PLU(HIGH);
     delay_us(tim/2);
     MOTOR_PLU(LOW);
@@ -68,8 +68,8 @@ void stepper_Init()
   MOTOR_PUL_GPIO_CLK_ENABLE();
   MOTOR_EN_GPIO_CLK_ENABLE();
 
-  /*选择要控制的GPIO引脚*/															   
-  GPIO_InitStruct.Pin = MOTOR_DIR_PIN;	
+  /*选择要控制的GPIO引脚*/                                 
+  GPIO_InitStruct.Pin = MOTOR_DIR_PIN;  
 
   /*设置引脚的输出类型为推挽输出*/
   GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;  
@@ -80,15 +80,15 @@ void stepper_Init()
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 
   /*Motor 方向引脚 初始化*/
-  HAL_GPIO_Init(MOTOR_DIR_GPIO_PORT, &GPIO_InitStruct);	
+  HAL_GPIO_Init(MOTOR_DIR_GPIO_PORT, &GPIO_InitStruct); 
 
   /*Motor 脉冲引脚 初始化*/
-  GPIO_InitStruct.Pin = MOTOR_PUL_PIN;	
-  HAL_GPIO_Init(MOTOR_PUL_GPIO_PORT, &GPIO_InitStruct);	
+  GPIO_InitStruct.Pin = MOTOR_PUL_PIN;  
+  HAL_GPIO_Init(MOTOR_PUL_GPIO_PORT, &GPIO_InitStruct); 
 
   /*Motor 使能引脚 初始化*/
-  GPIO_InitStruct.Pin = MOTOR_EN_PIN;	
-  HAL_GPIO_Init(MOTOR_EN_GPIO_PORT, &GPIO_InitStruct);	
+  GPIO_InitStruct.Pin = MOTOR_EN_PIN; 
+  HAL_GPIO_Init(MOTOR_EN_GPIO_PORT, &GPIO_InitStruct);  
 
   /*关掉使能*/
   MOTOR_EN(OFF);

@@ -23,8 +23,8 @@
   * @retval 无
   */
 void LED_GPIO_Config(void)
-{		
-		
+{   
+    
   /*定义一个GPIO_InitTypeDef类型的结构体*/
   GPIO_InitTypeDef  GPIO_InitStruct;
 
@@ -32,10 +32,10 @@ void LED_GPIO_Config(void)
   LED1_GPIO_CLK_ENABLE();
   LED2_GPIO_CLK_ENABLE();
   LED3_GPIO_CLK_ENABLE();
-  LED4_GPIO_CLK_ENABLE();	
+  LED4_GPIO_CLK_ENABLE(); 
 
-  /*选择要控制的GPIO引脚*/															   
-  GPIO_InitStruct.Pin = LED1_PIN;	
+  /*选择要控制的GPIO引脚*/                                 
+  GPIO_InitStruct.Pin = LED1_PIN; 
 
   /*设置引脚的输出类型为推挽输出*/
   GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;  
@@ -47,19 +47,19 @@ void LED_GPIO_Config(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_HIGH; 
 
   /*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
-  HAL_GPIO_Init(LED1_GPIO_PORT, &GPIO_InitStruct);	
+  HAL_GPIO_Init(LED1_GPIO_PORT, &GPIO_InitStruct);  
 
-  /*选择要控制的GPIO引脚*/															   
-  GPIO_InitStruct.Pin = LED2_PIN;	
-  HAL_GPIO_Init(LED2_GPIO_PORT, &GPIO_InitStruct);	
+  /*选择要控制的GPIO引脚*/                                 
+  GPIO_InitStruct.Pin = LED2_PIN; 
+  HAL_GPIO_Init(LED2_GPIO_PORT, &GPIO_InitStruct);  
 
-  /*选择要控制的GPIO引脚*/															   
-  GPIO_InitStruct.Pin = LED3_PIN;	
-  HAL_GPIO_Init(LED3_GPIO_PORT, &GPIO_InitStruct);	
+  /*选择要控制的GPIO引脚*/                                 
+  GPIO_InitStruct.Pin = LED3_PIN; 
+  HAL_GPIO_Init(LED3_GPIO_PORT, &GPIO_InitStruct);  
 
-/*选择要控制的GPIO引脚*/															   
-  GPIO_InitStruct.Pin = LED4_PIN;	
-  HAL_GPIO_Init(LED4_GPIO_PORT, &GPIO_InitStruct);	
+/*选择要控制的GPIO引脚*/                                 
+  GPIO_InitStruct.Pin = LED4_PIN; 
+  HAL_GPIO_Init(LED4_GPIO_PORT, &GPIO_InitStruct);  
 
   LED_ALL(LED_OFF);
 
