@@ -20,6 +20,7 @@
 #define TARGET_SPEED      1                   //步进电机运动时的目标转速，单位：转/秒
 #define SAMPLING_PERIOD   50                  //PID采样频率，单位Hz
 
+
 typedef struct {
   unsigned char stepper_dir : 1;               //步进电机方向
   unsigned char stepper_running : 1;           //步进电机运行状态
