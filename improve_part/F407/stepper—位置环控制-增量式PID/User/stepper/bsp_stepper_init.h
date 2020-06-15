@@ -135,8 +135,8 @@ extern void TIM8_SetPWM_pulse(int channel,int compare);
 #define ON  GPIO_PIN_RESET	//开
 #define OFF GPIO_PIN_SET	  //关
 
-#define CLOCKWISE 			1//顺时针
-#define ANTI_CLOCKWISE	0//逆时针
+#define CW 			           1//顺时针
+#define CCW	               0//逆时针
 
 
 
