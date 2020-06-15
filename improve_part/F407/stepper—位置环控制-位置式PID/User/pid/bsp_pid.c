@@ -101,9 +101,7 @@ float PID_realize(float actual_val)
   /*误差累积*/
   pid.integral += pid.err;
   /*PID算法实现*/
-  pid.actual_val = pid.Kp*pid.err
-                 + pid.Ki*pid.integral
-                 + pid.Kd*(pid.err-pid.err_last);
+  pid.actual_val = pid.Kp*pid.err + pid.Ki*pid.integral + pid.Kd*(pid.err-pid.err_last);
   /*误差传递*/
   pid.err_last = pid.err;
   /*PID算法实现，并返回计算值*/

@@ -116,6 +116,11 @@ void Stepper_Speed_Ctrl(void)
   }
   else
   {
-    
+    capture_per_unit = 0;
+    cont_val = 0;
+    pid.actual_val = 0;
+    pid.err = 0;
+    pid.err_last = 0;
+    pid.integral = 0;
   }
 }

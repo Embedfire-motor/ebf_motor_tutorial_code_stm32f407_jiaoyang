@@ -117,7 +117,7 @@ void Stepper_Speed_Ctrl(void)
       cont_val = abs(cont_val);
       
       /* 限制运行速度 */
-//      cont_val >= SPEED_LIMIT ? (cont_val = SPEED_LIMIT) : cont_val;
+      cont_val >= SPEED_LIMIT ? (cont_val = SPEED_LIMIT) : cont_val;
       
       /* 计算比较计数器的值 */
       OC_Pulse_num = ((uint16_t)(T1_FREQ / ((float)cont_val * PULSE_RATIO))) >> 1;
@@ -137,20 +137,11 @@ void Stepper_Speed_Ctrl(void)
   }
   else
   {
-//    capture_per_unit = 0;
-//    cont_val = 0;
-//    pid.actual_val = 0;
-//    pid.err = 0;
-//    pid.err_last = 0;
-//    pid.integral = 0;
-//    
-//    #if PID_ASSISTANT_EN
-//    int Temp = pid.target_val;    // 上位机需要整数参数，转换一下
-//    set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &Temp, 1);// 给通道 1 发送目标值
-//    Temp = capture_count;    // 上位机需要整数参数，转换一下
-//    set_computer_value(SEED_FACT_CMD, CURVES_CH1, &Temp, 1);  // 给通道 1 发送实际值
-//   #else
-//    printf("实际值：%d，目标值：%.0f\r\n", capture_per_unit, pid.target_val);// 打印实际值和目标值
-//   #endif
+    capture_per_unit = 0;
+    cont_val = 0;
+    pid.actual_val = 0;
+    pid.err = 0;
+    pid.err_last = 0;
+    pid.integral = 0;
   }
 }

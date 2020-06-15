@@ -75,31 +75,48 @@ int main(void)
 
 	while(1)
 	{
-//    if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
-//		{
-//      pid_status=!pid_status;//取反状态
-//    #if PID_ASSISTANT_EN
-//      if (pid_status)
-//      {
-//        Set_Stepper_Start();
-//        set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
-//      }
-//      else
-//      {
-//        Set_Stepper_Stop();
-//        set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
-//      }
-//    #else
-//      if (!pid_status)
-//      {
-//        Set_Stepper_Start();
-//      }
-//      else
-//      {
-//        Set_Stepper_Stop();
-//      }         
-//    #endif
-//		}
+    /* 扫描KEY1，启动电机 */
+    if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
+		{
+    #if PID_ASSISTANT_EN
+      Set_Stepper_Start();
+      set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
+    #else
+      Set_Stepper_Start();
+    #endif
+		}
+    /* 扫描KEY2，停止电机 */
+    if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
+		{
+    #if PID_ASSISTANT_EN
+      Set_Stepper_Stop();
+      set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
+    #else
+      Set_Stepper_Stop();     
+    #endif
+		}
+    /* 扫描KEY3，增大目标位置 */
+    if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
+		{
+			/* 位置增加2圈 */
+      pid.target_val += 4800;
+      
+    #if PID_ASSISTANT_EN
+      int temp = pid.target_val;
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送目标值
+    #endif
+		}
+    /* 扫描KEY4，减小目标位置 */
+    if( Key_Scan(KEY4_GPIO_PORT,KEY4_PIN) == KEY_ON  )
+		{
+			/* 位置减小2圈 */
+      pid.target_val -= 4800;
+      
+    #if PID_ASSISTANT_EN
+      int temp = pid.target_val;
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送目标值
+    #endif
+		}
 	}
 } 	
 
