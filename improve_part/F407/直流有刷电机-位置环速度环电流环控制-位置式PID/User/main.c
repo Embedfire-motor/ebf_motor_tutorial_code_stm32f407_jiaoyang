@@ -43,7 +43,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void)
 {
-  int32_t target_location = PER_CYCLE_PULSES;
+  int32_t target_location = PER_CYCLE_PULSES*3;
   
   /* HAL 库初始化 */
   HAL_Init();

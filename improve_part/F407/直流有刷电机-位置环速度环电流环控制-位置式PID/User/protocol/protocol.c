@@ -347,6 +347,10 @@ int8_t receiving_process(void)
         {
           set_pid_target(&pid_speed, target_temp);    // 设置目标值
         }
+		else if (packet.ch == CURVES_CH3)
+        {
+          set_pid_target(&pid_curr, target_temp);    // 设置目标值
+        }
       }
       break;
       

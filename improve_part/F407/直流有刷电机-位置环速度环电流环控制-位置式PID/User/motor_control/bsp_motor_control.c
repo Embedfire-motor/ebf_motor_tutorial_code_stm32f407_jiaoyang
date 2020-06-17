@@ -143,7 +143,10 @@ void motor_pid_control(void)
 {
   static uint32_t louter_ring_timer = 0;      // 外环环周期（电流环计算周期为定时器周期T，速度环为2T，位置环为3T）
   int32_t actual_current = get_curr_val();    // 读取当前电流值
-  
+  if(actual_current > TARGET_CURRENT_MAX)
+  {
+	  actual_current = TARGET_CURRENT_MAX;
+  }
   if (is_motor_en == 1)                  // 电机在使能状态下才进行控制处理
   {
     static int32_t Capture_Count = 0;    // 当前时刻总计数值
@@ -222,9 +225,9 @@ void motor_pid_control(void)
     set_motor_speed(cont_val);                                                 // 设置 PWM 占空比
     
   #if defined(PID_ASSISTANT_EN)
-//    set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Capture_Count,  1);         // 给通道 1 发送实际值
+    set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Capture_Count,  1);         // 给通道 1 发送实际值
     set_computer_value(SEND_FACT_CMD, CURVES_CH2, &actual_speed,   1);         // 给通道 2 发送实际值
-//    set_computer_value(SEND_FACT_CMD, CURVES_CH3, &actual_current, 1);         // 给通道 3 发送实际值
+    set_computer_value(SEND_FACT_CMD, CURVES_CH3, &actual_current, 1);         // 给通道 3 发送实际值
   #else
     printf("1.电流：实际值：%d. 目标值：%.0f.\n", Capture_Count, get_pid_target(&pid_location));      // 打印实际值和目标值
   #endif
