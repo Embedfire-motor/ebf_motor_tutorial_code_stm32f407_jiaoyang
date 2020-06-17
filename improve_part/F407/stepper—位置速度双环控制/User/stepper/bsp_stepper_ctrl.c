@@ -102,22 +102,26 @@ void Stepper_Speed_Ctrl(void)
     move_cont_val += PID_realize_move(&move_pid, (float)capture_count);// 进行 PID 计算
     /* 判断运动方向 */
     move_cont_val > 0 ? (MOTOR_DIR(CW)) : (MOTOR_DIR(CCW));
-    
+    set_computer_value(SEED_FACT_CMD, CURVES_CH3, &move_cont_val, 1); 
     /* 计算得出的期望值取绝对值 */
     cont_val = fabsf(move_cont_val);	
 		
 		/* 限制速度环输入值 */
     cont_val >= TARGET_SPEED_MAX ? (cont_val = TARGET_SPEED_MAX) : cont_val;
-		
+#if defined(PID_ASSISTANT_EN)
+      int32_t temp = cont_val;
+      set_computer_value(SEED_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
+#endif
 		set_pid_target(&speed_pid, cont_val);    // 设定速度的目标值
     /* 单位时间内的编码器脉冲数作为实际值传入pid控制器 */
     speed_cont_val += PID_realize_speed(&speed_pid, (float)capture_per_unit);// 进行 PID 计算
-    
+    if(speed_cont_val <= 0.5f)
+       speed_cont_val = 0;
 		
     /* 计算比较计数器的值 */
     OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (speed_cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
     
-    #if PID_ASSISTANT_EN
+#if PID_ASSISTANT_EN
      int Temp_ch2 = capture_per_unit;    // 上位机需要整数参数，转换一下
 		 int Temp_ch1 = capture_count;
      set_computer_value(SEED_FACT_CMD, CURVES_CH2, &Temp_ch2, 1);  // 给通道 1 发送实际值     // 给通道 2 发送实际值
@@ -125,7 +129,7 @@ void Stepper_Speed_Ctrl(void)
 
 #else
      printf("实际值：%d，目标值：%.0f\r\n", capture_per_unit, pid.target_val);// 打印实际值和目标值 
-    #endif
+#endif
   }
   else
   {

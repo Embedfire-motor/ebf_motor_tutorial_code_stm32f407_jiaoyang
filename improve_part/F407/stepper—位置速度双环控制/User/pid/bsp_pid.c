@@ -37,7 +37,7 @@ void PID_param_init()
 	move_pid.err = 0.0;
 	move_pid.err_last = 0.0;
 	move_pid.err_next = 0.0;
-  move_pid.Kp = 1.1;
+  move_pid.Kp = 0.0035;
   move_pid.Ki = 0.0;
   move_pid.Kd = 0.0;		
 		
@@ -45,16 +45,16 @@ void PID_param_init()
     float move_pid_temp[3] = {move_pid.Kp, move_pid.Ki, move_pid.Kd};
     set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, move_pid_temp, 3);// 给通道 1 发送 P I D 值
   #endif
-	
+	HAL_Delay(10);
 	/* 初始化速度环PID参数 */
   speed_pid.target_val=0.0;				
   speed_pid.actual_val=0.0;
 	speed_pid.err = 0.0;
 	speed_pid.err_last = 0.0;
 	speed_pid.err_next = 0.0;
-  speed_pid.Kp = 0.14;
-  speed_pid.Ki = 0.11;
-  speed_pid.Kd = 0.16;
+  speed_pid.Kp = 0.04;
+  speed_pid.Ki = 0.01;
+  speed_pid.Kd = 0.15;
 
   #if PID_ASSISTANT_EN
     float speed_pid_temp[3] = {speed_pid.Kp, speed_pid.Ki, speed_pid.Kd};

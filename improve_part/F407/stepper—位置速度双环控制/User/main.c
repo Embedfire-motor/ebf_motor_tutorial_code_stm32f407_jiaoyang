@@ -64,9 +64,8 @@ int main(void)
 
   /* 目标速度转换为编码器的脉冲数作为pid目标值 */
   move_pid.target_val = TARGET_DISP * ENCODER_TOTAL_RESOLUTION;
-	
+	int32_t Temp = TARGET_DISP * ENCODER_TOTAL_RESOLUTION;
 #if PID_ASSISTANT_EN
-  int Temp = move_pid.target_val;    // 上位机需要整数参数，转换一下
   set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
   set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &Temp, 1);// 给通道 1 发送目标值
 #endif
