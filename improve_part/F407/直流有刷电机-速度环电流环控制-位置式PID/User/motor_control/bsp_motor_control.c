@@ -156,7 +156,7 @@ void motor_pid_control(void)
     
     /* 转轴转速 = 单位时间内的计数值 / 编码器总分辨率 * 时间系数  */
     actual_speed = ((float)(Capture_Count - Last_Count) / ENCODER_TOTAL_RESOLUTION / REDUCTION_RATIO) / (GET_BASIC_TIM_PERIOD()/1000.0/60.0);
-    
+
     /* 记录当前总计数值，供下一时刻计算使用 */
     Last_Count = Capture_Count;
     
@@ -164,15 +164,15 @@ void motor_pid_control(void)
     {
       cont_val = speed_pid_realize(&pid_speed, actual_speed);    // 进行 PID 计算
 
-      if (cont_val > 0)    // 判断电机方向
-      {
-        set_motor_direction(MOTOR_FWD);
-      }
-      else
-      {
-        cont_val = -cont_val;
-        set_motor_direction(MOTOR_REV);
-      }
+//      if (cont_val > 0)    // 判断电机方向
+//      {
+//        set_motor_direction(MOTOR_FWD);
+//      }
+//      else
+//      {
+//        cont_val = -cont_val;
+//        set_motor_direction(MOTOR_REV);
+//      }
       
       cont_val = (cont_val > TARGET_CURRENT_MAX) ? TARGET_CURRENT_MAX : cont_val;    // 电流上限处理
       set_pid_target(&pid_curr, cont_val);    // 设定电流的目标值
