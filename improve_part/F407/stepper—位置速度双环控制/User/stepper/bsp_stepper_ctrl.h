@@ -23,7 +23,7 @@
 #define SPEED_LIMIT      5000                //运行速度限制
 #define TARGET_DISP      40                   //步进电机运动时的目标圈数，单位：转
 
-#define TARGET_SPEED_MAX    2000             // 目标速度的最大值
+#define TARGET_SPEED_MAX    1000             // 目标速度的最大值
 
 typedef struct {
   unsigned char stepper_dir : 1;               //步进电机方向

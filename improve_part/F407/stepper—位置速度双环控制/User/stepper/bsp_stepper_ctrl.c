@@ -92,22 +92,26 @@ void Stepper_Speed_Ctrl(void)
   if((sys_status.MSD_ENA == 1) && (sys_status.stepper_running == 1))
   {
     /* 计算编码器脉冲数 */
-    capture_count =__HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (encoder_overflow_count * ENCODER_TIM_PERIOD);
+    capture_count = (int)__HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (encoder_overflow_count * ENCODER_TIM_PERIOD);
 		
 		capture_per_unit = capture_count - last_count;
     last_count = capture_count;
-    capture_per_unit = fabsf(capture_per_unit);		
 		
 		/* 编码器脉冲累计值作为实际值传入位置pid控制器 */
     move_cont_val += PID_realize_move(&move_pid, (float)capture_count);// 进行 PID 计算
     /* 判断运动方向 */
     move_cont_val > 0 ? (MOTOR_DIR(CW)) : (MOTOR_DIR(CCW));
-    set_computer_value(SEED_FACT_CMD, CURVES_CH3, &move_cont_val, 1); 
     /* 计算得出的期望值取绝对值 */
-    cont_val = fabsf(move_cont_val);	
-		
-		/* 限制速度环输入值 */
-    cont_val >= TARGET_SPEED_MAX ? (cont_val = TARGET_SPEED_MAX) : cont_val;
+    cont_val = move_cont_val;
+		/* 目标速度上限处理 */
+		if (cont_val > TARGET_SPEED_MAX)
+		{
+			cont_val = TARGET_SPEED_MAX;
+		}
+		else if (cont_val < -TARGET_SPEED_MAX)
+		{
+			cont_val = -TARGET_SPEED_MAX;
+		}
 #if defined(PID_ASSISTANT_EN)
       int32_t temp = cont_val;
       set_computer_value(SEED_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
@@ -115,8 +119,10 @@ void Stepper_Speed_Ctrl(void)
 		set_pid_target(&speed_pid, cont_val);    // 设定速度的目标值
     /* 单位时间内的编码器脉冲数作为实际值传入pid控制器 */
     speed_cont_val += PID_realize_speed(&speed_pid, (float)capture_per_unit);// 进行 PID 计算
+		cont_val = fabsf(speed_cont_val);	
+//    cont_val >= 40 ? (cont_val = 40) : cont_val;		
     /* 计算比较计数器的值 */
-    OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (speed_cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
+    OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
     
 #if PID_ASSISTANT_EN
      int Temp_ch2 = capture_per_unit;    // 上位机需要整数参数，转换一下
