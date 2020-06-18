@@ -21,7 +21,7 @@
 #define SAMPLING_PERIOD   50                  //PID采样频率，单位Hz
 
 #define SPEED_LIMIT      5000                //运行速度限制
-#define TARGET_DISP      200                   //步进电机运动时的目标圈数，单位：转
+#define TARGET_DISP      40                   //步进电机运动时的目标圈数，单位：转
 
 #define TARGET_SPEED_MAX    2000             // 目标速度的最大值
 

@@ -115,9 +115,6 @@ void Stepper_Speed_Ctrl(void)
 		set_pid_target(&speed_pid, cont_val);    // 设定速度的目标值
     /* 单位时间内的编码器脉冲数作为实际值传入pid控制器 */
     speed_cont_val += PID_realize_speed(&speed_pid, (float)capture_per_unit);// 进行 PID 计算
-    if(speed_cont_val <= 0.5f)
-       speed_cont_val = 0;
-		
     /* 计算比较计数器的值 */
     OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (speed_cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
     
