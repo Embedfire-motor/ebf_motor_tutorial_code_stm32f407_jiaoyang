@@ -19,13 +19,13 @@ void PID_param_init()
     pid.err_last=0.0;
     pid.integral=0.0;
 
-		pid.Kp = 23;
+		pid.Kp = 3.3;
 		pid.Ki = 0;
-		pid.Kd = 25;
+		pid.Kd = 0;
 
 #if defined(PID_ASSISTANT_EN)
     float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
-    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+//    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
 
