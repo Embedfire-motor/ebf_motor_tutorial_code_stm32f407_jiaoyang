@@ -133,10 +133,10 @@ void Stepper_Speed_Ctrl(void)
 		} 
 		else
 		{
-		  /* 计算得出的期望值取绝对值 */
-			cont_val_l = fabsf(move_cont_val);
+//		  /* 计算得出的期望值取绝对值 */
+//			cont_val_l = fabsf(move_cont_val);
 			/* 计算比较计数器的值 */
-			OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / ((float)cont_val_l * PULSE_RATIO))) >> 1;
+			OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / ((float)move_cont_val * PULSE_RATIO))) >> 1;
 		}
 #if PID_ASSISTANT_EN
      int Temp_ch2 = capture_per_unit;    // 上位机需要整数参数，转换一下

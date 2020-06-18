@@ -52,7 +52,7 @@ void PID_param_init()
 	speed_pid.err = 0.0;
 	speed_pid.err_last = 0.0;
 	speed_pid.err_next = 0.0;
-  speed_pid.Kp = 0.04;
+  speed_pid.Kp = 0.05;
   speed_pid.Ki = 0.01;
   speed_pid.Kd = 0.15;
 
