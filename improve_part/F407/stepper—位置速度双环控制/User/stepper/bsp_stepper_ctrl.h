@@ -17,13 +17,13 @@
 
 #define PULSE_RATIO       (float)(SPR/ENCODER_TOTAL_RESOLUTION)//步进电机单圈脉冲数与编码器单圈脉冲的比值
 
-#define TARGET_SPEED      1                   //步进电机运动时的目标转速，单位：转/秒
-#define SAMPLING_PERIOD   50                  //PID采样频率，单位Hz
+#define TARGET_SPEED      1                    //步进电机运动时的目标转速，单位：转/秒
+#define SAMPLING_PERIOD   50                   //PID采样频率，单位Hz
 
-#define SPEED_LIMIT      5000                //运行速度限制
-#define TARGET_DISP      40                   //步进电机运动时的目标圈数，单位：转
+#define MOVE_CTRL         0.5f                   //启用速度环控制量
+#define TARGET_DISP       20                   //步进电机运动时的目标圈数，单位：转
 
-#define TARGET_SPEED_MAX    1000             // 目标速度的最大值
+#define TARGET_SPEED_MAX  1000                 // 目标速度的最大值
 
 typedef struct {
   unsigned char stepper_dir : 1;               //步进电机方向

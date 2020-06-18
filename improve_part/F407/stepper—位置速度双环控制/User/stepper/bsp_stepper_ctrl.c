@@ -88,6 +88,7 @@ void Stepper_Speed_Ctrl(void)
   static __IO float speed_cont_val = 0.0f;
   static __IO float move_cont_val = 0.0f;  
   static int cont_val = 0;  
+	__IO float cont_val_l = 0.0f; 
   /* 当电机运动时才启动pid计算 */
   if((sys_status.MSD_ENA == 1) && (sys_status.stepper_running == 1))
   {
@@ -101,32 +102,42 @@ void Stepper_Speed_Ctrl(void)
     move_cont_val += PID_realize_move(&move_pid, (float)capture_count);// 进行 PID 计算
     /* 判断运动方向 */
     move_cont_val > 0 ? (MOTOR_DIR(CW)) : (MOTOR_DIR(CCW));
-    /* 传递位置环计算值，便于计算*/
-    cont_val = move_cont_val;
-		
-		/* 目标速度上限处理 */
-		if (cont_val > TARGET_SPEED_MAX)
+		/* 判断是否启用速度环 */
+		if (fabsf(move_cont_val) >= MOVE_CTRL) 
 		{
-			cont_val = TARGET_SPEED_MAX;
-		}
-		else if (cont_val < -TARGET_SPEED_MAX)
-		{
-			cont_val = -TARGET_SPEED_MAX;
-		}
-		
+			/* 传递位置环计算值，便于计算*/
+			cont_val = move_cont_val;
+			
+			/* 目标速度上限处理 */
+			if (cont_val > TARGET_SPEED_MAX)
+			{
+				cont_val = TARGET_SPEED_MAX;
+			}
+			else if (cont_val < -TARGET_SPEED_MAX)
+			{
+				cont_val = -TARGET_SPEED_MAX;
+			}
+			
 #if defined(PID_ASSISTANT_EN)
-		int32_t temp = cont_val;
-		set_computer_value(SEED_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
+			int32_t temp = cont_val;
+			set_computer_value(SEED_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
 #endif
-		/* 设定速度的目标值 */
-		set_pid_target(&speed_pid, cont_val);    
-    /* 单位时间内的编码器脉冲数作为实际值传入速度环pid控制器 */
-    speed_cont_val += PID_realize_speed(&speed_pid, (float)capture_per_unit);// 进行 PID 计算
-		/* 由于OC_Pulse_num为uint16_t变量，取速度环输出值的绝对值进行后续计算*/
-		cont_val = fabsf(speed_cont_val);	
-    /* 计算比较计数器的值 */
-    OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
-    
+			/* 设定速度的目标值 */
+			set_pid_target(&speed_pid, cont_val);    
+			/* 单位时间内的编码器脉冲数作为实际值传入速度环pid控制器 */
+			speed_cont_val += PID_realize_speed(&speed_pid, (float)capture_per_unit);// 进行 PID 计算
+			/* 由于OC_Pulse_num为uint16_t变量，取速度环输出值的绝对值进行后续计算*/
+			cont_val = fabsf(speed_cont_val);	
+			/* 计算比较计数器的值 */
+			OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
+		} 
+		else
+		{
+		  /* 计算得出的期望值取绝对值 */
+			cont_val_l = fabsf(move_cont_val);
+			/* 计算比较计数器的值 */
+			OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / ((float)cont_val_l * PULSE_RATIO))) >> 1;
+		}
 #if PID_ASSISTANT_EN
      int Temp_ch2 = capture_per_unit;    // 上位机需要整数参数，转换一下
 		 int Temp_ch1 = capture_count;
