@@ -92,10 +92,10 @@ int main(void)
       Set_Stepper_Stop();     
     #endif
 		}
-    /* 扫描KEY3，增大目标速度 */
+    /* 扫描KEY3，增大目标位置*/
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
 		{
-      /* 目标速度增加48，对应电机转速增加1 */
+      /* 目标速度增加48000，对应电机位置增加20圈 */
       move_pid.target_val += 48000;
       
     #if PID_ASSISTANT_EN
@@ -103,10 +103,10 @@ int main(void)
       set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送目标值
     #endif
 		}
-    /* 扫描KEY4，减小目标速度 */
+    /* 扫描KEY4，减小目标位置 */
     if( Key_Scan(KEY4_GPIO_PORT,KEY4_PIN) == KEY_ON  )
 		{
-      /* 目标速度减小48，对应电机转速减少1 */
+      /* 目标速度减小48000，对应电机位置减少20圈 */
       move_pid.target_val -= 48000;
       
     #if PID_ASSISTANT_EN
@@ -127,7 +127,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* 判断触发中断的定时器 */
   if(htim->Instance == BASIC_TIM)
   {
-    Stepper_Speed_Ctrl();
+    Stepper_Ctrl();
   }
   else if(htim->Instance == ENCODER_TIM)
   {  

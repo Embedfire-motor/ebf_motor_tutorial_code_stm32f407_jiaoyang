@@ -74,11 +74,11 @@ void Set_Stepper_Start(void)
 }
 
 /**
-  * @brief  步进电机速度闭环控制
+  * @brief  步进电机位置速度双闭环控制
   * @retval 无
   * @note   基本定时器中断内调用
   */
-void Stepper_Speed_Ctrl(void)
+void Stepper_Ctrl(void)
 {
   /* 编码器相关变量 */
   static __IO float last_count = 0;
@@ -88,7 +88,7 @@ void Stepper_Speed_Ctrl(void)
   static __IO float speed_cont_val = 0.0f;
   static __IO float move_cont_val = 0.0f;  
   static int cont_val = 0;  
-	__IO float cont_val_l = 0.0f; 
+	
   /* 当电机运动时才启动pid计算 */
   if((sys_status.MSD_ENA == 1) && (sys_status.stepper_running == 1))
   {
@@ -133,8 +133,6 @@ void Stepper_Speed_Ctrl(void)
 		} 
 		else
 		{
-//		  /* 计算得出的期望值取绝对值 */
-//			cont_val_l = fabsf(move_cont_val);
 			/* 计算比较计数器的值 */
 			OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / ((float)move_cont_val * PULSE_RATIO))) >> 1;
 		}
