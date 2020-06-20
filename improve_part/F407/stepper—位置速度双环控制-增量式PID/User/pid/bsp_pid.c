@@ -105,7 +105,7 @@ void set_p_i_d(_pid *pid, float p, float i, float d)
 	*	@note 	无
   * @retval 通过PID计算后的输出
   */
-float PID_realize_speed(_pid *pid, float temp_val) 
+float PID_realize(_pid *pid, float temp_val) 
 {
 	/*传入实际值*/
 	pid->actual_val = temp_val;
@@ -121,19 +121,4 @@ float PID_realize_speed(_pid *pid, float temp_val)
 	return increment_val;
 }
 
-float PID_realize_move(_pid *pid, float temp_val) 
-{
-	/*传入实际值*/
-	pid->actual_val = temp_val;
-	/*计算目标值与实际值的误差*/
-  pid->err=pid->target_val-pid->actual_val;
-
-	/*PID算法实现*/
-	float increment_val = pid->Kp*(pid->err - pid->err_next) + pid->Ki*pid->err + pid->Kd*(pid->err - 2 * pid->err_next + pid->err_last);
-	/*传递误差*/
-	pid->err_last = pid->err_next;
-	pid->err_next = pid->err;
-	/*返回增量值*/
-	return increment_val;
-}
 

@@ -99,7 +99,7 @@ void Stepper_Ctrl(void)
     last_count = capture_count;
 		
 		/* 编码器脉冲累计值作为实际值传入位置环pid控制器 */
-    move_cont_val += PID_realize_move(&move_pid, (float)capture_count);// 进行 PID 计算
+    move_cont_val += PID_realize(&move_pid, (float)capture_count);// 进行 PID 计算
     /* 判断运动方向 */
     move_cont_val > 0 ? (MOTOR_DIR(CW)) : (MOTOR_DIR(CCW));
 		/* 判断是否启用速度环 */
@@ -125,7 +125,7 @@ void Stepper_Ctrl(void)
 			/* 设定速度的目标值 */
 			set_pid_target(&speed_pid, cont_val);    
 			/* 单位时间内的编码器脉冲数作为实际值传入速度环pid控制器 */
-			speed_cont_val += PID_realize_speed(&speed_pid, (float)capture_per_unit);// 进行 PID 计算
+			speed_cont_val += PID_realize(&speed_pid, (float)capture_per_unit);// 进行 PID 计算
 			/* 由于OC_Pulse_num为uint16_t变量，取速度环输出值的绝对值进行后续计算*/
 			cont_val = fabsf(speed_cont_val);	
 			/* 计算比较计数器的值 */
