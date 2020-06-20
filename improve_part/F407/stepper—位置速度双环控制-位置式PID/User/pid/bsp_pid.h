@@ -22,8 +22,7 @@ extern void PID_param_init(void);
 extern void set_pid_target(_pid *pid, float temp_val);
 extern float get_pid_actual(_pid *pid);
 extern void set_p_i_d(_pid *pid, float p, float i, float d);
-extern float PID_realize_speed(_pid *pid, float actual_val);
-extern float PID_realize_move(_pid *pid, float actual_val);
+extern float PID_realize(_pid *pid, float actual_val);
 extern void time_period_fun(void);
 
 #endif

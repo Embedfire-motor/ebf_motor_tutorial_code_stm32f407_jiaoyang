@@ -42,8 +42,9 @@ int main(void)
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
 	DEBUG_USART_Config();
-	printf("欢迎使用野火 电机开发板 步进电机 速度闭环控制 例程\r\n");
-	printf("按下按键3启动和停止电机\r\n");	
+	printf("欢迎使用野火 电机开发板 步进电机位置速度双环控制 例程\r\n");
+	printf("按下按键1启动电机，按下按键2停止电机\r\n");	
+	printf("按下按键3增大位置，按下按键4减小位置\r\n");	
   /* 初始化时间戳 */
   HAL_InitTick(5);
 	/*按键中断初始化*/
@@ -62,7 +63,7 @@ int main(void)
   PID_param_init();
 //  MOTOR_DIR(CW);
 
-  /* 目标速度转换为编码器的脉冲数作为pid目标值 */
+  /* 目标位置转换为编码器的脉冲数作为pid目标值 */
   move_pid.target_val = TARGET_DISP * ENCODER_TOTAL_RESOLUTION;
 	int32_t Temp = TARGET_DISP * ENCODER_TOTAL_RESOLUTION;
 #if PID_ASSISTANT_EN
@@ -95,7 +96,7 @@ int main(void)
     /* 扫描KEY3，增大目标位置*/
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
 		{
-      /* 目标速度增加48000，对应电机位置增加20圈 */
+      /* 目标位置增加48000，对应电机位置增加20圈 */
       move_pid.target_val += 48000;
       
     #if PID_ASSISTANT_EN
@@ -106,7 +107,7 @@ int main(void)
     /* 扫描KEY4，减小目标位置 */
     if( Key_Scan(KEY4_GPIO_PORT,KEY4_PIN) == KEY_ON  )
 		{
-      /* 目标速度减小48000，对应电机位置减少20圈 */
+      /* 目标位置减小48000，对应电机位置减少20圈 */
       move_pid.target_val -= 48000;
       
     #if PID_ASSISTANT_EN

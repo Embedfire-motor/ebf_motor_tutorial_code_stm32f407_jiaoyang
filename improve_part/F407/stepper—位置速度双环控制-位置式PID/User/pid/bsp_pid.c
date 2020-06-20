@@ -100,12 +100,12 @@ void set_p_i_d(_pid *pid, float p, float i, float d)
 }
 
 /**
-  * @brief  增量式PID算法实现
+  * @brief  位置式PID算法实现
   * @param  val：当前实际值
 	*	@note 	无
   * @retval 通过PID计算后的输出
   */
-float PID_realize_speed(_pid *pid, float actual_val) 
+float PID_realize(_pid *pid, float actual_val) 
 {
   /*传入实际值*/
   pid->actual_val = actual_val;
@@ -122,21 +122,3 @@ float PID_realize_speed(_pid *pid, float actual_val)
   return pid->actual_val;
 }
 
-
-
-float PID_realize_move(_pid *pid, float actual_val) 
-{
-  /*传入实际值*/
-  pid->actual_val = actual_val;
-  /*计算目标值与实际值的误差*/
-  pid->err = pid->target_val - pid->actual_val;
-
-  /*误差累积*/
-  pid->integral += pid->err;
-  /*PID算法实现*/
-  pid->actual_val = pid->Kp*pid->err+ pid->Ki*pid->integral+ pid->Kd*(pid->err-pid->err_last);
-  /*误差传递*/
-  pid->err_last = pid->err;
-  /*PID算法实现，并返回计算值*/
-  return pid->actual_val;
-}
