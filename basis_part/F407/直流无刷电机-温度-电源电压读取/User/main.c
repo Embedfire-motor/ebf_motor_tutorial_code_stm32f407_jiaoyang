@@ -33,6 +33,7 @@ int main(void)
 {
   __IO uint16_t ChannelPulse = PWM_MAX_PERIOD_COUNT/10;
   uint8_t i = 0;
+  uint8_t flag = 0;
   
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
@@ -104,8 +105,17 @@ int main(void)
       set_bldcm_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);
     }
     
-    printf("Tu=%0.2fV, Tr=%0.2fΩ, T=%0.2f℃\r\n", get_ntc_v_val(), get_ntc_r_val(), get_ntc_t_val());
-    HAL_Delay(111);
+    if (HAL_GetTick()%50 == 0 && flag == 0)    // 每50毫秒读取一次温度、电压
+    {
+      flag = 1;
+
+      printf("电源电压=%0.1fV, NTC=%0.0fΩ, T=%0.1f℃.\r\n", 
+             get_vbus_val(), get_ntc_r_val(), get_ntc_t_val());
+    }
+    else if (HAL_GetTick()%50 != 0 && flag == 1)
+    {
+      flag = 0;
+    }
 	}
 }
 
