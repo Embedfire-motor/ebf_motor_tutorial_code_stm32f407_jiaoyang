@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    bsp_motor_tim.c
-  * @author  STMicroelectronics
+  * @author  long
   * @version V1.0
   * @date    2015-xx-xx
   * @brief   电机相关定时器配置

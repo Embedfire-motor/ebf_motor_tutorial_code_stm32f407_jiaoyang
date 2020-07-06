@@ -26,8 +26,6 @@ unsigned char UART_RxPtr;
 /* 命令接收完成 */
 uint8_t receive_cmd = 0;
 
-static unsigned char data;
-
  /**
   * @brief  DEBUG_USART GPIO 配置,工作模式配置。115200 8-N-1
   * @param  无

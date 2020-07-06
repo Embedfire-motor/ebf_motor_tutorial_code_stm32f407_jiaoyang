@@ -13,6 +13,8 @@ extern TIM_HandleTypeDef  htimx_bldcm;
 	当定时器从0计数到5599，即为5600次，为一个定时周期 */
 #define PWM_PERIOD_COUNT     (5600)
 
+#define PWM_MAX_PERIOD_COUNT    (PWM_PERIOD_COUNT - 100)
+
 /* 高级控制定时器时钟源TIMxCLK = HCLK = 168MHz 
 	 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1)/PWM_PERIOD_COUNT = 15KHz*/
 #define PWM_PRESCALER_COUNT     (2)
@@ -52,6 +54,8 @@ extern TIM_HandleTypeDef  htimx_bldcm;
 #define MOTOR_OCNPWM3_GPIO_PORT      		  GPIOH
 #define MOTOR_OCNPWM3_GPIO_CLK_ENABLE()	  __GPIOH_CLK_ENABLE()
 #define MOTOR_OCNPWM3_AF					        GPIO_AF3_TIM8
+
+#define TIM_COM_TS_ITRx                   TIM_TS_ITR3    // 内部触发配置(TIM8->ITR3->TIM5)
 
 /* 霍尔传感器定时器 */
 #define HALL_TIM           				      TIM5

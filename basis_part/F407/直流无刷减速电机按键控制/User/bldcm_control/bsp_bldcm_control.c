@@ -35,6 +35,11 @@ void bldcm_init(void)
   sd_gpio_config();        // sd 引脚初始化
 }
 
+/**
+  * @brief  电机 SD 控制引脚初始化
+  * @param  无
+  * @retval 无
+  */
 static void sd_gpio_config(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct;

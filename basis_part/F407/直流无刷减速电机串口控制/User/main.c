@@ -38,7 +38,6 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
 int main(void) 
 {
   __IO uint16_t ChannelPulse = PWM_PERIOD_COUNT/10;
-  uint8_t i = 0;
   
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();

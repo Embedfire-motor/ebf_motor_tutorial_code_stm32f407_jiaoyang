@@ -3,7 +3,7 @@
   * @file    bsp_motor_tim.c
   * @author  STMicroelectronics
   * @version V1.0
-  * @date    2015-xx-xx
+  * @date    2020-xx-xx
   * @brief   电机相关定时器配置
   ******************************************************************************
   * @attention

@@ -5,6 +5,19 @@
 #include "./tim/bsp_motor_tim.h"
 #include "main.h"
 
+//引脚定义
+/*******************************************************/
+// 连接驱动板的 SD 脚
+#define SHUTDOWN_PIN                  GPIO_PIN_6
+#define SHUTDOWN_GPIO_PORT            GPIOE
+#define SHUTDOWN_GPIO_CLK_ENABLE()    __GPIOE_CLK_ENABLE()
+/*******************************************************/
+
+/* 电机 SD or EN 使能脚 */
+#define BLDCM_ENABLE_SD()                     HAL_GPIO_WritePin(SHUTDOWN_GPIO_PORT, SHUTDOWN_PIN, GPIO_PIN_SET)      // 高电平打开-高电平使能 
+#define BLDCM_DISABLE_SD()                    HAL_GPIO_WritePin(SHUTDOWN_GPIO_PORT, SHUTDOWN_PIN, GPIO_PIN_RESET)    // 低电平关断-低电平禁用
+
+
 /* 电机方向控制枚举 */
 typedef enum
 {

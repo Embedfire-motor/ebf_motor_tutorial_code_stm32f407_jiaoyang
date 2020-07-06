@@ -1,7 +1,24 @@
+/**
+  ******************************************************************************
+  * @file    bsp_adc.c
+  * @author  long
+  * @version V1.0
+  * @date    2015-xx-xx
+  * @brief   NTC驱动
+  ******************************************************************************
+  * @attention
+  *
+  * 实验平台:野火  STM32 F407 开发板  
+  * 论坛    :http://www.firebbs.cn
+  * 淘宝    :http://firestm32.taobao.com
+  *
+  ******************************************************************************
+  */
+
 #include "./adc/bsp_adc.h"
-#include ".\motor_control\bsp_motor_control.h"
 #include "./led/bsp_led.h" 
 #include "./usart/bsp_debug_usart.h"
+#include <math.h>
 
 __IO uint16_t ADC_ConvertedValue;
 DMA_HandleTypeDef DMA_Init_Handle;
@@ -9,8 +26,7 @@ ADC_HandleTypeDef ADC_Handle;
 
 static int16_t adc_buff[ADC_NUM_MAX];    // 电压采集缓冲区
 static int16_t vbus_adc_mean = 0;        // 电源电压 ACD 采样结果平均值
-static uint32_t adc_mean_sum = 0;        // 平均值累加
-static uint32_t adc_mean_count = 0;      // 累加计数
+static uint32_t adc_mean_t = 0;        // 平均值累加
 
 /**
   * @brief  ADC 通道引脚初始化
@@ -167,8 +183,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
     adc_mean += (int32_t)adc_buff[count];
   }
   
-  adc_mean_sum += adc_mean / (ADC_NUM_MAX / 2);    // 累加电压
-  adc_mean_count++;
+  adc_mean_t = adc_mean / (ADC_NUM_MAX / 2);    // 保存平均值
   
 #if 1
   
@@ -190,35 +205,51 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 }
 
 /**
-  * @brief  获取电流值
+  * @brief  获取温度传感器端的电压值
   * @param  无
   * @retval 转换得到的电流值
   */
-int32_t get_curr_val(void)
+float get_ntc_v_val(void)
 {
-  static uint8_t flag = 0;
-  static uint32_t adc_offset = 0;    // 偏置电压
-  int16_t curr_adc_mean = 0;         // 电流 ACD 采样结果平均值
+  float vdc = GET_ADC_VDC_VAL(adc_mean_t);      // 获取电压值
   
-  curr_adc_mean = adc_mean_sum / adc_mean_count;    // 保存平均值
+  return vdc;
+}
+
+/**
+  * @brief  获取温度传感器端的电阻值
+  * @param  无
+  * @retval 转换得到的电流值
+  */
+float get_ntc_r_val(void)
+{
+  float r = 0;
+  float vdc = get_ntc_v_val();
   
-  if (adc_mean_count > 10)
-  {
-    adc_mean_count = 0;
-    adc_mean_sum = 0;
-    
-    if (flag == 0)
-    {
-      adc_offset = curr_adc_mean;    // 记录偏置电压
-      flag = 1;
-    }
-    
-    curr_adc_mean = curr_adc_mean - adc_offset;                     // 减去偏置电压
-  }
+  r = (VREF - vdc) / (vdc / (float)4700.0);
   
-  float vdc = GET_ADC_VDC_VAL(curr_adc_mean);      // 获取电压值
-  
-  return GET_ADC_CURR_VAL(vdc);
+  return r;
+}
+
+/**
+  * @brief  获取温度传感器的温度
+  * @param  无
+  * @retval 转换得到的电流值
+  */
+float get_ntc_t_val(void)
+{
+  float t = 0;
+  float Rt = 0;
+  float Rp = 10000;
+  float T2 = 273.15+25;
+  float Bx = 3950;
+  float Ka = 273.15;
+
+  Rt = get_ntc_r_val();
+
+  t = 1 / ( 1 / T2 + log(Rt / Rp) / Bx) - Ka + 0.5;    // 使用公式计算
+
+  return t;
 }
 
 /**

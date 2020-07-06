@@ -778,6 +778,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\usart\bsp_debug_usart.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\adc\bsp_adc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

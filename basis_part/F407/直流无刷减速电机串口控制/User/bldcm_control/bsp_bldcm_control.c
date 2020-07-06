@@ -23,6 +23,9 @@
 /* 私有变量 */
 static bldcm_data_t bldcm_data;
 
+/* 局部函数 */
+static void sd_gpio_config(void);
+
 /**
   * @brief  电机初始化
   * @param  无
@@ -32,6 +35,26 @@ void bldcm_init(void)
 {
   TIMx_Configuration();    // 电机控制定时器，引脚初始化
   hall_tim_config();       // 霍尔传感器初始化
+  sd_gpio_config();        // sd 引脚初始化
+}
+
+static void sd_gpio_config(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+  
+  /* 定时器通道功能引脚端口时钟使能 */
+	SHUTDOWN_GPIO_CLK_ENABLE();
+  
+  /* 引脚IO初始化 */
+	/*设置输出类型*/
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	/*设置引脚速率 */ 
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	/*选择要控制的GPIO引脚*/	
+	GPIO_InitStruct.Pin = SHUTDOWN_PIN;
+  
+	/*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
+  HAL_GPIO_Init(SHUTDOWN_GPIO_PORT, &GPIO_InitStruct);
 }
 
 /**
@@ -73,6 +96,7 @@ motor_dir_t get_bldcm_direction(void)
   */
 void set_bldcm_enable(void)
 {
+  BLDCM_ENABLE_SD();
   hall_enable();
 }
 
@@ -88,6 +112,9 @@ void set_bldcm_disable(void)
   
   /* 停止 PWM 输出 */
   stop_pwm_output();
+  
+  /* 关闭 MOS 管 */
+  BLDCM_DISABLE_SD();
 }
 
 /**

@@ -22,6 +22,7 @@
 #include ".\key\bsp_key.h" 
 #include ".\bldcm_control\bsp_bldcm_control.h"
 #include "./usart/bsp_debug_usart.h"
+#include "./adc/bsp_adc.h"
 
 /**
   * @brief  主函数
@@ -36,6 +37,9 @@ int main(void)
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
   
+  /* HAL 初始化 */
+  HAL_Init();
+  
 	/* 初始化按键GPIO */
 	Key_GPIO_Config();
   
@@ -44,6 +48,9 @@ int main(void)
   
   /* 调试串口初始化 */
   DEBUG_USART_Config();
+  
+  /* ADC 初始化 */
+  ADC_Init();
   
   printf("野火直流无刷电机按键控制例程\r\n");
 
@@ -96,6 +103,9 @@ int main(void)
       /* 转换方向 */
       set_bldcm_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);
     }
+    
+    printf("Tu=%0.2fV, Tr=%0.2fΩ, T=%0.2f℃\r\n", get_ntc_v_val(), get_ntc_r_val(), get_ntc_t_val());
+    HAL_Delay(111);
 	}
 }
 

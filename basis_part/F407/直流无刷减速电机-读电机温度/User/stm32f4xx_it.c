@@ -40,6 +40,7 @@
 #include "stm32f4xx_it.h"
 #include "./led/bsp_led.h"
 #include "./tim/bsp_motor_tim.h"
+#include "./adc/bsp_adc.h"
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -178,6 +179,26 @@ void SysTick_Handler(void)
 void HALL_TIM_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htimx_hall);
+}
+
+/**
+  * @brief  This function handles DMA interrupt request.
+  * @param  None
+  * @retval None
+  */
+void ADC_DMA_IRQ_Handler(void)
+{
+  HAL_DMA_IRQHandler(&DMA_Init_Handle);
+}
+
+/**
+  * @brief  This function handles ADC interrupt request.
+  * @param  None
+  * @retval None
+  */
+void ADC_VBUS_IRQHandler(void)
+{
+  HAL_ADC_IRQHandler(&ADC_Handle);
 }
 
 /**
