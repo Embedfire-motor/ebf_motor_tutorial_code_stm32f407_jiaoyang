@@ -20,45 +20,49 @@ void PID_param_init(void)
     pid_location.err_last=0.0;
     pid_location.integral=0.0;
   
-		pid_location.Kp = 0.11;
-		pid_location.Ki = 0.1;
+		pid_location.Kp = 0.011;//0.0068
+		pid_location.Ki = 0.0018	;//0.01
 		pid_location.Kd = 0.0;
 
     /* 速度相关初始化参数 */
-    pid_speed.target_val=200.0;				
+    pid_speed.target_val=100.0;				
     pid_speed.actual_val=0.0;
     pid_speed.err=0.0;
     pid_speed.err_last=0.0;
     pid_speed.integral=0.0;
   
-		pid_speed.Kp = 2.0;
-		pid_speed.Ki = 0.06;
-		pid_speed.Kd = 0.04;
+		pid_speed.Kp = 2.0;//0.5;
+		pid_speed.Ki = 0.02;//0.005;
+		pid_speed.Kd = 0.00;
 
-  	/* 速度相关初始化参数 */
-    pid_curr.target_val=0.0;				
+  	/* 电流相关初始化参数 */
+    pid_curr.target_val=80.0;				
     pid_curr.actual_val=0.0;
     pid_curr.err=0.0;
     pid_curr.err_last=0.0;
     pid_curr.integral=0.0;
 
-		pid_curr.Kp = 0.0;
-    pid_curr.Ki = 5.5;
+	pid_curr.Kp = 0.0;
+    pid_curr.Ki = 3.5;//5.5
     pid_curr.Kd = 0.00;
 
 #if defined(PID_ASSISTANT_EN)
     float pid_temp[3] = {pid_location.Kp, pid_location.Ki, pid_location.Kd};
-//    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 
     pid_temp[0] = pid_speed.Kp;
     pid_temp[1] = pid_speed.Ki;
     pid_temp[2] = pid_speed.Kd;
 //    set_computer_value(SEND_P_I_D_CMD, CURVES_CH2, pid_temp, 3);     // 给通道 2 发送 P I D 值
-    
+  	int temp = (int)pid_speed.target_val;
+  set_computer_value(SEND_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 1 发送目标值
     pid_temp[0] = pid_curr.Kp;
     pid_temp[1] = pid_curr.Ki;
     pid_temp[2] = pid_curr.Kd;
-    set_computer_value(SEND_P_I_D_CMD, CURVES_CH3, pid_temp, 3);     // 给通道 3 发送 P I D 值
+////    set_computer_value(SEND_P_I_D_CMD, CURVES_CH3, pid_temp, 3);     // 给通道 3 发送 P I D 值
+//	int temp = (int)pid_curr.target_val;
+//  set_computer_value(SEND_TARGET_CMD, CURVES_CH3, &temp, 1);     // 给通道 1 发送目标值
+
 #endif
 } 
 

@@ -166,7 +166,7 @@ void motor_pid_control(void)
 }
 
 /**
-  * @brief  定时器每100ms产生一次中断回调函数
+  * @brief  定时器每25ms产生一次中断回调函数
   * @param  htim：定时器句柄
   * @retval 无
   */

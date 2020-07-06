@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * @file    protocol.c
-  * @author  long
   * @version V1.0
   * @date    2020-xx-xx
   * @brief   野火PID调试助手通讯协议解析
@@ -20,7 +19,7 @@
 #include ".\motor_control\bsp_motor_control.h"
 #include "./pid/bsp_pid.h"
 #include "./tim/bsp_basic_tim.h"
-
+extern float set_point;
 struct prot_frame_parser_t
 {
     uint8_t *recv_ptr;
@@ -175,7 +174,7 @@ static uint8_t protocol_frame_parse(uint8_t *data, uint16_t *data_len)
     int16_t header_oft = -1;
     uint8_t checksum = 0;
     
-    need_to_parse_len = recvbuf_get_len_to_parse(parser.frame_len, PROT_FRAME_LEN_RECV, parser.r_oft, parser.w_oft);    // 得到为解析的数据长度
+    need_to_parse_len = recvbuf_get_len_to_parse(parser.frame_len, PROT_FRAME_LEN_RECV, parser.r_oft, parser.w_oft);    // 得到未解析的数据长度
     if (need_to_parse_len < 9)     // 肯定还不能同时找到帧头和帧长度
         return frame_type;
 
@@ -296,7 +295,6 @@ int8_t receiving_process(void)
   uint8_t frame_data[128];         // 要能放下最长的帧
   uint16_t frame_len = 0;          // 帧长度
   uint8_t cmd_type = CMD_NONE;     // 命令类型
-  packet_head_t packet;
   
   while(1)
   {
@@ -310,59 +308,37 @@ int8_t receiving_process(void)
 
       case SET_P_I_D_CMD:
       {
-        type_cast_t temp_p, temp_i, temp_d;
-
-        packet.ch = frame_data[CHX_INDEX_VAL];
+        uint32_t temp0 = COMPOUND_32BIT(&frame_data[13]);
+        uint32_t temp1 = COMPOUND_32BIT(&frame_data[17]);
+        uint32_t temp2 = COMPOUND_32BIT(&frame_data[21]);
         
-        temp_p.i = COMPOUND_32BIT(&frame_data[13]);
-        temp_i.i = COMPOUND_32BIT(&frame_data[17]);
-        temp_d.i = COMPOUND_32BIT(&frame_data[21]);
+        float p_temp, i_temp, d_temp;
         
-        if (packet.ch == CURVES_CH1)
-        {
-          set_p_i_d(&pid_location, temp_p.f, temp_i.f, temp_d.f);    // 设置 P I D
-        }
-        else if (packet.ch == CURVES_CH2)
-        {
-          set_p_i_d(&pid_speed, temp_p.f, temp_i.f, temp_d.f);    // 设置 P I D
-        }
-        else if (packet.ch == CURVES_CH3)
-        {
-          set_p_i_d(&pid_curr, temp_p.f, temp_i.f, temp_d.f);    // 设置 P I D
-        }
+        p_temp = *(float *)&temp0;
+        i_temp = *(float *)&temp1;
+        d_temp = *(float *)&temp2;
+        
+        set_p_i_d(p_temp, i_temp, d_temp);    // 设置 P I D
       }
       break;
 
       case SET_TARGET_CMD:
       {
-        int target_temp = COMPOUND_32BIT(&frame_data[13]);    // 得到数据
-        packet.ch = frame_data[CHX_INDEX_VAL];
+        int actual_temp = COMPOUND_32BIT(&frame_data[13]);    // 得到数据
         
-        /* 只设置位置的目标值，电流的目标置是由速度pid的输出决定的 */
-        if (packet.ch == CURVES_CH1)    
-        {
-          set_pid_target(&pid_location, target_temp);    // 设置目标值
-        }
-        else if (packet.ch == CURVES_CH2)
-        {
-          set_pid_target(&pid_speed, target_temp);    // 设置目标值
-        }
-		else if (packet.ch == CURVES_CH3)
-        {
-          set_pid_target(&pid_curr, target_temp);    // 设置目标值
-        }
+        set_point = (actual_temp);    // 设置目标值
       }
       break;
       
       case START_CMD:
       {
-        set_motor_enable();              // 启动电机
+//        set_motor_enable();              // 启动电机
       }
       break;
       
       case STOP_CMD:
       {
-        set_motor_disable();              // 停止电机
+//        set_motor_disable();              // 停止电机
       }
       break;
       
@@ -375,8 +351,6 @@ int8_t receiving_process(void)
       case SET_PERIOD_CMD:
       {
         uint32_t temp = COMPOUND_32BIT(&frame_data[13]);     // 周期数
-        packet.ch = frame_data[CHX_INDEX_VAL];
-        
         SET_BASIC_TIM_PERIOD(temp);                             // 设置定时器周期1~1000ms
       }
       break;

@@ -56,13 +56,13 @@ int main(void)
   
   /* 串口初始化 */
   DEBUG_USART_Config();
-  
+//	for(volatile int i=0x2fffff;i>0;i--){}
+
   /* ADC 始化 */
   ADC_Init();
   
   set_motor_speed(ChannelPulse);
   set_motor_disable();    // 禁用电机
-  
   printf("野火直流有刷电机-限流-过压-欠压保护实验\r\n");
 	
 	while(1)

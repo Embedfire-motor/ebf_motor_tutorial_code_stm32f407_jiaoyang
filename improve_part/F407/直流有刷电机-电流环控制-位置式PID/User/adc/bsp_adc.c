@@ -8,7 +8,7 @@ DMA_HandleTypeDef DMA_Init_Handle;
 ADC_HandleTypeDef ADC_Handle;
 
 static uint16_t adc_buff[ADC_NUM_MAX];
-static uint16_t vbus_adc_mean = 0;    // 电源电压 ACD 采样结果平均值
+static uint16_t vbus_adc_mean = 0;    // 电源电压 ADC 采样结果平均值
 static uint32_t adc_mean_sum = 0;        // 平均值累加
 static uint32_t adc_mean_count = 0;      // 累加计数
 
@@ -237,23 +237,27 @@ int32_t get_curr_val(void)
 {
   static uint8_t flag = 0;
   static uint32_t adc_offset = 0;    // 偏置电压
-  uint16_t curr_adc_mean = 0;         // 电流 ACD 采样结果平均值
+  int16_t curr_adc_mean = 0;         // 电流 ACD 采样结果平均值
   
   curr_adc_mean = adc_mean_sum / adc_mean_count;    // 保存平均值
   
-  if (adc_mean_count > 10)
-  {
+
     adc_mean_count = 0;
     adc_mean_sum = 0;
     
-    if (flag == 0)
+    if (flag < 17)
     {
-      adc_offset = curr_adc_mean;    // 记录偏置电压
-      flag = 1;
+      adc_offset = curr_adc_mean;    // 多次记录偏置电压，待系统稳定偏置电压才为有效值
+      flag += 1;
     }
-    
-    curr_adc_mean -= adc_offset;                     // 减去偏置电压
-  }
+    if(curr_adc_mean>=adc_offset)
+	{
+		curr_adc_mean -= adc_offset;                     // 减去偏置电压
+	}else
+	{
+		curr_adc_mean=0;
+	}
+
 
   float vdc = GET_ADC_VDC_VAL(curr_adc_mean);      // 获取电压值
   

@@ -70,7 +70,7 @@ static void TIM_Mode_Config(void)
 }
 
 /**
-  * @brief  初始化基本定时器定时，1ms产生一次中断
+  * @brief  初始化基本定时器定时，25ms产生一次中断
   * @param  无
   * @retval 无
   */
