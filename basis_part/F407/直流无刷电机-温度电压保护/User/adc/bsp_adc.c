@@ -18,6 +18,7 @@
 #include "./adc/bsp_adc.h"
 #include "./led/bsp_led.h" 
 #include "./usart/bsp_debug_usart.h"
+#include ".\bldcm_control\bsp_bldcm_control.h"
 #include <math.h>
 
 __IO uint16_t ADC_ConvertedValue;
@@ -147,9 +148,26 @@ static void ADC_Mode_Config(void)
       while(1);
     }
     
+    /** 配置ADC看门狗
+    */
+    ADC_AnalogWDGConfTypeDef AnalogWDGConfig = {0};
+    
+    AnalogWDGConfig.WatchdogMode = ADC_ANALOGWATCHDOG_SINGLE_REG;
+    AnalogWDGConfig.HighThreshold = VBUS_HEX_MAX;
+    AnalogWDGConfig.LowThreshold = VBUS_HEX_MIN;
+    AnalogWDGConfig.Channel = VBUS_ADC_CHANNEL;
+    AnalogWDGConfig.ITMode = ENABLE;
+    if (HAL_ADC_AnalogWDGConfig(&ADC_Handle, &AnalogWDGConfig) != HAL_OK)
+    {
+      while(1);
+    }
+    
     // 外设中断优先级配置和使能中断配置
     HAL_NVIC_SetPriority(ADC_DMA_IRQ, 1, 1);
     HAL_NVIC_EnableIRQ(ADC_DMA_IRQ);
+    
+    HAL_NVIC_SetPriority(ADC_VBUS_IRQ, 0, 1);
+    HAL_NVIC_EnableIRQ(ADC_VBUS_IRQ);
 
     HAL_ADC_Start_DMA(&ADC_Handle, (uint32_t*)&adc_buff, ADC_NUM_MAX);
 }
@@ -165,6 +183,8 @@ void ADC_Init(void)
   adc_dma_init();
 	ADC_Mode_Config();
 }
+
+static uint16_t flag_num = 0;
 
 /**
   * @brief  常规转换在非阻塞模式下完成回调
@@ -205,9 +225,31 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 }
 
 /**
+  * @brief  在非阻塞模式模拟看门狗回调
+  * @param  hadc: ADC  句柄.
+  * @retval 无
+  */
+void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
+{
+  flag_num++;     // 电源电压超过阈值电压
+  
+  if (vbus_adc_mean > VBUS_HEX_MIN && vbus_adc_mean < VBUS_HEX_MAX)
+    flag_num = 0;
+  
+  if (flag_num > ADC_NUM_MAX)      // 电源电压超过阈值电压10次
+  {
+    set_bldcm_disable();
+    flag_num = 0;
+    LED1_ON;
+    printf("电源电压超过限制！请检查原因，复位开发板在试！\r\n");
+    while(1);
+  }
+}
+
+/**
   * @brief  获取温度传感器端的电压值
   * @param  无
-  * @retval 转换得到的电流值
+  * @retval 转换得到的电压值
   */
 float get_ntc_v_val(void)
 {
@@ -219,7 +261,7 @@ float get_ntc_v_val(void)
 /**
   * @brief  获取温度传感器端的电阻值
   * @param  无
-  * @retval 转换得到的电流值
+  * @retval 转换得到的电阻值
   */
 float get_ntc_r_val(void)
 {
@@ -234,20 +276,21 @@ float get_ntc_r_val(void)
 /**
   * @brief  获取温度传感器的温度
   * @param  无
-  * @retval 转换得到的电流值
+  * @retval 转换得到的温度，单位：（℃）
   */
 float get_ntc_t_val(void)
 {
-  float t = 0;
-  float Rt = 0;
-  float Rp = 10000;
-  float T2 = 273.15+25;
-  float Bx = 3950;
-  float Ka = 273.15;
+  float t = 0;             // 测量温度
+  float Rt = 0;            // 测量电阻
+  float Ka = 273.15;       // 0℃ 时对应的温度（开尔文）
+  float R25 = 10000.0;     // 25℃ 电阻值
+  float T25 = Ka + 25;     // 25℃ 时对应的温度（开尔文）
+  float B = 3950.0;        /* B-常数：B = ln(R25 / Rt) / (1 / T – 1 / T25)，
+                             其中 T = 25 + 273.15 */
 
-  Rt = get_ntc_r_val();
+  Rt = get_ntc_r_val();    // 获取当前电阻值
 
-  t = 1 / ( 1 / T2 + log(Rt / Rp) / Bx) - Ka + 0.5;    // 使用公式计算
+  t = B * T25 / (B + log(Rt / R25) * T25) - Ka ;    // 使用公式计算
 
   return t;
 }

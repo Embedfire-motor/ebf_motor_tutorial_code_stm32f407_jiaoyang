@@ -24,6 +24,9 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./adc/bsp_adc.h"
 
+#define TEMP_MAX    80    // 温度最大值
+#define TEMP_MIN    10    // 温度最小值
+
 /**
   * @brief  主函数
   * @param  无
@@ -34,6 +37,7 @@ int main(void)
   __IO uint16_t ChannelPulse = PWM_MAX_PERIOD_COUNT/10;
   uint8_t i = 0;
   uint8_t flag = 0;
+  uint8_t t_max_count = 0;
   
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
@@ -108,9 +112,23 @@ int main(void)
     if (HAL_GetTick()%50 == 0 && flag == 0)    // 每50毫秒读取一次温度、电压
     {
       flag = 1;
+      float temp = 0;
+      temp = get_ntc_t_val();
 
       printf("电源电压=%0.1fV, NTC=%0.0fΩ, T=%0.1f℃.\r\n", 
-             get_vbus_val(), get_ntc_r_val(), get_ntc_t_val());
+             get_vbus_val(), get_ntc_r_val(), temp);
+      
+      if (temp < TEMP_MIN || temp > TEMP_MAX)    // 判断是不是超过限定的值
+      {
+        if (t_max_count++ > 5)    // 连续5次超过
+        {
+          LED2_ON;
+          set_bldcm_disable();
+          t_max_count = 0;
+          printf("温度超过限制！请检查原因，复位开发板在试！\r\n");
+          while(1);
+        }
+      }
     }
     else if (HAL_GetTick()%50 != 0 && flag == 1)
     {

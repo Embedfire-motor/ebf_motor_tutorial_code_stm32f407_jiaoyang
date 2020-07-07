@@ -234,20 +234,21 @@ float get_ntc_r_val(void)
 /**
   * @brief  获取温度传感器的温度
   * @param  无
-  * @retval 转换得到的电流值
+  * @retval 转换得到的温度，单位：（℃）
   */
 float get_ntc_t_val(void)
 {
-  float t = 0;
-  float Rt = 0;
-  float Rp = 10000;
-  float T2 = 273.15+25;
-  float Bx = 3950;
-  float Ka = 273.15;
+  float t = 0;             // 测量温度
+  float Rt = 0;            // 测量电阻
+  float Ka = 273.15;       // 0℃ 时对应的温度（开尔文）
+  float R25 = 10000.0;     // 25℃ 电阻值
+  float T25 = Ka + 25;     // 25℃ 时对应的温度（开尔文）
+  float B = 3950.0;        /* B-常数：B = ln(R25 / Rt) / (1 / T – 1 / T25)，
+                             其中 T = 25 + 273.15 */
 
-  Rt = get_ntc_r_val();
+  Rt = get_ntc_r_val();    // 获取当前电阻值
 
-  t = 1 / ( 1 / T2 + log(Rt / Rp) / Bx) - Ka + 0.5;    // 使用公式计算
+  t = B * T25 / (B + log(Rt / R25) * T25) - Ka ;    // 使用公式计算
 
   return t;
 }
