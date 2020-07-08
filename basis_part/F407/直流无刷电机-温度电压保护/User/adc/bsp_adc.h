@@ -4,8 +4,8 @@
 #include "stm32f4xx.h"
 
 // ADC 序号宏定义
-#define CURR_ADC                        ADC3
-#define CURR_ADC_CLK_ENABLE()           __ADC3_CLK_ENABLE()
+#define TEMP_ADC                        ADC3
+#define TEMP_ADC_CLK_ENABLE()           __ADC3_CLK_ENABLE()
 
 #define ADC_VBUS_IRQ                    ADC_IRQn
 #define ADC_VBUS_IRQHandler             ADC_IRQHandler
@@ -17,19 +17,19 @@
   
 /*********************** 温度传感器电压采集 ******************/
 // ADC GPIO 宏定义
-#define CURR_ADC_GPIO_PORT              GPIOF
-#define CURR_ADC_GPIO_PIN               GPIO_PIN_10
-#define CURR_ADC_GPIO_CLK_ENABLE()      __GPIOB_CLK_ENABLE()
+#define TEMP_ADC_GPIO_PORT              GPIOF
+#define TEMP_ADC_GPIO_PIN               GPIO_PIN_10
+#define TEMP_ADC_GPIO_CLK_ENABLE()      __GPIOB_CLK_ENABLE()
 
-#define CURR_ADC_CHANNEL                ADC_CHANNEL_8
+#define TEMP_ADC_CHANNEL                ADC_CHANNEL_8
 
 // ADC DR寄存器宏定义，ADC转换后的数字值则存放在这里
-#define CURR_ADC_DR_ADDR                ((uint32_t)ADC1+0x4c)
+#define TEMP_ADC_DR_ADDR                ((uint32_t)ADC1+0x4c)
 
 // ADC DMA 通道宏定义，这里我们使用DMA传输
-#define CURR_ADC_DMA_CLK_ENABLE()       __DMA2_CLK_ENABLE()
-#define CURR_ADC_DMA_CHANNEL            DMA_CHANNEL_2
-#define CURR_ADC_DMA_STREAM             DMA2_Stream0
+#define TEMP_ADC_DMA_CLK_ENABLE()       __DMA2_CLK_ENABLE()
+#define TEMP_ADC_DMA_CHANNEL            DMA_CHANNEL_2
+#define TEMP_ADC_DMA_STREAM             DMA2_Stream0
 
 #define ADC_DMA_IRQ                     DMA2_Stream0_IRQn
 #define ADC_DMA_IRQ_Handler             DMA2_Stream0_IRQHandler

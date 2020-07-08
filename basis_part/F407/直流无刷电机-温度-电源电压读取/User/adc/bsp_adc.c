@@ -37,13 +37,13 @@ static void ADC_GPIO_Config(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
     // 使能 GPIO 时钟
-    CURR_ADC_GPIO_CLK_ENABLE();
+    TEMP_ADC_GPIO_CLK_ENABLE();
     VBUS_GPIO_CLK_ENABLE();
     // 配置 IO
-    GPIO_InitStructure.Pin = CURR_ADC_GPIO_PIN;
+    GPIO_InitStructure.Pin = TEMP_ADC_GPIO_PIN;
     GPIO_InitStructure.Mode = GPIO_MODE_ANALOG;	    
     GPIO_InitStructure.Pull = GPIO_NOPULL ; //不上拉不下拉
-    HAL_GPIO_Init(CURR_ADC_GPIO_PORT, &GPIO_InitStructure);	
+    HAL_GPIO_Init(TEMP_ADC_GPIO_PORT, &GPIO_InitStructure);	
 
     GPIO_InitStructure.Pin = VBUS_GPIO_PIN;
     HAL_GPIO_Init(VBUS_GPIO_PORT, &GPIO_InitStructure);	
@@ -54,9 +54,9 @@ void adc_dma_init(void)
     // ------------------DMA Init 结构体参数 初始化--------------------------
     // ADC1使用DMA2，数据流0，通道0，这个是手册固定死的
     // 开启DMA时钟
-    CURR_ADC_DMA_CLK_ENABLE();
+    TEMP_ADC_DMA_CLK_ENABLE();
     // 数据传输通道
-    DMA_Init_Handle.Instance = CURR_ADC_DMA_STREAM;
+    DMA_Init_Handle.Instance = TEMP_ADC_DMA_STREAM;
     // 数据传输方向为外设到存储器	
     DMA_Init_Handle.Init.Direction = DMA_PERIPH_TO_MEMORY;
     // 外设寄存器只有一个，地址不用递增
@@ -78,7 +78,7 @@ void adc_dma_init(void)
     DMA_Init_Handle.Init.MemBurst = DMA_MBURST_SINGLE;
     DMA_Init_Handle.Init.PeriphBurst = DMA_PBURST_SINGLE;  
     // 选择 DMA 通道，通道存在于流中
-    DMA_Init_Handle.Init.Channel = CURR_ADC_DMA_CHANNEL; 
+    DMA_Init_Handle.Init.Channel = TEMP_ADC_DMA_CHANNEL; 
     //初始化DMA流，流相当于一个大的管道，管道里面有很多通道
     HAL_DMA_Init(&DMA_Init_Handle); 
 
@@ -93,10 +93,10 @@ void adc_dma_init(void)
 static void ADC_Mode_Config(void)
 {
     // 开启ADC时钟
-    CURR_ADC_CLK_ENABLE();
+    TEMP_ADC_CLK_ENABLE();
     // -------------------ADC Init 结构体 参数 初始化------------------------
     // ADC1
-    ADC_Handle.Instance = CURR_ADC;
+    ADC_Handle.Instance = TEMP_ADC;
     // 时钟为fpclk 4分频	
     ADC_Handle.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV4;
     // ADC 分辨率
@@ -127,7 +127,7 @@ static void ADC_Mode_Config(void)
     //---------------------------------------------------------------------------
     ADC_ChannelConfTypeDef ADC_Config;
     
-    ADC_Config.Channel      = CURR_ADC_CHANNEL;
+    ADC_Config.Channel      = TEMP_ADC_CHANNEL;
     ADC_Config.Rank         = 1;
     // 采样时间间隔	
     ADC_Config.SamplingTime = ADC_SAMPLETIME_3CYCLES;
@@ -155,7 +155,7 @@ static void ADC_Mode_Config(void)
 }
 
 /**
-  * @brief  电流采集初始化
+  * @brief  ADC 采集初始化
   * @param  无
   * @retval 无
   */
@@ -177,7 +177,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 
   HAL_ADC_Stop_DMA(hadc);       // 停止 ADC 采样，处理完一次数据在继续采样
   
-  /* 计算电流通道采样的平均值 */
+  /* 计算温度通道采样的平均值 */
   for(uint32_t count = 0; count < ADC_NUM_MAX; count+=2)
   {
     adc_mean += (int32_t)adc_buff[count];
