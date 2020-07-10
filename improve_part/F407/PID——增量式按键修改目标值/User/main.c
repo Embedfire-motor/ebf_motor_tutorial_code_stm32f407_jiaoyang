@@ -61,9 +61,15 @@ int main(void)
 		if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
 		{
 				if(run_i%2==0)
+				{
 						set_point=200;
+						pid.target_val = set_point;
+				}
 				else
+				{
 						set_point=0;
+						pid.target_val = set_point;
+				}
 				run_i++;
 #if defined(PID_ASSISTANT_EN) 
 				temp = set_point;    // 上位机需要整数参数，转换一下

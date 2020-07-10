@@ -28,6 +28,7 @@
 extern _pid pid;
 extern float set_point;
 extern int pid_status;
+
 /**
   * @brief  主函数
   * @param  无
@@ -50,7 +51,6 @@ int main(void)
 	/*按键初始化*/
 	Key_GPIO_Config();
 	int run_i=0;
-  
 #if defined(PID_ASSISTANT_EN) 
     int temp = set_point;    // 上位机需要整数参数，转换一下
     set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
@@ -64,9 +64,15 @@ int main(void)
 		if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
 		{
 			if(run_i%2==0)
+			{
 					set_point=200;
+					pid.target_val = set_point;
+			}
 			else
+			{
 					set_point=0;
+					pid.target_val = set_point;
+			}
 			run_i++;
         
 #if defined(PID_ASSISTANT_EN) 
