@@ -40,10 +40,8 @@ void PID_param_init()
   */
 float PID_realize(float temp_val) 
 {
-	/*传入目标值*/
-	pid.target_val = temp_val;
 	/*计算目标值与实际值的误差*/
-	pid.err=pid.target_val-pid.actual_val;
+	pid.err=pid.target_val-temp_val;
 	/*PID算法实现*/
 	float increment_val = pid.Kp*(pid.err - pid.err_next) + pid.Ki*pid.err + pid.Kd*(pid.err - 2 * pid.err_next + pid.err_last);
 	/*累加*/
@@ -108,7 +106,7 @@ void time_period_fun()
 			
 	if(!pid_status)
 	{
-		float val=PID_realize(set_point);
+		float val=PID_realize(pid.actual_val);
     
 		int temp = val;    // 上位机需要整数参数，转换一下
 		set_computer_value(SEND_FACT_CMD, CURVES_CH1, &temp, 1);                // 给通道 1 发送实际值

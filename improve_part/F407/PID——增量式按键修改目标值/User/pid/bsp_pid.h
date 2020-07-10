@@ -16,7 +16,7 @@ typedef struct
 	float Kp, Ki, Kd;     //定义比例、积分、微分系数
 }_pid;
 
-
+extern _pid pid;
 extern void PID_param_init(void);
 extern void set_pid_target(float temp_val);
 extern float get_pid_target(void);
