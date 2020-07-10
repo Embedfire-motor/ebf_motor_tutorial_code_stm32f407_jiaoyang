@@ -6,14 +6,15 @@
 
 /* 电机控旋转实现结构体 */
 
+#define SPEED_FILTER_NUM      30    // 速度滤波次数
+
 typedef struct
 {
-  int timeout;                // 定时器更新计数
-  uint32_t hall_timer;        // 霍尔采集总时间
-  uint32_t hall_pulse_num;    // 霍尔采集总脉冲数
-  int speed;            // 电机速度 rps（转/秒）
+  int32_t timeout;            // 定时器更新计数
+  float speed;                // 电机速度 rps（转/秒）
+  int32_t enable_flag;        // 电机使能标志
+  int32_t speed_group[SPEED_FILTER_NUM];
 }motor_rotate_t;
-
 
 /* 电机控制定时器 */
 #define MOTOR_TIM           				      TIM8
@@ -22,6 +23,8 @@ typedef struct
 /* 累计 TIM_Period个后产生一个更新或者中断		
 	当定时器从0计数到5599，即为5600次，为一个定时周期 */
 #define PWM_PERIOD_COUNT     (5600)
+
+#define PWM_MAX_PERIOD_COUNT    (PWM_PERIOD_COUNT - 100)
 
 /* 高级控制定时器时钟源TIMxCLK = HCLK = 168MHz 
 	 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1)/PWM_PERIOD_COUNT = 15KHz*/
@@ -62,6 +65,8 @@ typedef struct
 #define MOTOR_OCNPWM3_GPIO_PORT      		  GPIOH
 #define MOTOR_OCNPWM3_GPIO_CLK_ENABLE()	  __GPIOH_CLK_ENABLE()
 #define MOTOR_OCNPWM3_AF					        GPIO_AF3_TIM8
+
+#define TIM_COM_TS_ITRx                   TIM_TS_ITR3    // 内部触发配置(TIM8->ITR3->TIM5)
 
 /* 霍尔传感器定时器 */
 #define HALL_TIM           				      TIM5
@@ -104,7 +109,7 @@ extern TIM_HandleTypeDef TIM_TimeBaseStructure;
 void PWM_TIMx_Configuration(void);
 void stop_pwm_output(void);
 void set_pwm_pulse(uint16_t pulse);
-float get_motor_speed(void);
+float get_motor_speed(uint32_t time);
 
 void hall_enable(void);
 void hall_disable(void);

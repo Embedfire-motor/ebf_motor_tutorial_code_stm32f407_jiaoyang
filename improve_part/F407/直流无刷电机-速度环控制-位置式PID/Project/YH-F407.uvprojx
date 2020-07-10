@@ -788,6 +788,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\tim\bsp_basic_tim.c</FilePath>
             </File>
+            <File>
+              <FileName>protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\protocol\protocol.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

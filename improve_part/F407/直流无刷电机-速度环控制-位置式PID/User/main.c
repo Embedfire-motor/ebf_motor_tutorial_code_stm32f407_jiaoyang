@@ -24,6 +24,7 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./tim/bsp_basic_tim.h"
 #include "./pid/bsp_pid.h"
+#include "./protocol/protocol.h"
 	
 void Delay(__IO uint32_t nCount)	 //简单的延时函数
 {
@@ -37,7 +38,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  int16_t target_speed = 600;
+  int16_t target_speed = 1500;
   uint8_t i = 0;
   
 	/* 初始化系统时钟为168MHz */
@@ -52,6 +53,9 @@ int main(void)
   /* LED 灯初始化 */
   LED_GPIO_Config();
   
+  /* 协议初始化 */
+  protocol_init();
+  
   /* 调试串口初始化 */
   DEBUG_USART_Config();
   
@@ -62,6 +66,9 @@ int main(void)
 
   /* 电机初始化 */
   bldcm_init();
+  
+  /* 设置目标速度 */
+  set_pid_target(target_speed);
 
 #if defined(PID_ASSISTANT_EN)
   set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);                // 同步上位机的启动按钮状态
@@ -70,6 +77,9 @@ int main(void)
 	
 	while(1)
 	{
+    /* 接收数据处理 */
+    receiving_process();
+    
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
     {
@@ -98,8 +108,8 @@ int main(void)
       /* 增大占空比 */
       target_speed += 100;
       
-      if(target_speed > 2400)
-        target_speed = 2400;
+      if(target_speed > 3500)
+        target_speed = 3500;
       
       set_pid_target(target_speed);
       
@@ -113,10 +123,10 @@ int main(void)
     {
       target_speed -= 100;
 
-      if(target_speed < -2400)
-        target_speed = -2400;
+      if(target_speed < 300)
+        target_speed = 300;
       
-      set_pid_target(-600);
+      set_pid_target(target_speed);
       
     #if defined(PID_ASSISTANT_EN)
       set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值

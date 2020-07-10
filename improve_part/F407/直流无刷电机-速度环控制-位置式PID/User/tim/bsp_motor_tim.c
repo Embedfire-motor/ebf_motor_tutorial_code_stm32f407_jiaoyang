@@ -25,6 +25,12 @@ TIM_OC_InitTypeDef TIM_OCInitStructure;
 /* 霍尔传感器相关定时器初始出 */
 TIM_HandleTypeDef htimx_hall;
 
+static uint16_t bldcm_pulse = 0;
+
+static motor_rotate_t motor_drive = {0};    // 定义电机驱动管理结构体
+
+static void update_speed_dir(uint8_t dir_in);
+
 /**
   * @brief  配置TIM复用输出PWM时用到的I/O
   * @param  无
@@ -110,7 +116,7 @@ static void TIM_Mode_Config(void)
   /*PWM模式配置*/
   //配置为PWM模式1
   TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM1;
-  TIM_OCInitStructure.Pulse = 0;
+  TIM_OCInitStructure.Pulse = 0;                         // 默认必须要初始为0
   TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_HIGH;
   TIM_OCInitStructure.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_SET;
@@ -119,15 +125,18 @@ static void TIM_Mode_Config(void)
   HAL_TIM_PWM_ConfigChannel(&htimx_bldcm,&TIM_OCInitStructure,TIM_CHANNEL_1);    // 初始化通道 1 输出 PWM 
   HAL_TIM_PWM_ConfigChannel(&htimx_bldcm,&TIM_OCInitStructure,TIM_CHANNEL_2);    // 初始化通道 2 输出 PWM
   HAL_TIM_PWM_ConfigChannel(&htimx_bldcm,&TIM_OCInitStructure,TIM_CHANNEL_3);    // 初始化通道 3 输出 PWM
+  
+  /* 配置触发源 */
+  HAL_TIMEx_ConfigCommutationEvent(&htimx_bldcm, TIM_COM_TS_ITRx, TIM_COMMUTATION_SOFTWARE);
 
-  /* 关闭定时器通道1输出PWM */
-  HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_1);
+  /* 开启定时器通道1输出PWM */
+  HAL_TIM_PWM_Start(&htimx_bldcm,TIM_CHANNEL_1);
 
-  /* 关闭定时器通道2输出PWM */
-  HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_2);
+  /* 开启定时器通道2输出PWM */
+  HAL_TIM_PWM_Start(&htimx_bldcm,TIM_CHANNEL_2);
 
-  /* 关闭定时器通道3输出PWM */
-  HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_3);
+  /* 开启定时器通道3输出PWM */
+  HAL_TIM_PWM_Start(&htimx_bldcm,TIM_CHANNEL_3);
 }
 
 /**
@@ -138,13 +147,13 @@ static void TIM_Mode_Config(void)
 void stop_pwm_output(void)
 {
   /* 关闭定时器通道1输出PWM */
-	HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_1);
+  __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_1, 0);
 
   /* 关闭定时器通道2输出PWM */
-	HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_2);
+  __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_2, 0);
   
   /* 关闭定时器通道3输出PWM */
-	HAL_TIM_PWM_Stop(&htimx_bldcm,TIM_CHANNEL_3);
+  __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_3, 0);
   
   HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
   HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
@@ -159,9 +168,10 @@ void stop_pwm_output(void)
 void set_pwm_pulse(uint16_t pulse)
 {
   /* 设置定时器通道输出 PWM 的占空比 */
-	__HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_1,pulse);
-  __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_2,pulse);
-  __HAL_TIM_SET_COMPARE(&htimx_bldcm,TIM_CHANNEL_3,pulse);
+	bldcm_pulse = pulse;
+  
+  if (motor_drive.enable_flag)
+    HAL_TIM_TriggerCallback(NULL);   // 执行一次换相
 }
 
 /**
@@ -248,7 +258,9 @@ void hall_enable(void)
 
   LED1_OFF;
   
-  HAL_TIM_TriggerCallback(&htimx_hall);   // 执行一次换相
+  HAL_TIM_TriggerCallback(NULL);   // 执行一次换相
+
+  motor_drive.enable_flag = 1;
 }
 
 /**
@@ -262,6 +274,8 @@ void hall_disable(void)
   __HAL_TIM_DISABLE_IT(&htimx_hall, TIM_IT_TRIGGER);
   __HAL_TIM_DISABLE_IT(&htimx_hall, TIM_IT_UPDATE);
   HAL_TIMEx_HallSensor_Stop(&htimx_hall);
+  motor_drive.enable_flag = 0;
+  motor_drive.speed = 0;
 }
 
 uint8_t get_hall_state(void)
@@ -304,8 +318,6 @@ void hall_tim_config(void)
 	hall_tim_init();      // 初始化定时器
 }
 
-static motor_rotate_t motor_drive;    // 定义电机驱动实现
-
 /**
   * @brief  更新电机速度
   * @param  time：计数器的总值
@@ -313,20 +325,18 @@ static motor_rotate_t motor_drive;    // 定义电机驱动实现
   * @retval 无
   */
 
-static void update_motor_speed(uint32_t time, uint32_t num)
+static void update_motor_speed(uint8_t dir_in, uint32_t time)
 {
   int speed_temp = 0;
   static uint8_t count = 0;
-  static int speed_group[10];
   static int flag = 0;
 
   /* 计算速度：
      电机每转一圈共用24个脉冲，(1.0/(84000000.0/128.0)为计数器的周期，(1.0/(84000000.0/128.0) * time)为时间长。
   */
-  speed_group[count++] = (num / 24.0) / ((1.0/(84000000.0/HALL_PRESCALER_COUNT) * time)/60.0);
-//motor_drive.speed = (num / 24.0) / ((1.0/(84000000.0/HALL_PRESCALER_COUNT) * time)/60.0);
-//  return;
-  if (count > 9)
+  motor_drive.speed_group[count++] = (1.0 / 24.0) / ((1.0 / (84000000.0 / HALL_PRESCALER_COUNT) * time) / 60.0);
+
+  if (count >= SPEED_FILTER_NUM)
   {
     flag = 1;
     count = 0;
@@ -334,111 +344,95 @@ static void update_motor_speed(uint32_t time, uint32_t num)
 
   speed_temp = 0;
 
-  /* 计算近 10 次的速度平均值（滤波） */
+  /* 计算近 SPEED_FILTER_NUM 次的速度平均值（滤波） */
   if (flag)
   {
-    for (uint8_t c=0; c<10; c++)
+    for (uint8_t c=0; c<SPEED_FILTER_NUM; c++)
     {
-      speed_temp += speed_group[c];
+      speed_temp += motor_drive.speed_group[c];
     }
 
-    motor_drive.speed = speed_temp/10;
+    motor_drive.speed = speed_temp/SPEED_FILTER_NUM;
   }
   else
   {
     for (uint8_t c=0; c<count; c++)
     {
-      speed_temp += speed_group[c];
+      speed_temp += motor_drive.speed_group[c];
     }
 
-    motor_drive.speed = speed_temp/count;
-  }
-}
-
-uint8_t dir = 0;
-
-/**
-  * @brief  获取电机转速
-  * @param  无
-  * @retval 返回电机转速
-  */
-float get_motor_speed(void)
-{
-  float temp = 0.0;
-  
-//  if(dir != MOTOR_FWD)
-//  {
-//    temp = -motor_drive.speed;     // 反向转时输出负的速度
-//  }
-//  else
-  {
-    temp = motor_drive.speed;
+    motor_drive.speed = speed_temp / count;
   }
   
-  return temp;
+  update_speed_dir(dir_in);
 }
 
 /**
   * @brief  获取电机转速
-  * @param  无
+  * @param  time:获取的时间间隔
   * @retval 返回电机转速
   */
-float get_motor_dir(void)
+float get_motor_speed(uint32_t time)
 {
-  return dir;
+  return motor_drive.speed;
 }
 
 /**
-  * @brief  更新电机速度方向
+  * @brief  更新电机实际速度方向
   * @param  dir_in：霍尔值
   * @retval 无
   */
-void update_speed_dir(uint8_t dir_in)
+static void update_speed_dir(uint8_t dir_in)
 {
   uint8_t step[6] = {1, 3, 2, 6, 4, 5};
 
   static uint8_t num_old = 0;
+  uint8_t step_loc = 0;    // 记录当前霍尔位置
+  int8_t dir = 1;
   
-  for (uint8_t i=0; i<6; i++)
+  for (step_loc=0; step_loc<6; step_loc++)
   {
-    if (step[i] == dir_in)
+    if (step[step_loc] == dir_in)    // 找到当前霍尔的位置
     {
-      if (i == 0)
-      {
-        if (num_old == 1)
-        {
-          dir = MOTOR_FWD;
-        }
-        else if (num_old == 5)
-        {
-          dir = MOTOR_REV;
-        }
-      }
-      else if (i == 5)
-      {
-        if (num_old == 0)
-        {
-          dir = MOTOR_FWD;
-        }
-        else if (num_old == 4)
-        {
-          dir = MOTOR_REV;
-        }
-      }
-      else if (i > num_old)
-      {
-        dir = MOTOR_REV;
-      }
-      else if (i < num_old)
-      {
-        dir = MOTOR_FWD;
-      }
-      
-//      printf("dir = %d\r\n", dir);
-      num_old = i;
       break;
     }
   }
+  
+  /* 端点处理 */
+  if (step_loc == 0)
+  {
+    if (num_old == 1)
+    {
+      dir = 1;
+    }
+    else if (num_old == 5)
+    {
+      dir = -1;
+    }
+  }
+  /* 端点处理 */
+  else if (step_loc == 5)
+  {
+    if (num_old == 0)
+    {
+      dir = 1;
+    }
+    else if (num_old == 4)
+    {
+      dir = -1;
+    }
+  }
+  else if (step_loc > num_old)
+  {
+    dir = -1;
+  }
+  else if (step_loc < num_old)
+  {
+    dir = 1;
+  }
+  
+  num_old = step_loc;
+  motor_drive.speed *= dir;
 }
 
 /**
@@ -451,92 +445,71 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
   /* 获取霍尔传感器引脚状态,作为换相的依据 */
   uint8_t step = 0;
 
-  motor_drive.hall_timer += __HAL_TIM_GET_COMPARE(htim,TIM_CHANNEL_1);     // 获取计数器的值
-  motor_drive.hall_pulse_num ++;
-  
-  if (motor_drive.hall_pulse_num >= 3)
-  {
-    update_motor_speed(motor_drive.hall_timer, motor_drive.hall_pulse_num);     // 更新速度
-    
-    /* 复位数值，重新开始 */
-    motor_drive.hall_pulse_num = 0;
-    motor_drive.hall_timer = 0;
-  }
-  
   step = get_hall_state();
 
-  update_speed_dir(step);
-
+  if (htim == &htimx_hall)   // 判断是否由触发中断产生
+  {
+    update_motor_speed(step, __HAL_TIM_GET_COMPARE(htim,TIM_CHANNEL_1));
+    motor_drive.timeout = 0;
+  }
+  
   if(get_bldcm_direction() != MOTOR_FWD)
   {
-    step = 7 - step;        // 根据顺序表的规律可知： CW = 7 - CCW;
+    step = 7 - step;          // 换相： CW = 7 - CCW;
   }
 
   switch(step)
   {
-    case 1://W+ U-
-      /*  Channe2 configuration  */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_2);     // 停止上桥臂 PWM 输出
+    case 1:    /* W+ U- */
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 2 配置为 0
       HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
     
-      /*  Channe3 configuration */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_3);    // 开始上桥臂 PWM 输出
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_3, bldcm_pulse);                  // 通道 3 配置的占空比
       HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_SET);      // 开启下桥臂
       break;
     
-    case 2: //U+  V-
-      /*  Channe3 configuration */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_3);
-      HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_RESET);
+    case 2:    /* U+  V -*/
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 3 配置为 0
+      HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
     
-      /*  Channel configuration  */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_1);
-      HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_SET);
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_1, bldcm_pulse);                  // 通道 1 配置的占空比
+      HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_SET);      // 开启下桥臂
       break;
     
-    case 3:// W+ V-
-      /*  Channel configuration */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_1);
-      HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_RESET);
+    case 3:    /* W+ V- */
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
+      HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
  
-      /*  Channe3 configuration  */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_3);
-      HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_SET);
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_3, bldcm_pulse);                  // 通道 3 配置的占空比
+      HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_SET);      // 开启下桥臂
       break;
     
-    case 4:// V+ W-
-      /*  Channel configuration */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_1);
-      HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_RESET);
+    case 4:    /* V+ W- */
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
+      HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+      
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_2, bldcm_pulse);                  // 通道 2 配置的占空比
+      HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_SET);      // 开启下桥臂
+      break;
+    
+    case 5:    /* V+ U- */
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 3 配置为 0
+      HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 
-      /*  Channe2 configuration */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_2);
-      HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_SET);    
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_2, bldcm_pulse);                  // 通道 2 配置的占空比
+      HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_SET);      // 开启下桥臂
       break;
     
-    case 5: // V+ U-
-      /*  Channe3 configuration */       
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_3);
-      HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_RESET);
-    
-      /*  Channe2 configuration */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_2);
-    
-      HAL_GPIO_WritePin(MOTOR_OCNPWM1_GPIO_PORT, MOTOR_OCNPWM1_PIN, GPIO_PIN_SET);
-      break;
-    
-    case 6: // U+ W-
-      /*  Channe2 configuration */ 
-      HAL_TIM_PWM_Stop(&htimx_bldcm, TIM_CHANNEL_2);
-      HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_RESET);
-    
-      /*  Channel configuration */
-      HAL_TIM_PWM_Start(&htimx_bldcm, TIM_CHANNEL_1); 
-      HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_SET);
+    case 6:    /* U+ W- */
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 2 配置为 0
+      HAL_GPIO_WritePin(MOTOR_OCNPWM2_GPIO_PORT, MOTOR_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+
+      __HAL_TIM_SET_COMPARE(&htimx_bldcm, TIM_CHANNEL_1, bldcm_pulse);                  // 通道 1 配置的占空比
+      HAL_GPIO_WritePin(MOTOR_OCNPWM3_GPIO_PORT, MOTOR_OCNPWM3_PIN, GPIO_PIN_SET);      // 开启下桥臂
       break;
   }
-
-  motor_drive.timeout = 0;
+  
+  HAL_TIM_GenerateEvent(&htimx_bldcm, TIM_EVENTSOURCE_COM);    // 软件产生换相事件，此时才将配置写入
 }
 
 /**
@@ -551,7 +524,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (motor_drive.timeout++ > 2)    // 有一次在产生更新中断前霍尔传感器没有捕获到值
     {
       printf("堵转超时\r\n");
-      motor_drive.timeout = 0;       
+      motor_drive.timeout = 0;
       
       LED1_ON;     // 点亮LED1表示堵转超时停止
       
@@ -559,6 +532,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       hall_disable();       // 禁用霍尔传感器接口
       stop_pwm_output();    // 停止 PWM 输出
       set_bldcm_disable();
+      motor_drive.speed = 0;
     }
   }
   else if(htim == (&TIM_TimeBaseStructure))
