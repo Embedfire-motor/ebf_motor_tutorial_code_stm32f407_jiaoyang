@@ -32,7 +32,7 @@ void PID_param_init()
 	*	@note 	无
   * @retval 无
   */
-void set_pid_actual(float temp_val)
+void set_pid_target(float temp_val)
 {
   pid.target_val = temp_val;    // 设置当前的目标值
 }
@@ -43,7 +43,7 @@ void set_pid_actual(float temp_val)
 	*	@note 	无
   * @retval 目标值
   */
-float get_pid_actual(void)
+float get_pid_target(void)
 {
   return pid.target_val;    // 设置当前的目标值
 }

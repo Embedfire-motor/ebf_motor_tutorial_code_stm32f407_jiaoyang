@@ -16,6 +16,7 @@
   */ 
 
 #include ".\bldcm_control\bsp_bldcm_control.h"
+#include "./usart/bsp_debug_usart.h"
 #include "./pid/bsp_pid.h"
 
 /* 私有变量 */
@@ -91,8 +92,6 @@ void set_bldcm_disable(void)
   bldcm_data.is_enable = 0;
 }
 
-void Transmit_FB( __IO int32_t *Feedback);
-
 /**
   * @brief  电机位置式 PID 控制实现(定时调用)
   * @param  无
@@ -126,9 +125,9 @@ void bldcm_pid_control(void)
     set_bldcm_speed(cont_val);    // 设置占空比
     
   #if PID_ASSISTANT_EN
-    set_computer_value(SET_FACT_CMD, CURVES_CH1, actual);     // 给通道 1 发送实际值
+    set_computer_value(SEND_FACT_CMD, CURVES_CH1, &actual, 1);     // 给通道 1 发送实际值
   #else
-    printf("实际值：%d. 目标值：%d\n", actual, get_pid_actual());
+    printf("实际值：%d. 目标值：%d\n", actual, get_pid_target());
   #endif
   }
 }
