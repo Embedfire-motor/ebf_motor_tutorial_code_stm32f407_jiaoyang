@@ -24,13 +24,12 @@
 #include "./usart/bsp_debug_usart.h"
 #include "./tim/bsp_basic_tim.h"
 #include "./pid/bsp_pid.h"
-
-int pulse_num=0;
+#include "./protocol/protocol.h"
 	
 void Delay(__IO uint32_t nCount)	 //简单的延时函数
 {
 	for(; nCount != 0; nCount--);
-}	
+}
 
 /**
   * @brief  主函数
@@ -39,17 +38,23 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t target_speed = 500;
+  int16_t target_speed = 1500;
   uint8_t i = 0;
   
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
+  
+  /* HAL 库初始化 */
+  HAL_Init();
   
 	/* 初始化按键GPIO */
 	Key_GPIO_Config();
   
   /* LED 灯初始化 */
   LED_GPIO_Config();
+  
+  /* 协议初始化 */
+  protocol_init();
   
   /* 调试串口初始化 */
   DEBUG_USART_Config();
@@ -62,59 +67,77 @@ int main(void)
   /* 电机初始化 */
   bldcm_init();
   
-  /* 使能电机 */
-  set_bldcm_speed(300);
-  set_bldcm_enable();
-  
-  Delay(0xFFFFFF);
+  /* 设置目标速度 */
+  set_pid_target(target_speed);
+
+#if defined(PID_ASSISTANT_EN)
+  set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);                // 同步上位机的启动按钮状态
+  set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &target_speed, 1);     // 给通道 1 发送目标值
+#endif
 	
 	while(1)
 	{
+    /* 接收数据处理 */
+    receiving_process();
+    
     /* 扫描KEY1 */
     if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
     {
       /* 使能电机 */
-      set_bldcm_speed(300);
       set_bldcm_enable();
       
-      Delay(0xFFFFFF);
+    #if defined(PID_ASSISTANT_EN) 
+      set_computer_value(SEND_START_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
+    #endif
     }
     
     /* 扫描KEY2 */
     if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
     {
-      /* 增大占空比 */
-      target_speed+=100;
+      /* 停止电机 */
+      set_bldcm_disable();
       
-      if(target_speed>2000)
-        target_speed=2000;
-      
-      set_pid_actual(target_speed);
+    #if defined(PID_ASSISTANT_EN) 
+      set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);               // 同步上位机的启动按钮状态
+    #endif
     }
     
     /* 扫描KEY3 */
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
     {
-      if(target_speed<100)
-        target_speed=100;
-      else
-        target_speed-=100;
-
-      set_pid_actual(target_speed);
+      /* 增大占空比 */
+      target_speed += 100;
+      
+      if(target_speed > 3500)
+        target_speed = 3500;
+      
+      set_pid_target(target_speed);
+      
+    #if defined(PID_ASSISTANT_EN)
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
+    #endif
     }
     
     /* 扫描KEY4 */
     if( Key_Scan(KEY4_GPIO_PORT,KEY4_PIN) == KEY_ON  )
     {
-      /* 转换方向 */
-      set_bldcm_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);
+      target_speed -= 100;
+
+      if(target_speed < 300)
+        target_speed = 300;
+      
+      set_pid_target(target_speed);
+      
+    #if defined(PID_ASSISTANT_EN)
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1,  &target_speed, 1);     // 给通道 1 发送目标值
+    #endif
     }
     
-    /* 扫描KEY4 */
+    /* 扫描KEY5 */
     if( Key_Scan(KEY5_GPIO_PORT,KEY5_PIN) == KEY_ON  )
     {
-      /* 停止电机 */
-      set_bldcm_disable();
+      /* 转换方向 */
+      set_bldcm_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);
     }
 	}
 }

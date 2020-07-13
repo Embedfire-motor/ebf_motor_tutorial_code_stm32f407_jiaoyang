@@ -129,7 +129,7 @@ void set_bldcm_disable(void)
   */
 void bldcm_pid_control(void)
 {
-  int32_t speed_actual = get_motor_speed(GET_BASIC_TIM_PERIOD());   // 电机旋转的当前速度
+  int32_t speed_actual = get_motor_speed();   // 电机旋转的当前速度
 
   if (bldcm_data.is_enable)
   {

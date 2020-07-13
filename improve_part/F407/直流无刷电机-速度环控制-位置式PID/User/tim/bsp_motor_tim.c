@@ -372,7 +372,7 @@ static void update_motor_speed(uint8_t dir_in, uint32_t time)
   * @param  time:获取的时间间隔
   * @retval 返回电机转速
   */
-float get_motor_speed(uint32_t time)
+float get_motor_speed(void)
 {
   return motor_drive.speed;
 }

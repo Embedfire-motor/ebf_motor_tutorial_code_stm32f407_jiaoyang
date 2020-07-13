@@ -109,7 +109,7 @@ extern TIM_HandleTypeDef TIM_TimeBaseStructure;
 void PWM_TIMx_Configuration(void);
 void stop_pwm_output(void);
 void set_pwm_pulse(uint16_t pulse);
-float get_motor_speed(uint32_t time);
+float get_motor_speed(void);
 
 void hall_enable(void);
 void hall_disable(void);

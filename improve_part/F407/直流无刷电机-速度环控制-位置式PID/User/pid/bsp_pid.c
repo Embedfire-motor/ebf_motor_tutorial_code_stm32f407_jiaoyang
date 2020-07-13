@@ -12,20 +12,20 @@ _pid pid;
   */
 void PID_param_init()
 {
-		/* 初始化参数 */
-    pid.target_val=0.0;				
-    pid.actual_val=0.0;
-    pid.err=0.0;
-    pid.err_last=0.0;
-    pid.integral=0.0;
+  /* 初始化参数 */
+  pid.target_val=0.0;				
+  pid.actual_val=0.0;
+  pid.err=0.0;
+  pid.err_last=0.0;
+  pid.integral=0.0;
 
-		pid.Kp = 0.3;//24
-		pid.Ki = 0.2;
-		pid.Kd = 0.0;
-	
+  pid.Kp = 0.3;//24
+  pid.Ki = 0.2;
+  pid.Kd = 0.0;
+
 #if defined(PID_ASSISTANT_EN)
-    float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
-    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
+  float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
+  set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
 
@@ -71,9 +71,9 @@ float get_pid_target(void)
   */
 void set_p_i_d(float p, float i, float d)
 {
-  	pid.Kp = p;    // 设置比例系数 P
-		pid.Ki = i;    // 设置积分系数 I
-		pid.Kd = d;    // 设置微分系数 D
+  pid.Kp = p;    // 设置比例系数 P
+  pid.Ki = i;    // 设置积分系数 I
+  pid.Kd = d;    // 设置微分系数 D
 }
 
 /**
@@ -84,15 +84,20 @@ void set_p_i_d(float p, float i, float d)
   */
 float PID_realize(float actual_val)
 {
-		/*计算目标值与实际值的误差*/
-    pid.err=pid.target_val-actual_val;
-    pid.integral+=pid.err;
-		/*PID算法实现*/
-    pid.actual_val=pid.Kp*pid.err+pid.Ki*pid.integral+pid.Kd*(pid.err-pid.err_last);
-		/*误差传递*/
-    pid.err_last=pid.err;
-		/*返回当前实际值*/
-    return pid.actual_val;
+  /*计算目标值与实际值的误差*/
+  pid.err = pid.target_val - actual_val;
+  pid.integral += pid.err;
+
+  /*PID算法实现*/
+  pid.actual_val = pid.Kp * pid.err + 
+                   pid.Ki * pid.integral + 
+                   pid.Kd * (pid.err - pid.err_last);
+
+  /*误差传递*/
+  pid.err_last = pid.err;
+
+  /*返回当前实际值*/
+  return pid.actual_val;
 }
 
 
