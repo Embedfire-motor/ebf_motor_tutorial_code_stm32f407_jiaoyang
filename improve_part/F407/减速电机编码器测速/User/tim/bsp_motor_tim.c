@@ -91,8 +91,8 @@ static void TIM_PWMOUTPUT_Config(void)
 	/*PWMƒ£ Ω≈‰÷√*/
   TIM_OCInitStructure.OCMode = TIM_OCMODE_PWM1;
 	TIM_OCInitStructure.Pulse = 0;
-	TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_LOW;
-	TIM_OCInitStructure.OCNPolarity = TIM_OCPOLARITY_LOW;
+	TIM_OCInitStructure.OCPolarity = TIM_OCNPOLARITY_HIGH;
+	TIM_OCInitStructure.OCNPolarity = TIM_OCNPOLARITY_HIGH;
 	TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_SET;
 	TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 	
