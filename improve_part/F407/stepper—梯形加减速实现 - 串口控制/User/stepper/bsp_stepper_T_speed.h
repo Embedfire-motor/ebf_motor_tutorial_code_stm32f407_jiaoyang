@@ -52,7 +52,7 @@ struct GLOBAL_FLAGS {
 //其中 高级定时器的 频率为168MHz,其他定时器为84MHz
 //168/(5+1)=28Mhz
 //具体需要的频率可以自己计算
-#define TIM_PRESCALER      5 
+#define TIM_PRESCALER      15 
 #define T1_FREQ           (SystemCoreClock/(TIM_PRESCALER+1)) // 频率ft值
 
 

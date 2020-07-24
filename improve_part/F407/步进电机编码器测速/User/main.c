@@ -3,8 +3,8 @@
   * @file    main.c
   * @author  fire
   * @version V1.0
-  * @date    2019-xx-xx
-  * @brief   PWM控制角度
+  * @date    2020-xx-xx
+  * @brief   步进电机编码器测速
   ******************************************************************************
   * @attention
   *
