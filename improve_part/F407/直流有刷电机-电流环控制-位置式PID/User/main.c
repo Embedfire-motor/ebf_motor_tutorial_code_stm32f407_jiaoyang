@@ -40,7 +40,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void)
 {
-  int32_t target_curr = 80;
+  int32_t target_curr = 40;
   
   /* HAL 库初始化 */
   HAL_Init();
@@ -107,7 +107,7 @@ int main(void)
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
       /* 增大目标速度 */
-      target_curr += 10;
+      target_curr += 5;
       
       if(target_curr > 120)
         target_curr = 120;
@@ -122,7 +122,7 @@ int main(void)
     if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
     {
       /* 减小目标速度 */
-      target_curr -= 10;
+      target_curr -= 5;
       
       if(target_curr < 25)
         target_curr = 25;

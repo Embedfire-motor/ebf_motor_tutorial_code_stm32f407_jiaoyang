@@ -139,13 +139,13 @@ void set_motor_disable(void)
 void motor_pid_control(void)
 {
   int32_t actual_current = get_curr_val();    // 读取当前电流值
-  
+
   if (is_motor_en == 1)     // 电机在使能状态下才进行控制处理
   {
     float cont_val = 0;                       // 当前控制值
 
     cont_val = PID_realize(actual_current);    // 进行 PID 计算
-    
+
     if (cont_val < 0)
     {
       cont_val = 0;    // 下限处理
