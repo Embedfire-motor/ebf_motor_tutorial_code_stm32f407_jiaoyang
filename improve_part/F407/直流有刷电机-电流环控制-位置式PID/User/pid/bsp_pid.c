@@ -80,9 +80,9 @@ float PID_realize(float actual_val)
 		/*计算目标值与实际值的误差*/
     pid.err=pid.target_val-actual_val;
 	
-		/* 死区设定,电流精度限制,误差在5ma就不累计误差 */
-		if(pid.err <= 5 && pid.err >= -5) 
-			pid.err = 0;
+//		/* 死区设定,电流精度限制,误差在5ma就不累计误差 */
+//		if(pid.err <= 5 && pid.err >= -5) 
+//			pid.err = 0;
 	
     /*误差累积*/
     pid.integral+=pid.err;

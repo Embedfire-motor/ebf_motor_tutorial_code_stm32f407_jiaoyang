@@ -26,7 +26,7 @@
 
 static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
-static uint8_t    is_motor_en = 0;             // 电机使能
+uint8_t    is_motor_en = 0;             // 电机使能
 
 #define TARGET_CURRENT_MAX    350    // 目标电流的最大值 mA
 
@@ -156,7 +156,7 @@ void motor_pid_control(void)
     
     /* 转轴转速 = 单位时间内的计数值 / 编码器总分辨率 * 时间系数  */
     actual_speed = ((float)(Capture_Count - Last_Count) / ENCODER_TOTAL_RESOLUTION / REDUCTION_RATIO) / (GET_BASIC_TIM_PERIOD()/1000.0/60.0);
-
+//    printf("============================实际值：%d===================. \n", actual_speed);      // 打印实际值和目标值
     /* 记录当前总计数值，供下一时刻计算使用 */
     Last_Count = Capture_Count;
     

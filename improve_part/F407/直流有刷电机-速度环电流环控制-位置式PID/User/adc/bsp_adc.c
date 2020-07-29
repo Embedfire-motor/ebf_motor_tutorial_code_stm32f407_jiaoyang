@@ -97,8 +97,8 @@ static void ADC_Mode_Config(void)
     ADC_Handle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
     //使用软件触发
     ADC_Handle.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-    //数据右对齐	
-    ADC_Handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    //数据左对齐	
+    ADC_Handle.Init.DataAlign = ADC_DATAALIGN_LEFT;
     //转换通道 2个
     ADC_Handle.Init.NbrOfConversion = 2;
     //使能连续转换请求
@@ -213,19 +213,23 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
   */
 void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
 {
-  flag_num++;     // 电源电压超过阈值电压
-  
-  if (vbus_adc_mean > VBUS_HEX_MIN && vbus_adc_mean < VBUS_HEX_MAX)
-    flag_num = 0;
-  
-  if (flag_num > ADC_NUM_MAX)      // 电源电压超过阈值电压10次
-  {
-    set_motor_disable();
-    flag_num = 0;
-    LED1_ON;
-    printf("电源电压超过限制！请检查原因，复位开发板在试！\r\n");
-    while(1);
-  }
+//	float temp_adc;
+//	
+//  flag_num++;     // 电源电压超过阈值电压
+
+//  temp_adc = get_vbus_val();
+//	
+//  if (temp_adc > VBUS_MIN && temp_adc < VBUS_MAX)
+//    flag_num = 0;
+//  
+//  if (flag_num > ADC_NUM_MAX)      // 电源电压超过阈值电压10次
+//  {
+//    set_motor_disable();
+//    flag_num = 0;
+//    LED1_ON;
+//    printf("电源电压超过限制！请检查原因，复位开发板在试！\r\n");
+//    while(1);
+//  }
 }
 
 /**
@@ -240,17 +244,16 @@ int32_t get_curr_val(void)
   int16_t curr_adc_mean = 0;         // 电流 ACD 采样结果平均值
   
   curr_adc_mean = adc_mean_sum / adc_mean_count;    // 保存平均值
-  
 
-    adc_mean_count = 0;
-    adc_mean_sum = 0;
+	adc_mean_count = 0;
+	adc_mean_sum = 0;
     
-    if (flag < 17)
-    {
-      adc_offset = curr_adc_mean;    // 多次记录偏置电压，待系统稳定偏置电压才为有效值
-      flag += 1;
-    }
-    if(curr_adc_mean>=adc_offset)
+	if (flag < 17 && is_motor_en ==0)	//	仅在电机未启动时记录
+	{
+		adc_offset = curr_adc_mean;    // 多次记录偏置电压，待系统稳定偏置电压才为有效值
+		flag += 1;
+	}
+	if(curr_adc_mean>=adc_offset)
 	{
 		curr_adc_mean -= adc_offset;                     // 减去偏置电压
 	}else

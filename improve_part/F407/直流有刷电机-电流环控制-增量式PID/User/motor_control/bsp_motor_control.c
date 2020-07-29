@@ -25,7 +25,7 @@
 
 static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
-static uint8_t    is_motor_en = 0;             // 电机使能
+uint8_t    is_motor_en = 0;             // 电机使能
 
 static void sd_gpio_config(void)
 {

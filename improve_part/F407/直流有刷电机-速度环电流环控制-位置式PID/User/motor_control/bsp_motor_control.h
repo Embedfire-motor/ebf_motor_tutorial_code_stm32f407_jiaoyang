@@ -24,6 +24,9 @@ typedef enum
   MOTOR_REV,
 }motor_dir_t;
 
+/* 电机使能 */
+extern uint8_t	is_motor_en;
+
 /* 设置速度（占空比） */
 #define SET_FWD_COMPAER(ChannelPulse)     TIM1_SetPWM_pulse(PWM_CHANNEL_1,ChannelPulse)    // 设置比较寄存器的值
 #define SET_REV_COMPAER(ChannelPulse)     TIM1_SetPWM_pulse(PWM_CHANNEL_2,ChannelPulse)    // 设置比较寄存器的值
