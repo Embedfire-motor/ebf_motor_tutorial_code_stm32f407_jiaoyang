@@ -4,7 +4,7 @@
   * @author  fire
   * @version V1.0
   * @date    2020-xx-xx
-  * @brief   第一象限直线插补-逐点比较法
+  * @brief   任意直线插补-逐点比较法
   ******************************************************************************
   * @attention
   *
@@ -20,13 +20,13 @@ Axis_TypeDef axis;
 LinearInterpolation_TypeDef interpolation_para = {0};
 
 /**
-  * @brief  直线增量插补运动
+  * @brief  第一象限直线插补运动
   * @param  inc_x：终点坐标X的增量
   * @param  inc_y：终点坐标Y的增量
   * @param  speed：进给速度
   * @retval 无
   */
-void InterPolation_Move(uint32_t inc_x, uint32_t inc_y, uint16_t speed)
+static void InterPolation_Move(uint32_t inc_x, uint32_t inc_y, uint16_t speed)
 {
   /* 偏差清零 */
   interpolation_para.deviation = 0;
@@ -52,6 +52,50 @@ void InterPolation_Move(uint32_t inc_x, uint32_t inc_y, uint16_t speed)
   /* 开启X轴比较通道输出 */
   TIM_CCxChannelCmd(MOTOR_PUL_TIM, step_motor[interpolation_para.active_axis].pul_channel, TIM_CCx_ENABLE);
   HAL_TIM_Base_Start_IT(&TIM_StepperHandle);
+  
+  interpolation_para.motionstatus = 1;
+}
+
+/**
+  * @brief  任意直线插补运动
+  * @param  coordi_x：终点坐标X的增量
+  * @param  coordi_y：终点坐标Y的增量
+  * @param  speed：进给速度，定时器计数值
+  * @retval 无
+  */
+void Linear_Interpolation(int32_t coordi_x, int32_t coordi_y, uint16_t speed)
+{
+  /* 判断当前是否正在做插补运动 */
+  if(interpolation_para.motionstatus != 0)
+    return;
+  
+  /* 判断坐标正负，以此决定各轴的运动方向 */
+  if(coordi_x < 0)
+  {
+    interpolation_para.dir_x = CCW;
+    coordi_x = -coordi_x;
+    MOTOR_DIR(step_motor[x_axis].dir_port, step_motor[x_axis].dir_pin, CCW);
+  }
+  else
+  {
+    interpolation_para.dir_x = CW;
+    MOTOR_DIR(step_motor[x_axis].dir_port, step_motor[x_axis].dir_pin, CW);
+  }
+  
+  if(coordi_y < 0)
+  {
+    interpolation_para.dir_y = CCW;
+    coordi_y = -coordi_y;
+    MOTOR_DIR(step_motor[y_axis].dir_port, step_motor[y_axis].dir_pin, CCW);
+  }
+  else
+  {
+    interpolation_para.dir_y = CW;
+    MOTOR_DIR(step_motor[y_axis].dir_port, step_motor[y_axis].dir_pin, CW);
+  }
+  
+  /* 开始插补运动 */
+  InterPolation_Move(coordi_x, coordi_y, speed);
 }
 
 /**
@@ -63,12 +107,13 @@ void InterPolation_Move(uint32_t inc_x, uint32_t inc_y, uint16_t speed)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   uint32_t last_axis = 0;
-
+  
   /* 记录上一步的进给活动轴 */
   last_axis = interpolation_para.active_axis;
-
+  
   /* 进给总步数减1 */
   interpolation_para.endpoint_pulse--;
+  
   /* 判断是否完成插补 */
   if(interpolation_para.endpoint_pulse == 0)
   {
@@ -77,6 +122,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     TIM_CCxChannelCmd(htim->Instance, step_motor[interpolation_para.active_axis].pul_channel, TIM_CCx_DISABLE);
     __HAL_TIM_MOE_DISABLE(htim);
     HAL_TIM_Base_Stop_IT(htim);
+    interpolation_para.motionstatus = 0;
   }
   else
   {

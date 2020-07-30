@@ -4,7 +4,7 @@
   * @author  fire
   * @version V1.0
   * @date    2020-xx-xx
-  * @brief   第一象限直线插补
+  * @brief   任意直线插补
   ******************************************************************************
   * @attention
   *
@@ -37,7 +37,7 @@ int main(void)
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
 	DEBUG_USART_Config();
-	printf("欢迎使用野火 电机开发板 步进电机 第一象限直线插补 例程\r\n");
+	printf("欢迎使用野火 电机开发板 步进电机 任意直线插补 例程\r\n");
   /* LED初始化 */
   LED_GPIO_Config();
   /* 按键初始化 */
@@ -45,28 +45,18 @@ int main(void)
   /*步进电机初始化*/
 	stepper_Init();
   
+  Linear_Interpolation(6400, 6400, 500);
+  delay_ms(1500);
+  
 	while(1)
 	{
-    if(Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
-    {
-      InterPolation_Move(6400, 4560, 1500);
-    }
-    if(Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
-    {
-      InterPolation_Move(6400 * 6, 6400 * 6, 1500);
-    }
-    if(Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
-    {
-      InterPolation_Move(12200, 45060, 1500);
-    }
-    if(Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
-    {
-      InterPolation_Move(5466, 89080, 1500);
-    }
-    if(Key_Scan(KEY5_GPIO_PORT, KEY5_PIN) == KEY_ON)
-    {
-      InterPolation_Move(39879, 44542, 1500);
-    }
+    while(interpolation_para.motionstatus);
+    delay_ms(500);
+    Linear_Interpolation(6400 * 6, 6400 * 6, 1000);
+    
+    while(interpolation_para.motionstatus);
+    delay_ms(500);
+    Linear_Interpolation(-6400 * 6, -6400 * 6, 1000);
 	}
 } 	
 

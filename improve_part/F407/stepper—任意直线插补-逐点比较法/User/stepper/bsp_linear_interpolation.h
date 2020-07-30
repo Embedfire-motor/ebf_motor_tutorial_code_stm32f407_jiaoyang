@@ -17,10 +17,13 @@ typedef struct{
   __IO uint32_t endpoint_pulse;       //到达终点位置需要的脉冲数
   __IO uint32_t active_axis;          //当前运动的轴
   __IO int32_t deviation;             //偏差参数
+  __IO uint8_t motionstatus : 1;      //插补运动状态
+  __IO uint8_t dir_x : 1;             //X轴运动方向
+  __IO uint8_t dir_y : 1;             //Y轴运动方向
 }LinearInterpolation_TypeDef;
 
-#define F       32
+extern LinearInterpolation_TypeDef interpolation_para;
 
-void InterPolation_Move(uint32_t inc_x, uint32_t inc_y, uint16_t speed);
+void Linear_Interpolation(int32_t coordi_x, int32_t coordi_y, uint16_t speed);
 
 #endif /* __BSP_STEP_LINEAR_INTERPOLATION_H */
