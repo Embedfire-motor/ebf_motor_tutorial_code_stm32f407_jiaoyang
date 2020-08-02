@@ -313,7 +313,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>4</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -779,9 +779,9 @@
               <FilePath>..\User\stepper\bsp_stepper_init.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_linear_interpolation.c</FileName>
+              <FileName>bsp_circular_interpolation.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\stepper\bsp_linear_interpolation.c</FilePath>
+              <FilePath>..\User\stepper\bsp_circular_interpolation.c</FilePath>
             </File>
           </Files>
         </Group>
