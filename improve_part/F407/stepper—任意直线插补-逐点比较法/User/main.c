@@ -46,17 +46,29 @@ int main(void)
 	stepper_Init();
   
   Linear_Interpolation(6400, 6400, 500);
-  delay_ms(1500);
   
 	while(1)
 	{
-    while(interpolation_para.motionstatus);
-    delay_ms(500);
-    Linear_Interpolation(6400 * 6, 6400 * 6, 1000);
-    
-    while(interpolation_para.motionstatus);
-    delay_ms(500);
-    Linear_Interpolation(-6400 * 6, -6400 * 6, 1000);
+    if(Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
+    {
+      Linear_Interpolation(6400, 4560, 1000);
+    }
+    if(Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
+    {
+      Linear_Interpolation(6400 * 6, 6400 * 6, 1000);
+    }
+    if(Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
+    {
+      Linear_Interpolation(12200, -45060, 1000);
+    }
+    if(Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
+    {
+      Linear_Interpolation(-65466, -89080, 1000);
+    }
+    if(Key_Scan(KEY5_GPIO_PORT, KEY5_PIN) == KEY_ON)
+    {
+      Linear_Interpolation(-39879, 44542, 1000);
+    }
 	}
 } 	
 

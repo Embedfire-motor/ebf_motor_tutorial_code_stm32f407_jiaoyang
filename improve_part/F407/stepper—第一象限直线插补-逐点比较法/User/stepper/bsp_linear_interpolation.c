@@ -63,12 +63,10 @@ void InterPolation_Move(uint32_t inc_x, uint32_t inc_y, uint16_t speed)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   uint32_t last_axis = 0;
-
+  
   /* 记录上一步的进给活动轴 */
   last_axis = interpolation_para.active_axis;
-
-  /* 进给总步数减1 */
-  interpolation_para.endpoint_pulse--;
+  
   /* 判断是否完成插补 */
   if(interpolation_para.endpoint_pulse == 0)
   {
@@ -77,28 +75,30 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     TIM_CCxChannelCmd(htim->Instance, step_motor[interpolation_para.active_axis].pul_channel, TIM_CCx_DISABLE);
     __HAL_TIM_MOE_DISABLE(htim);
     HAL_TIM_Base_Stop_IT(htim);
+    return;
+  }
+  
+  /* 根据上一步的偏差，判断的进给方向，并计算下一步的偏差 */
+  if(interpolation_para.deviation >= 0)
+  {
+    /* 偏差>0，在直线上方，进给X轴，计算偏差 */
+    interpolation_para.active_axis = x_axis;
+    interpolation_para.deviation -= interpolation_para.endpoint_y;
   }
   else
   {
-    /* 根据上一步的偏差，判断的进给方向，并计算下一步的偏差 */
-    if(interpolation_para.deviation >= 0)
-    {
-      /* 偏差>0，在直线上方，进给X轴，计算偏差 */
-      interpolation_para.active_axis = x_axis;
-      interpolation_para.deviation -= interpolation_para.endpoint_y;
-    }
-    else
-    {
-      /* 偏差<0，在直线下方，进给Y轴，计算偏差 */
-      interpolation_para.active_axis = y_axis;
-      interpolation_para.deviation += interpolation_para.endpoint_x;
-    }
-    
-    /* 下一步的活动轴与上一步的不一致时，需要换轴 */
-    if(last_axis != interpolation_para.active_axis)
-    {
-      TIM_CCxChannelCmd(htim->Instance, step_motor[last_axis].pul_channel, TIM_CCx_DISABLE);
-      TIM_CCxChannelCmd(htim->Instance, step_motor[interpolation_para.active_axis].pul_channel, TIM_CCx_ENABLE);
-    }
+    /* 偏差<0，在直线下方，进给Y轴，计算偏差 */
+    interpolation_para.active_axis = y_axis;
+    interpolation_para.deviation += interpolation_para.endpoint_x;
   }
+  
+  /* 下一步的活动轴与上一步的不一致时，需要换轴 */
+  if(last_axis != interpolation_para.active_axis)
+  {
+    TIM_CCxChannelCmd(htim->Instance, step_motor[last_axis].pul_channel, TIM_CCx_DISABLE);
+    TIM_CCxChannelCmd(htim->Instance, step_motor[interpolation_para.active_axis].pul_channel, TIM_CCx_ENABLE);
+  }
+  
+  /* 进给总步数减1 */
+  interpolation_para.endpoint_pulse--;
 }
