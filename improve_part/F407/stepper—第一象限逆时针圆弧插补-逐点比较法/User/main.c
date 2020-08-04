@@ -52,11 +52,6 @@ int main(void)
     {
       Circular_InterPolation_CCW(6400 * 10, 0, 0, 6400 * 10, 1000);
     }
-    /* À≥ ±’Î‘≤ª° */
-    if(Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
-    {
-      Circular_InterPolation_CW(0, 6400 * 10, 6400 * 10, 0, 1000);
-    }
 	}
 } 	
 
