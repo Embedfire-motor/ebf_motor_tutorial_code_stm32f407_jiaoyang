@@ -30,7 +30,7 @@ CircularInterpolation_TypeDef interpolation_para = {0};
   * @param  speed：进给速度
   * @retval 无
   */
-void Circular_InterPolation_CCW(int32_t start_x, int32_t start_y, int32_t stop_x, int32_t stop_y, uint16_t speed)
+void Circular_InterPolation_CW(int32_t start_x, int32_t start_y, int32_t stop_x, int32_t stop_y, uint16_t speed)
 {
   /* 判断当前是否正在做插补运动 */
   if(interpolation_para.motionstatus != 0)

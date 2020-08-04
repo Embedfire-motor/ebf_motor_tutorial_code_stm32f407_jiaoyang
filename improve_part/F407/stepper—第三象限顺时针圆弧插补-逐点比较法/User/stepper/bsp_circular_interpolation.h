@@ -25,6 +25,6 @@ typedef struct{
 
 extern CircularInterpolation_TypeDef interpolation_para;
 
-void Circular_InterPolation_CCW(int32_t start_x, int32_t start_y, int32_t stop_x, int32_t stop_y, uint16_t speed);
+void Circular_InterPolation_CW(int32_t start_x, int32_t start_y, int32_t stop_x, int32_t stop_y, uint16_t speed);
 
 #endif /* __BSP_STEP_CIRCULAR_INTERPOLATION_H */
