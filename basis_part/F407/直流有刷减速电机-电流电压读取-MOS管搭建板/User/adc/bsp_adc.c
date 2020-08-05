@@ -97,8 +97,8 @@ static void ADC_Mode_Config(void)
     ADC_Handle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
     //使用软件触发
     ADC_Handle.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-    //数据右对齐	
-    ADC_Handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    //数据左对齐
+    ADC_Handle.Init.DataAlign = ADC_DATAALIGN_LEFT;
     //转换通道 2个
     ADC_Handle.Init.NbrOfConversion = 2;
     //使能连续转换请求

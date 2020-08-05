@@ -97,8 +97,8 @@ static void ADC_Mode_Config(void)
     ADC_Handle.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
     //使用软件触发
     ADC_Handle.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-    //数据右对齐	
-    ADC_Handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    //数据左对齐	
+    ADC_Handle.Init.DataAlign = ADC_DATAALIGN_LEFT;
     //转换通道 2个
     ADC_Handle.Init.NbrOfConversion = 2;
     //使能连续转换请求
@@ -213,9 +213,13 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
   */
 void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
 {
+	float temp_adc;
+	
   flag_num++;     // 电源电压超过阈值电压
-  
-  if (vbus_adc_mean > VBUS_HEX_MIN && vbus_adc_mean < VBUS_HEX_MAX)
+	
+  temp_adc = get_vbus_val();
+	
+  if (temp_adc > VBUS_MIN && temp_adc < VBUS_MAX)
     flag_num = 0;
   
   if (flag_num > ADC_NUM_MAX)      // 电源电压超过阈值电压10次

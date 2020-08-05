@@ -75,10 +75,18 @@ float PID_realize(float actual_val)
 {
 	/*计算目标值与实际值的误差*/
   pid.err=pid.target_val-actual_val;
+//	/* 死区设定,电流精度限制,误差在5ma就不累计误差 */
+//	if(pid.err <= 5 && pid.err >= -5) 
+//		pid.err = 0;
 	/*PID算法实现*/
 	pid.actual_val += pid.Kp*(pid.err - pid.err_next) 
                  + pid.Ki*pid.err 
                  + pid.Kd*(pid.err - 2 * pid.err_next + pid.err_last);
+	
+	/* 限幅输出,防止深度饱和 */
+	if(pid.actual_val > 5600) pid.actual_val = 5600;
+	else if(pid.actual_val <= 0) pid.actual_val = 0;
+	
 	/*传递误差*/
 	pid.err_last = pid.err_next;
 	pid.err_next = pid.err;

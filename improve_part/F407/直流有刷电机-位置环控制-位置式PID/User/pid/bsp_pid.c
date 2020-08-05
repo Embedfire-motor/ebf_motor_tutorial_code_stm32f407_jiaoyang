@@ -19,7 +19,7 @@ void PID_param_init()
     pid.err_last=0.0;
     pid.integral=0.0;
 
-		pid.Kp = 3.3;
+		pid.Kp = 2.3;
 		pid.Ki = 0;
 		pid.Kd = 0;
 

@@ -25,7 +25,7 @@
 
 static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
-static uint8_t    is_motor_en = 0;             // 电机使能
+uint8_t    is_motor_en = 0;             // 电机使能
 
 static void sd_gpio_config(void)
 {
@@ -139,13 +139,13 @@ void set_motor_disable(void)
 void motor_pid_control(void)
 {
   int32_t actual_current = get_curr_val();    // 读取当前电流值
-  
+
   if (is_motor_en == 1)     // 电机在使能状态下才进行控制处理
   {
     float cont_val = 0;                       // 当前控制值
 
     cont_val = PID_realize(actual_current);    // 进行 PID 计算
-    
+
     if (cont_val < 0)
     {
       cont_val = 0;    // 下限处理

@@ -25,6 +25,9 @@ typedef enum
   MOTOR_REV,
 }motor_dir_t;
 
+/* 电机使能 */
+extern uint8_t	is_motor_en;
+
 #define PER_CYCLE_PULSES    (ENCODER_TOTAL_RESOLUTION * REDUCTION_RATIO)    // 电机旋转一圈可以捕获的脉冲
 
 /* 设置速度（占空比） */

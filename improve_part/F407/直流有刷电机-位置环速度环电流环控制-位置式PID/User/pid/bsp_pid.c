@@ -186,8 +186,8 @@ float curr_pid_realize(_pid *pid, float actual_val)
 
     pid->integral += pid->err;    // 误差累积
   
-    if (pid->err > -5 && pid->err < 5)
-        pid->err = 0;
+//    if (pid->err > -5 && pid->err < 5)
+//        pid->err = 0;
   
     /* 限定积分范围，防止积分饱和 */
     if (pid->integral > 2000) 

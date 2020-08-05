@@ -13,7 +13,7 @@
 #define VREF                            3.3f     // 参考电压，理论上是3.3，可通过实际测量得3.258
 #define ADC_NUM_MAX                     2048       // ADC 转换结果缓冲区最大值
 
-#define GET_ADC_VDC_VAL(val)            ((float)val/(float)4096*VREF)          // 得到电压值
+#define GET_ADC_VDC_VAL(val)            ((float)val/(float)65536*VREF)          // 得到电压值
   
 /*********************** 电流采集 ******************/
 // ADC GPIO 宏定义
@@ -45,7 +45,7 @@
 #define VBUS_ADC_CHANNEL                ADC_CHANNEL_8
 
 #define VBUS_MAX                        14    // 电压最大值
-#define VBUS_MIN                        10    // 电压最小值
+#define VBUS_MIN                        5    // 电压最小值
 
 #define VBUS_HEX_MAX                    ((VBUS_MAX/301.0*8.0+0.5)/VREF*4096)    // 电压最大值（测量电压是电源电压的1/31）31.0
 #define VBUS_HEX_MIN                    ((VBUS_MIN/301.0*8.0+0.5)/VREF*4096)    // 电压最小值（测量电压是电源电压的1/31）31.0

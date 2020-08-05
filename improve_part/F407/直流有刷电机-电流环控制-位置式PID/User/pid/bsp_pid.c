@@ -12,7 +12,7 @@ _pid pid;
 void PID_param_init()
 {
 		/* 初始化参数 */
-    pid.target_val=80.0;				
+    pid.target_val=40.0;				
     pid.actual_val=0.0;
     pid.err=0.0;
     pid.err_last=0.0;
@@ -73,8 +73,17 @@ void set_p_i_d(float p, float i, float d)
   */
 float PID_realize(float actual_val)
 {
+		/* 限制电流幅值,野火电机空载时最大电流在100ma左右,如果过大容易积分饱和 */
+		if(pid.target_val >= 120) pid.target_val = 120.0;
+		else if(pid.target_val <= 5) pid.target_val = 0.0;
+
 		/*计算目标值与实际值的误差*/
     pid.err=pid.target_val-actual_val;
+	
+//		/* 死区设定,电流精度限制,误差在5ma就不累计误差 */
+//		if(pid.err <= 5 && pid.err >= -5) 
+//			pid.err = 0;
+	
     /*误差累积*/
     pid.integral+=pid.err;
 		/*PID算法实现*/

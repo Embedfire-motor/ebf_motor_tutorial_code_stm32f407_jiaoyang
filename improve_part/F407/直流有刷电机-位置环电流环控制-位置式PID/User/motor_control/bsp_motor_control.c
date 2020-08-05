@@ -25,7 +25,7 @@
 
 static motor_dir_t direction  = MOTOR_FWD;     // 记录方向
 static uint16_t    dutyfactor = 0;             // 记录占空比
-static uint8_t    is_motor_en = 0;             // 电机使能
+uint8_t    is_motor_en = 0;             // 电机使能
 
 #define TARGET_CURRENT_MAX    130    // 目标电流的最大值 mA
 
@@ -189,7 +189,7 @@ void motor_pid_control(void)
     
   #if defined(PID_ASSISTANT_EN)
     set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Capture_Count,  1);          // 给通道 1 发送实际值
-    set_computer_value(SEND_FACT_CMD, CURVES_CH2, &actual_current, 1);         // 给通道 2 发送实际值
+//    set_computer_value(SEND_FACT_CMD, CURVES_CH2, &actual_current, 1);         // 给通道 2 发送实际值
   #else
     printf("实际值：%d. 目标值：%.0f. 差值：%.0f. 控制值：%.0f\n", Capture_Count, get_pid_target(&pid_location), (float)Capture_Count - get_pid_target(&pid_location), cont_val);      // 打印实际值和目标值
   #endif
