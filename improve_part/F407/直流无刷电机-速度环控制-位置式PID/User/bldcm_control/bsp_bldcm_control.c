@@ -147,7 +147,7 @@ void bldcm_pid_control(void)
   #ifdef PID_ASSISTANT_EN
     set_computer_value(SEND_FACT_CMD, CURVES_CH1, &speed_actual, 1);     // 给通道 1 发送实际值
   #else
-    printf("实际值：%d. 目标值：%d\n", actual, get_pid_target());
+    printf("实际值：%d, 目标值：%.0f\n", speed_actual, get_pid_target());
   #endif
   }
 }
