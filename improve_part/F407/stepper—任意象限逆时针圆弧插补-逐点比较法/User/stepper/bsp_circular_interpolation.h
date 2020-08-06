@@ -3,10 +3,6 @@
 
 #include "./stepper/bsp_stepper_init.h"
 
-
-#define INTERPOLATION_DEBUG 1
-
-
 /* 坐标轴枚举 */
 typedef enum{
   x_axis = 0U,
@@ -34,7 +30,6 @@ typedef struct{
   __IO uint8_t dir_x : 1;             //X轴运动方向
   __IO uint8_t dir_y : 1;             //Y轴运动方向
   __IO uint8_t crood_pos : 2;         //起点坐标所在的象限
-
 }CircularInterpolation_TypeDef;
 
 

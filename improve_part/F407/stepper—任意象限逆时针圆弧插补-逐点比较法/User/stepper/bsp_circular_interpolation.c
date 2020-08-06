@@ -259,7 +259,4 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_TIM_Base_Stop_IT(htim);
     interpolation_para.motionstatus = 0;
   }
-#if INTERPOLATION_DEBUG
-  printf("%d %d\r\n", interpolation_para.startpoint_x, interpolation_para.startpoint_y);
-#endif
 }

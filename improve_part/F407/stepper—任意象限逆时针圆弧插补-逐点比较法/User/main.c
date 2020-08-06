@@ -57,6 +57,7 @@ int main(void)
       Circular_InterPolation_CW(-6400 * 10, 0, 0, -6400 * 10, 500);
       while(interpolation_para.motionstatus);
       Circular_InterPolation_CW(0, -6400 * 10, 6400 * 10, 0, 500);
+      while(interpolation_para.motionstatus);
     }
 	}
 }
