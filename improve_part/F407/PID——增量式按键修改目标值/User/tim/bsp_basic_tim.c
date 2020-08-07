@@ -28,7 +28,6 @@ TIM_HandleTypeDef TIM_TimeBaseStructure;
 static void TIMx_NVIC_Configuration(void)
 {
 	//设置抢占优先级，子优先级
-	HAL_NVIC_SetPriority(BASIC_TIM_IRQn, 0, 3);
 	// 设置中断来源
 	HAL_NVIC_EnableIRQ(BASIC_TIM_IRQn);
 }
@@ -53,13 +52,15 @@ static void TIM_Mode_Config(void)
 	TIM_TimeBaseStructure.Instance = BASIC_TIM;
 	/* 累计 TIM_Period个后产生一个更新或者中断*/		
 	//当定时器从0计数到4999，即为5000次，为一个定时周期
-	TIM_TimeBaseStructure.Init.Period = 200-1;       
+	TIM_TimeBaseStructure.Init.Period = BASIC_PERIOD_COUNT - 1;       
 
 	//定时器时钟源TIMxCLK = 2 * PCLK1  
 	//				PCLK1 = HCLK / 4 
 	//				=> TIMxCLK=HCLK/2=SystemCoreClock/2=84MHz
 	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)=10000Hz
-	TIM_TimeBaseStructure.Init.Prescaler = 8400-1;	
+	TIM_TimeBaseStructure.Init.Prescaler = BASIC_PRESCALER_COUNT - 1;	
+  TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;           // 向上计数
+  TIM_TimeBaseStructure.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;     // 时钟分频
 
 	// 初始化定时器TIMx, x[2,3,4,5]
 	HAL_TIM_Base_Init(&TIM_TimeBaseStructure);
@@ -78,11 +79,13 @@ void TIMx_Configuration(void)
 	TIMx_NVIC_Configuration();	
   
 	TIM_Mode_Config();
+  
 #if defined(PID_ASSISTANT_EN)
   uint32_t temp = GET_BASIC_TIM_PERIOD();     // 计算周期，单位ms
   
-  set_computer_value(SEND_PERIOD_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
+  set_computer_value(SEED_PERIOD_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
 #endif
+
 }
 
 /*********************************************END OF FILE**********************/

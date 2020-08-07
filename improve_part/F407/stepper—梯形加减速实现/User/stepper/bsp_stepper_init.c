@@ -38,31 +38,31 @@ static void Stepper_GPIO_Config(void)
 	/*选择要控制的GPIO引脚*/															   
 	GPIO_InitStruct.Pin = MOTOR_DIR_PIN;	
 	/*设置引脚的输出类型为推挽输出*/
-	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;  
+	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;  
 	GPIO_InitStruct.Pull =GPIO_PULLUP;
 	/*设置引脚速率为高速 */   
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	/*Motor 方向引脚 初始化*/
 	HAL_GPIO_Init(MOTOR_DIR_GPIO_PORT, &GPIO_InitStruct);	
-	
+
 	/*Motor 使能引脚 初始化*/
 	GPIO_InitStruct.Pin = MOTOR_EN_PIN;	
 	HAL_GPIO_Init(MOTOR_EN_GPIO_PORT, &GPIO_InitStruct);	
-	
-	
-  /* 定时器通道1功能引脚IO初始化 */
+
+
+	/* 定时器通道1功能引脚IO初始化 */
 	/*设置输出类型*/
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 	/*设置引脚速率 */ 
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	/*设置复用*/
-  GPIO_InitStruct.Alternate = MOTOR_PUL_GPIO_AF;
+	GPIO_InitStruct.Alternate = MOTOR_PUL_GPIO_AF;
 	/*设置复用*/
 	GPIO_InitStruct.Pull =GPIO_PULLUP;
 	/*选择要控制的GPIO引脚*/	
 	GPIO_InitStruct.Pin = MOTOR_PUL_PIN;
 	/*Motor 脉冲引脚 初始化*/
-  HAL_GPIO_Init(MOTOR_PUL_PORT, &GPIO_InitStruct);			
+	HAL_GPIO_Init(MOTOR_PUL_PORT, &GPIO_InitStruct);			
 }
 
  /**
@@ -72,9 +72,9 @@ static void Stepper_GPIO_Config(void)
   */
 static void TIMx_NVIC_Configuration(void)
 {
-  /* 外设中断配置 */
-  HAL_NVIC_SetPriority(MOTOR_PUL_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(MOTOR_PUL_IRQn);
+	/* 外设中断配置 */
+	HAL_NVIC_SetPriority(MOTOR_PUL_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(MOTOR_PUL_IRQn);
 }
 
 /*
@@ -91,49 +91,49 @@ static void TIMx_NVIC_Configuration(void)
  */
 void TIM_PWMOUTPUT_Config(void)
 {
-  TIM_OC_InitTypeDef  TIM_OCInitStructure;  	
-  /*使能定时器*/
-  MOTOR_PUL_CLK_ENABLE();
-  
-  TIM_TimeBaseStructure.Instance = MOTOR_PUL_TIM;    
+	TIM_OC_InitTypeDef  TIM_OCInitStructure;  	
+	/*使能定时器*/
+	MOTOR_PUL_CLK_ENABLE();
+
+	TIM_TimeBaseStructure.Instance = MOTOR_PUL_TIM;    
 	/* 累计 TIM_Period个后产生一个更新或者中断*/		
-  //当定时器从0计数到10000，即为10000次，为一个定时周期
+	//当定时器从0计数到10000，即为10000次，为一个定时周期
 	TIM_TimeBaseStructure.Init.Period = TIM_PERIOD; 
 	// 通用控制定时器时钟源TIMxCLK = HCLK/2	=	84MHz 
 	// 高级控制定时器时钟源TIMxCLK = HCLK		=	168MHz 
 	// 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)
-  TIM_TimeBaseStructure.Init.Prescaler = TIM_PRESCALER;                
-	
+	TIM_TimeBaseStructure.Init.Prescaler = TIM_PRESCALER;                
+
 	/*计数方式*/
-  TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;            
+	TIM_TimeBaseStructure.Init.CounterMode = TIM_COUNTERMODE_UP;            
 	/*采样时钟分频*/	
-  TIM_TimeBaseStructure.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;   
-  TIM_TimeBaseStructure.Init.RepetitionCounter = 0 ;  		
+	TIM_TimeBaseStructure.Init.ClockDivision=TIM_CLOCKDIVISION_DIV1;   
+	TIM_TimeBaseStructure.Init.RepetitionCounter = 0 ;  		
 	/*初始化定时器*/
-  HAL_TIM_OC_Init(&TIM_TimeBaseStructure);
-	
+	HAL_TIM_OC_Init(&TIM_TimeBaseStructure);
+
 	/*PWM模式配置--这里配置为输出比较模式*/
-  TIM_OCInitStructure.OCMode = TIM_OCMODE_TOGGLE; 
+	TIM_OCInitStructure.OCMode = TIM_OCMODE_TOGGLE; 
 	/*比较输出的计数值*/
-  TIM_OCInitStructure.Pulse = 0;                    
+	TIM_OCInitStructure.Pulse = 0;                    
 	/*当定时器计数值小于CCR1_Val时为高电平*/
-  TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_HIGH;          
+	TIM_OCInitStructure.OCPolarity = TIM_OCPOLARITY_HIGH;          
 	/*设置互补通道输出的极性*/
-  TIM_OCInitStructure.OCNPolarity = TIM_OCNPOLARITY_LOW; 
+	TIM_OCInitStructure.OCNPolarity = TIM_OCNPOLARITY_LOW; 
 	/*快速模式设置*/
-  TIM_OCInitStructure.OCFastMode = TIM_OCFAST_DISABLE;   
+	TIM_OCInitStructure.OCFastMode = TIM_OCFAST_DISABLE;   
 	/*空闲电平*/
-  TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_RESET;  
+	TIM_OCInitStructure.OCIdleState = TIM_OCIDLESTATE_RESET;  
 	/*互补通道设置*/
-  TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET; 
-  HAL_TIM_OC_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, MOTOR_PUL_CHANNEL_x);
+	TIM_OCInitStructure.OCNIdleState = TIM_OCNIDLESTATE_RESET; 
+	HAL_TIM_OC_ConfigChannel(&TIM_TimeBaseStructure, &TIM_OCInitStructure, MOTOR_PUL_CHANNEL_x);
 
 	/* 确定定时器 */
-  HAL_TIM_Base_Start(&TIM_TimeBaseStructure);
-  /* 启动比较输出并使能中断 */
-  HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
+	HAL_TIM_Base_Start(&TIM_TimeBaseStructure);
+	/* 启动比较输出并使能中断 */
+	HAL_TIM_OC_Start_IT(&TIM_TimeBaseStructure,MOTOR_PUL_CHANNEL_x);
 	/*使能比较通道*/
-  TIM_CCxChannelCmd(MOTOR_PUL_TIM,MOTOR_PUL_CHANNEL_x,TIM_CCx_ENABLE);
+	TIM_CCxChannelCmd(MOTOR_PUL_TIM,MOTOR_PUL_CHANNEL_x,TIM_CCx_ENABLE);
 
 }
 
@@ -146,20 +146,19 @@ void stepper_Init()
 {
 	/*电机IO配置*/
 	Stepper_GPIO_Config();
-  /*定时器PWM输出配置*/
-  TIM_PWMOUTPUT_Config();
+	/*定时器PWM输出配置*/
+	TIM_PWMOUTPUT_Config();
 	/*中断配置*/
 	TIMx_NVIC_Configuration();
 }
 
 /**
-  * 函数功能: 定时器中断服务函数
-  * 输入参数: 无
-  * 返 回 值: 无
-  * 说    明: 实现加减速过程
+  * @brief  定时器中断服务函数
+  * @retval 无
   */
 void MOTOR_PUL_IRQHandler(void)
 { 
+	/*速度状态决策*/
 	speed_decision();
 }
 

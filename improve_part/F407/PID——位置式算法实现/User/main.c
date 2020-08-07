@@ -33,12 +33,12 @@ int main(void)
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
-  DEBUG_USART_Config();
-  /* 初始化基本定时器定时，20ms产生一次中断 */
+	DEBUG_USART_Config();
+	/* 初始化基本定时器定时，20ms产生一次中断 */
 	TIMx_Configuration();
-  printf("欢迎使用野火 电机开发板 位置式PID算法实现 例程\r\n");
+	printf("欢迎使用野火 电机开发板 位置式PID算法实现 例程\r\n");
 	/* PID算法参数初始化 */
-  PID_param_init();	
+	PID_param_init();	
 	LED_GPIO_Config();
 	while(1)
 	{       

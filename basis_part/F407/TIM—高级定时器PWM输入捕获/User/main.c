@@ -32,19 +32,19 @@ extern __IO float Frequency;
   */
 int main(void) 
 {
-	/* 初始化系统时钟为168MHz */
-	SystemClock_Config();
-	/* 初始化串口 */
-	DEBUG_USART_Config();
+  /* 初始化系统时钟为168MHz */
+  SystemClock_Config();
+  /* 初始化串口 */
+  DEBUG_USART_Config();
     /* 初始化基本定时器定时，1s产生一次中断 */
-	TIMx_Configuration();
+  TIMx_Configuration();
   
-	while(1)
-	{  	
-		HAL_Delay(500);
-		printf("IC1Value = %d  IC2Value = %d ",IC1Value,IC2Value);
-		printf("占空比：%0.2f%%   频率：%0.2fHz\n",DutyCycle,Frequency);	
-	}
+  while(1)
+  {   
+    HAL_Delay(500);
+    printf("IC1Value = %d  IC2Value = %d ", IC1Value, IC2Value);
+    printf("占空比：%0.2f%%   频率：%0.2fHz\n", DutyCycle, Frequency);
+  }
 }
 
 

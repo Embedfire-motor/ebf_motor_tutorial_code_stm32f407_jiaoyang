@@ -20,18 +20,52 @@ void PID_param_init()
 		pid.err_last = 0.0;
 		pid.err_next = 0.0;
 		
-//		pid.Kp = 0.20;
-//		pid.Ki = 0.80;
 //		pid.Kd = 0.01;
-	
-		pid.Kp = 0.05;
-		pid.Ki = 0.10;
-		pid.Kd = 0.01;
 #if defined(PID_ASSISTANT_EN)
 		float pid_temp[3] = {pid.Kp, pid.Ki, pid.Kd};
 		set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, pid_temp, 3);     // 给通道 1 发送 P I D 值
 #endif
 }
+
+
+/**
+  * @brief  设置目标值
+  * @param  val		目标值
+	*	@note 	无
+  * @retval 无
+  */
+void set_pid_actual(float temp_val)
+{
+  pid.target_val = temp_val;    // 设置当前的目标值
+}
+
+/**
+  * @brief  获取目标值
+  * @param  无
+	*	@note 	无
+  * @retval 目标值
+  */
+float get_pid_actual(void)
+{
+  return pid.target_val;    // 设置当前的目标值
+}
+
+/**
+  * @brief  设置比例、积分、微分系数
+  * @param  p：比例系数 P
+  * @param  i：积分系数 i
+  * @param  d：微分系数 d
+	*	@note 	无
+  * @retval 无
+  */
+void set_p_i_d(float p, float i, float d)
+{
+  	pid.Kp = p;    // 设置比例系数 P
+		pid.Ki = i;    // 设置积分系数 I
+		pid.Kd = d;    // 设置微分系数 D
+}
+
+
 /**
   * @brief  PID算法实现
   * @param  val		目标值
@@ -52,43 +86,6 @@ float PID_realize(float temp_val)
 	/*返回当前实际值*/
 	return pid.actual_val;
 	
-}
-
-/**
-  * @brief  设置目标值
-  * @param  val		目标值
-  * @note 	无
-  * @retval 无
-  */
-void set_pid_target(float temp_val)
-{
-  pid.target_val = temp_val;    // 设置当前的目标值
-}
-
-/**
-  * @brief  获取目标值
-  * @param  无
-	*	@note 	无
-  * @retval 目标值
-  */
-float get_pid_target(void)
-{
-  return pid.target_val;    // 设置当前的目标值
-}
-
-/**
-  * @brief  设置比例、积分、微分系数
-  * @param  p：比例系数 P
-  * @param  i：积分系数 i
-  * @param  d：微分系数 d
-	*	@note 	无
-  * @retval 无
-  */
-void set_p_i_d(float p, float i, float d)
-{
-  	pid.Kp = p;    // 设置比例系数 P
-	pid.Ki = i;    // 设置积分系数 I
-	pid.Kd = d;    // 设置微分系数 D
 }
 
 /**
@@ -113,7 +110,6 @@ void time_period_fun()
 //		printf("val,%f;act,%f\n",set_point,val);	
 	}
 }
-
 
 
 

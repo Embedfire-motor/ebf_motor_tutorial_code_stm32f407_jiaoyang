@@ -38,7 +38,7 @@ static void Stepper_GPIO_Config(void)
 	/*选择要控制的GPIO引脚*/															   
 	GPIO_InitStruct.Pin = MOTOR_DIR_PIN;	
 	/*设置引脚的输出类型为推挽输出*/
-	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_OD;  
+	GPIO_InitStruct.Mode  = GPIO_MODE_OUTPUT_PP;  
 	GPIO_InitStruct.Pull =GPIO_PULLUP;
 	/*设置引脚速率为高速 */   
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
@@ -50,19 +50,19 @@ static void Stepper_GPIO_Config(void)
 	HAL_GPIO_Init(MOTOR_EN_GPIO_PORT, &GPIO_InitStruct);	
 	
 	
-  /* 定时器通道1功能引脚IO初始化 */
+	/* 定时器通道1功能引脚IO初始化 */
 	/*设置输出类型*/
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 	/*设置引脚速率 */ 
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	/*设置复用*/
-  GPIO_InitStruct.Alternate = MOTOR_PUL_GPIO_AF;
+	GPIO_InitStruct.Alternate = MOTOR_PUL_GPIO_AF;
 	/*设置复用*/
 	GPIO_InitStruct.Pull =GPIO_PULLUP;
 	/*选择要控制的GPIO引脚*/	
 	GPIO_InitStruct.Pin = MOTOR_PUL_PIN;
 	/*Motor 脉冲引脚 初始化*/
-  HAL_GPIO_Init(MOTOR_PUL_PORT, &GPIO_InitStruct);			
+	HAL_GPIO_Init(MOTOR_PUL_PORT, &GPIO_InitStruct);			
 }
 
  /**

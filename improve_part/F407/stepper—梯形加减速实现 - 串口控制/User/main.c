@@ -36,8 +36,8 @@ int main(void)
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
-  DEBUG_USART_Config();
-  printf("欢迎使用野火 电机开发板 步进电机 加减速正反选装 例程\r\n");
+	DEBUG_USART_Config();
+	printf("欢迎使用野火 电机开发板 步进电机 加减速正反转 例程\r\n");
 	/*按键中断初始化*/
 	EXTI_Key_Config();	
 	/*led初始化*/

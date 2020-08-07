@@ -225,7 +225,7 @@ void DEBUG_USART_IRQHandler(void)
 						}
 					}
 			}
-
+    
     }	 
 
 }

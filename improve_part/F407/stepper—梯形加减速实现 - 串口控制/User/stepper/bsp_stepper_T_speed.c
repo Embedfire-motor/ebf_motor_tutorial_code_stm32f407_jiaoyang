@@ -205,10 +205,10 @@ void speed_decision()
   //定时器使用翻转模式，需要进入两次中断才输出一个完整脉冲
   __IO static uint8_t i=0;
   
-  if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, STEPMOTOR_TIM_IT_CCx) !=RESET)
+  if(__HAL_TIM_GET_IT_SOURCE(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx) !=RESET)
   {
     // 清楚定时器中断
-    __HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, STEPMOTOR_TIM_IT_CCx);
+    __HAL_TIM_CLEAR_IT(&TIM_TimeBaseStructure, MOTOR_TIM_IT_CCx);
     
     // 设置比较值
     tim_count=__HAL_TIM_GET_COUNTER(&TIM_TimeBaseStructure);
@@ -228,7 +228,7 @@ void speed_decision()
 
 						// 关闭通道
 						TIM_CCxChannelCmd(MOTOR_PUL_TIM, MOTOR_PUL_CHANNEL_x, TIM_CCx_DISABLE);        
-						__HAL_TIM_CLEAR_FLAG(&TIM_TimeBaseStructure, STEPMOTOR_TIM_FLAG_CCx);
+						__HAL_TIM_CLEAR_FLAG(&TIM_TimeBaseStructure, MOTOR_TIM_FLAG_CCx);
 
 						status.running = FALSE;
 						break;
