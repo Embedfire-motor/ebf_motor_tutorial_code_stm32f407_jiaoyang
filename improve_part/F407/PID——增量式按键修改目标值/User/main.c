@@ -112,7 +112,7 @@ int main(void)
 	int run_i=0;
 #if defined(PID_ASSISTANT_EN) 
     int temp = set_point;    // 上位机需要整数参数，转换一下
-    set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
+    set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
 #endif	
 	while(1)
 	{       
@@ -127,7 +127,7 @@ int main(void)
         
     #if defined(PID_ASSISTANT_EN) 
         temp = set_point;    // 上位机需要整数参数，转换一下
-        set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
+        set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
 		#endif
     }   
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
@@ -137,11 +137,11 @@ int main(void)
     #if defined(PID_ASSISTANT_EN) 
       if (!pid_status)
       {
-        set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
+        set_computer_value(SEND_START_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
       }
       else
       {
-        set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
+        set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);     // 同步上位机的启动按钮状态
       }      
     #endif
 		} 
