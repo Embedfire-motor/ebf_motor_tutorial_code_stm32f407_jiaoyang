@@ -28,7 +28,7 @@
  ************************/
 
 /***************** MOTOR ELECTRICAL PARAMETERS  ******************************/
-#define POLE_PAIR_NUM          4 /* Number of motor pole pairs */
+#define POLE_PAIR_NUM          2 /* Number of motor pole pairs */
 #define RS                     0.42 /* Stator resistance , ohm*/
 #define LS                     0.001240 /* Stator inductance, H
                                                  For I-PMSM it is equal to Lq */
@@ -57,7 +57,7 @@
                                                  It can be either DEGREES_120 or
                                                  DEGREES_60 */
 
-#define HALL_PHASE_SHIFT        300 /*!< Define here in degrees
+#define HALL_PHASE_SHIFT        120 /*!< Define here in degrees
                                                  the electrical phase shift between
                                                  the low to high transition of
                                                  signal H1 and the maximum of

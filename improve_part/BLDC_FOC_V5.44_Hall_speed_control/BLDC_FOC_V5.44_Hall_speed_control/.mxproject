@@ -7,8 +7,8 @@ HeaderPath=..\Drivers\STM32F4xx_HAL_Driver\Inc;..\Drivers\STM32F4xx_HAL_Driver\I
 CDefines=ARM_MATH_CM4;USE_HAL_DRIVER;STM32F407xx;USE_HAL_DRIVER;USE_HAL_DRIVER;
 
 [PreviousGenFiles]
-HeaderPath=D:/MotorDevelop/jiaoyang_motor/base_code/improve_part/F407/BLDC_FOC_V5.44_Hall_speed_control/Inc
+HeaderPath=D:/MotorDevelop/jiaoyang_motor/ebf_motor_tutorial_code_stm32f407/improve_part/BLDC_FOC_V5.44_Hall_speed_control/BLDC_FOC_V5.44_Hall_speed_control/Inc
 HeaderFiles=motorcontrol.h;drive_parameters.h;mc_tasks.h;motor_control_protocol.h;mc_api.h;mc_config.h;mc_stm_types.h;regular_conversion_manager.h;mc_math.h;mc_interface.h;parameters_conversion.h;parameters_conversion_f4xx.h;pmsm_motor_parameters.h;power_stage_parameters.h;mc_parameters.h;ui_task.h;user_interface.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;
-SourcePath=D:/MotorDevelop/jiaoyang_motor/base_code/improve_part/F407/BLDC_FOC_V5.44_Hall_speed_control/Src
+SourcePath=D:/MotorDevelop/jiaoyang_motor/ebf_motor_tutorial_code_stm32f407/improve_part/BLDC_FOC_V5.44_Hall_speed_control/BLDC_FOC_V5.44_Hall_speed_control/Src
 SourceFiles=motorcontrol.c;mc_api.c;motor_control_protocol.c;mc_config.c;mc_tasks.c;regular_conversion_manager.c;mc_math.c;mc_interface.c;stm32f4xx_mc_it.c;mc_parameters.c;ui_task.c;user_interface.c;stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;
 

@@ -118,7 +118,7 @@
 #define UV_VOLTAGE_PROT_ENABLING        ENABLE
 #define OV_VOLTAGE_THRESHOLD_V          32 /*!< Over-voltage
                                                          threshold */
-#define UD_VOLTAGE_THRESHOLD_V          1 /*!< Under-voltage
+#define UD_VOLTAGE_THRESHOLD_V          18 /*!< Under-voltage
                                                           threshold */
 #if 0
 #define ON_OVER_VOLTAGE                 TURN_OFF_PWM /*!< TURN_OFF_PWM,
