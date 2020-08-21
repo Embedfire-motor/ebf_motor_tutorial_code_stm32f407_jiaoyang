@@ -320,7 +320,7 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
   uint8_t step = 0;
   step = get_hall_state();
 
-  if(get_bldcm_direction() != MOTOR_FWD)
+  if(get_bldcm_direction() == MOTOR_FWD)
   {
     step = 7 - step;        // 根据换向表的规律可知： REV = 7 - FWD;
   }
