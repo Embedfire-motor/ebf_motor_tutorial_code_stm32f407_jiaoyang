@@ -3,8 +3,8 @@
   * @file    main.c
   * @author  fire
   * @version V1.0
-  * @date    2017-xx-xx
-  * @brief   GPIO输出--使用固件库点亮LED灯
+  * @date    2020-xx-xx
+  * @brief   直流有刷减速电机-限电流-过压-欠压保护-MOS管搭建板
   ******************************************************************************
   * @attention
   *

@@ -744,6 +744,11 @@
           <GroupName>USER</GroupName>
           <Files>
             <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\main.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f4xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\stm32f4xx_it.c</FilePath>
@@ -757,11 +762,6 @@
               <FileName>bsp_key.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\key\bsp_key.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\main.c</FilePath>
             </File>
             <File>
               <FileName>bsp_motor_tim.c</FileName>
