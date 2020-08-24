@@ -226,17 +226,30 @@ NTC_Handle_t TempSensorParamsM1 =
   .hExpectedTemp_C = M1_VIRTUAL_HEAT_SINK_TEMPERATURE_VALUE,
 };
 
+/* Bus voltage sensor value filter buffer */
+uint16_t RealBusVoltageSensorFilterBufferM1[M1_VBUS_SW_FILTER_BW_FACTOR];
+
 /**
-  * Virtual bus voltage sensor parameters Motor 1
+  * Bus voltage sensor parameters Motor 1
   */
-VirtualBusVoltageSensor_Handle_t VirtualBusVoltageSensorParamsM1 =
+RDivider_Handle_t RealBusVoltageSensorParamsM1 =
 {
-  ._Super =
+  ._Super                =
   {
-    .SensorType       = VIRTUAL_SENSOR,
-    .ConversionFactor = 500,
+    .SensorType          = REAL_SENSOR,
+    .ConversionFactor    = (uint16_t)(ADC_REFERENCE_VOLTAGE / VBUS_PARTITIONING_FACTOR),
   },
-  .ExpectedVbus_d = 1 + (NOMINAL_BUS_VOLTAGE_V * 65536) / 500,
+
+  .VbusRegConv =
+  {
+    .regADC = ADC1,
+    .channel = MC_ADC_CHANNEL_8,
+    .samplingTime = M1_VBUS_SAMPLING_TIME,
+  },
+  .LowPassFilterBW       =  M1_VBUS_SW_FILTER_BW_FACTOR,
+  .OverVoltageThreshold  = OVERVOLTAGE_THRESHOLD_d,
+  .UnderVoltageThreshold =  UNDERVOLTAGE_THRESHOLD_d,
+  .aBuffer = RealBusVoltageSensorFilterBufferM1,
 };
 
 UI_Handle_t UI_Params =

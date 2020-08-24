@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>ARM_MATH_CM4,USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;                        ../Drivers/STM32F4xx_HAL_Driver/Inc;                        ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;                        ../MCSDK_v5.4.4-Full/MotorControl/MCSDK/MCLib/Any/Inc;                        ../MCSDK_v5.4.4-Full/MotorControl/MCSDK/MCLib/F4xx/Inc;                        ../MCSDK_v5.4.4-Full/MotorControl/MCSDK/UILibrary/Inc;                        ../MCSDK_v5.4.4-Full/MotorControl/MCSDK/SystemDriveParams;                        ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;                        ../Drivers/CMSIS/Include;                        ../Drivers/CMSIS/DSP/Include;                        ..\USER\YH_MotorControl\Inc</IncludePath>
+              <IncludePath>../Inc;                                    ../Drivers/STM32F4xx_HAL_Driver/Inc;                                    ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;                                    ../MCSDK_v5.4.4-Full/MotorControl/MCSDK/MCLib/Any/Inc;                                    ../MCSDK_v5.4.4-Full/MotorControl/MCSDK/MCLib/F4xx/Inc;                                    ../MCSDK_v5.4.4-Full/MotorControl/MCSDK/UILibrary/Inc;                                    ../MCSDK_v5.4.4-Full/MotorControl/MCSDK/SystemDriveParams;                                    ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;                                    ../Drivers/CMSIS/Include;                                    ../Drivers/CMSIS/DSP/Include;                                    ..\USER\YH_MotorControl\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -639,6 +639,11 @@
               <FilePath>../MCSDK_v5.4.4-Full/MotorControl/MCSDK/MCLib/Any/Src/pwm_common.c</FilePath>
             </File>
             <File>
+              <FileName>r_divider_bus_voltage_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../MCSDK_v5.4.4-Full/MotorControl/MCSDK/MCLib/Any/Src/r_divider_bus_voltage_sensor.c</FilePath>
+            </File>
+            <File>
               <FileName>ramp_ext_mngr.c</FileName>
               <FileType>1</FileType>
               <FilePath>../MCSDK_v5.4.4-Full/MotorControl/MCSDK/MCLib/Any/Src/ramp_ext_mngr.c</FilePath>
@@ -662,11 +667,6 @@
               <FileName>state_machine.c</FileName>
               <FileType>1</FileType>
               <FilePath>../MCSDK_v5.4.4-Full/MotorControl/MCSDK/MCLib/Any/Src/state_machine.c</FilePath>
-            </File>
-            <File>
-              <FileName>virtual_bus_voltage_sensor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../MCSDK_v5.4.4-Full/MotorControl/MCSDK/MCLib/Any/Src/virtual_bus_voltage_sensor.c</FilePath>
             </File>
             <File>
               <FileName>virtual_speed_sensor.c</FileName>

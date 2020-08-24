@@ -59,7 +59,7 @@
 /* #define  MC.SMOOTH_BRAKING_ACTION_ON_OVERVOLTAGE */
 
 /* USER CODE END Private define */
-#define VBUS_TEMP_ERR_MASK ~(MC_OVER_VOLT | MC_UNDER_VOLT | MC_OVER_TEMP)
+#define VBUS_TEMP_ERR_MASK ~(0 | 0 | MC_OVER_TEMP)
 
 /* Private variables----------------------------------------------------------*/
 FOCVars_t FOCVars[NBR_OF_MOTORS];
@@ -72,7 +72,7 @@ PID_Handle_t *pPIDSpeed[NBR_OF_MOTORS];
 PID_Handle_t *pPIDIq[NBR_OF_MOTORS];
 PID_Handle_t *pPIDId[NBR_OF_MOTORS];
 EncAlign_Handle_t *pEAC[NBR_OF_MOTORS];
-VirtualBusVoltageSensor_Handle_t *pBusSensorM1;
+RDivider_Handle_t *pBusSensorM1;
 
 NTC_Handle_t *pTemperatureSensor[NBR_OF_MOTORS];
 PWMC_Handle_t * pwmcHandle[NBR_OF_MOTORS];
@@ -184,11 +184,11 @@ __weak void MCboot( MCI_Handle_t* pMCIList[NBR_OF_MOTORS],MCT_Handle_t* pMCTList
   pPIDIq[M1] = &PIDIqHandle_M1;
   pPIDId[M1] = &PIDIdHandle_M1;
 
-  /**********************************************************/
-  /*   Virtual bus voltage sensor component initialization  */
-  /**********************************************************/
-  pBusSensorM1 = &VirtualBusVoltageSensorParamsM1;
-  VVBS_Init(pBusSensorM1);
+  /********************************************************/
+  /*   Bus voltage sensor component initialization        */
+  /********************************************************/
+  pBusSensorM1 = &RealBusVoltageSensorParamsM1;
+  RVBS_Init(pBusSensorM1);
 
   /*************************************************/
   /*   Power measurement component initialization  */
@@ -807,6 +807,10 @@ __weak void TSK_SafetyTask_PWMOFF(uint8_t bMotor)
   CodeReturn |= errMask[bMotor] & NTC_CalcAvTemp(pTemperatureSensor[bMotor]); /* check for fault if FW protection is activated. It returns MC_OVER_TEMP or MC_NO_ERROR */
   CodeReturn |= PWMC_CheckOverCurrent(pwmcHandle[bMotor]);                    /* check for fault. It return MC_BREAK_IN or MC_NO_FAULTS
                                                                                  (for STM32F30x can return MC_OVER_VOLT in case of HW Overvoltage) */
+  if(bMotor == M1)
+  {
+    CodeReturn |=  errMask[bMotor] &RVBS_CalcAvVbus(pBusSensorM1);
+  }
 
   STM_FaultProcessing(&STM[bMotor], CodeReturn, ~CodeReturn); /* Update the STM according error code */
   switch (STM_GetState(&STM[bMotor])) /* Acts on PWM outputs in case of faults */

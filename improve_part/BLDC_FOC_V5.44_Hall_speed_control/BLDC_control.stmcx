@@ -7,7 +7,7 @@
 			<type>SINGLE</type>
 			<example_prj>false</example_prj>
 			<output_setting version="1.0">
-				<project_name>BLDC_FOC_V5.44_Hall_speed_control</project_name>
+				<project_name>BLDC_control</project_name>
 			</output_setting>
 		</properties>
 		<systems>
@@ -169,7 +169,7 @@
 						<var version="1.0" type="MC_Bool" name="xAllDriver_signal_enable" enable="true" visible="true" readonly="false" value="false" />
 						<var version="1.0" type="MC_Bool" name="use_STGAP1S" enable="true" visible="true" readonly="false" value="false" />
 						<var version="1.0" type="MC_Double" name="SettParamGain - Input - Imax" enable="true" visible="true" readonly="false" value="2.1" />
-						<var version="1.0" type="MC_Double" name="SettParamGain - Input - Vm" enable="true" visible="true" readonly="false" value="0.5" />
+						<var version="1.0" type="MC_Double" name="SettParamGain - Input - Vm" enable="true" visible="true" readonly="false" value="1.2000000000000002" />
 						<var version="1.0" type="MC_Double" name="SettParamGain - Input - Prating" enable="true" visible="true" readonly="false" value="0.5" />
 						<var version="1.0" type="MC_Double" name="SettParamGain - Input - R1" enable="true" visible="true" readonly="false" value="0" />
 						<var version="1.0" type="MC_Double" name="SettParamGain - Input - R2" enable="true" visible="true" readonly="false" value="10000" />
@@ -1984,7 +1984,7 @@
 			<reg version="1.0" id="1" name="Flags" description="$$DESCR_AS_NAME$$" unit="" type="32" access_mode="0" value="0" value_previous="0" minimum="0" maximum="4294967295" period="200" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="2" name="Status" description="$$DESCR_AS_NAME$$" unit="" type="8" access_mode="0" value="6" value_previous="6" minimum="0" maximum="255" period="200" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="3" name="Control mode" description="$$DESCR_AS_NAME$$" unit="" type="8" access_mode="2" value="1" value_previous="1" minimum="0" maximum="255" period="500" modified="false" visible="true" enable="true" />
-			<reg version="1.0" id="4" name="Speed reference" description="$$DESCR_AS_NAME$$" unit="RPM" type="160" access_mode="0" value="2352" value_previous="2352" minimum="-3000" maximum="3000" period="200" modified="false" visible="true" enable="true" />
+			<reg version="1.0" id="4" name="Speed reference" description="$$DESCR_AS_NAME$$" unit="RPM" type="160" access_mode="0" value="2352" value_previous="2352" minimum="-5000" maximum="5000" period="200" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="5" name="Speed Kp" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="2134" value_previous="2134" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="6" name="Speed Ki" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="20" value_previous="20" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="7" name="Speed Kd" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="0" value_previous="0" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
@@ -2008,9 +2008,9 @@
 			<reg version="1.0" id="25" name="Bus Voltage" description="$$DESCR_AS_NAME$$" unit="Volt" type="16" access_mode="0" value="24" value_previous="23" minimum="0" maximum="32" period="500" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="26" name="Heatsink Temperature" description="$$DESCR_AS_NAME$$" unit="°C" type="16" access_mode="0" value="29" value_previous="29" minimum="0" maximum="100" period="500" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="27" name="Motor Power" description="$$DESCR_AS_NAME$$" unit="W" type="16" access_mode="0" value="0" value_previous="0" minimum="0" maximum="200" period="500" modified="false" visible="true" enable="false" />
-			<reg version="1.0" id="28" name="DAC Out 1" description="$$DESCR_AS_NAME$$" unit="" type="8" access_mode="2" value="0" value_previous="0" minimum="0" maximum="255" period="0" modified="false" visible="true" enable="true" />
-			<reg version="1.0" id="29" name="DAC Out 2" description="$$DESCR_AS_NAME$$" unit="" type="8" access_mode="2" value="0" value_previous="0" minimum="0" maximum="255" period="0" modified="false" visible="true" enable="true" />
-			<reg version="1.0" id="30" name="Speed measured" description="$$DESCR_AS_NAME$$" unit="RPM" type="160" access_mode="0" value="2358" value_previous="2346" minimum="-3000" maximum="3000" period="200" modified="false" visible="true" enable="true" />
+			<reg version="1.0" id="28" name="DAC Out 1" description="$$DESCR_AS_NAME$$" unit="" type="8" access_mode="2" value="0" value_previous="0" minimum="0" maximum="255" period="0" modified="false" visible="true" enable="false" />
+			<reg version="1.0" id="29" name="DAC Out 2" description="$$DESCR_AS_NAME$$" unit="" type="8" access_mode="2" value="0" value_previous="0" minimum="0" maximum="255" period="0" modified="false" visible="true" enable="false" />
+			<reg version="1.0" id="30" name="Speed measured" description="$$DESCR_AS_NAME$$" unit="RPM" type="160" access_mode="0" value="2358" value_previous="2346" minimum="-5000" maximum="5000" period="200" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="31" name="Torque measured (Iq)" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="0" value="0" value_previous="93" minimum="-32768" maximum="32767" period="200" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="32" name="Flux measured (Id)" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="0" value="0" value_previous="-118" minimum="-32768" maximum="32767" period="200" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="33" name="Flux weakening BUS Voltage allowed percentage measured" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="0" value="0" value_previous="0" minimum="0" maximum="65535" period="200" modified="false" visible="true" enable="false" />
@@ -2071,7 +2071,7 @@
 			<reg version="1.0" id="88" name="PFC Voltage loop Kd" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="0" value_previous="0" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="89" name="PFC startup duration" description="$$DESCR_AS_NAME$$" unit="ms" type="16" access_mode="2" value="0" value_previous="0" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="90" name="PFC abilitation status" description="$$DESCR_AS_NAME$$" unit="" type="8" access_mode="0" value="0" value_previous="0" minimum="0" maximum="1" period="0" modified="false" visible="true" enable="false" />
-			<reg version="1.0" id="91" name="Ramp final speed" description="$$DESCR_AS_NAME$$" unit="RMS" type="160" access_mode="2" value="1902" value_previous="2352" minimum="-3000" maximum="3000" period="200" modified="false" visible="true" enable="true" />
+			<reg version="1.0" id="91" name="Ramp final speed" description="$$DESCR_AS_NAME$$" unit="RMS" type="160" access_mode="2" value="1902" value_previous="2352" minimum="-5000" maximum="5000" period="200" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="92" name="Ramp duration" description="$$DESCR_AS_NAME$$" unit="ms" type="16" access_mode="2" value="0" value_previous="0" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="93" name="HFI electrical angle" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="0" value="0" value_previous="0" minimum="-32768" maximum="32767" period="0" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="94" name="HFI rotor speed" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="0" value="0" value_previous="0" minimum="-32768" maximum="32767" period="0" modified="false" visible="true" enable="false" />

@@ -59,7 +59,7 @@
 /* #define  MC.SMOOTH_BRAKING_ACTION_ON_OVERVOLTAGE */
 
 /* USER CODE END Private define */
-#define VBUS_TEMP_ERR_MASK ~(MC_OVER_VOLT | MC_UNDER_VOLT | MC_OVER_TEMP)
+#define VBUS_TEMP_ERR_MASK (MC_OVER_VOLT| MC_UNDER_VOLT| MC_OVER_TEMP)
 
 /* Private variables----------------------------------------------------------*/
 FOCVars_t FOCVars[NBR_OF_MOTORS];

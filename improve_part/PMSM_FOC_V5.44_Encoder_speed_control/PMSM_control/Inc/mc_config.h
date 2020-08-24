@@ -27,6 +27,7 @@
 #include "virtual_speed_sensor.h"
 #include "ntc_temperature_sensor.h"
 #include "pwm_curr_fdbk.h"
+#include "r_divider_bus_voltage_sensor.h"
 #include "virtual_bus_voltage_sensor.h"
 #include "pqd_motor_power_measurement.h"
  #include "user_interface.h"
@@ -55,7 +56,7 @@ extern PQD_MotorPowMeas_Handle_t *pPQD_MotorPowMeasM1;
 extern VirtualSpeedSensor_Handle_t VirtualSpeedSensorM1;
 extern ENCODER_Handle_t ENCODER_M1;
 extern EncAlign_Handle_t EncAlignCtrlM1;
-extern VirtualBusVoltageSensor_Handle_t VirtualBusVoltageSensorParamsM1;
+extern RDivider_Handle_t RealBusVoltageSensorParamsM1;
 extern CircleLimitation_Handle_t CircleLimitationM1;
 extern RampExtMngr_Handle_t RampExtMngrHFParamsM1;
 extern UI_Handle_t UI_Params;

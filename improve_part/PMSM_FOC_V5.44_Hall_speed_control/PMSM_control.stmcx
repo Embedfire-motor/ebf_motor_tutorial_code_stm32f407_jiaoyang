@@ -452,10 +452,10 @@
 						<var version="1.0" type="MC_Int" name="PositionControl_D_dividend" enable="true" visible="true" readonly="false" value="1000" />
 						<var version="1.0" type="MC_Int" name="PositionControl_D_divisor" enable="true" visible="true" readonly="false" value="16" />
 						<var version="1.0" type="MC_Bool" name="Bus voltage sensing" enable="true" visible="true" readonly="false" value="true" />
-						<var version="1.0" type="MC_Bool" name="Over-voltage" enable="true" visible="true" readonly="false" value="false" />
-						<var version="1.0" type="MC_Bool" name="Set intervention threshold to power stage max rated voltage" enable="false" visible="true" readonly="false" value="true" />
+						<var version="1.0" type="MC_Bool" name="Over-voltage" enable="true" visible="true" readonly="false" value="true" />
+						<var version="1.0" type="MC_Bool" name="Set intervention threshold to power stage max rated voltage" enable="true" visible="true" readonly="false" value="true" />
 						<var version="1.0" type="MC_Int" name="Over-voltage threshold" enable="false" visible="true" readonly="false" value="32" />
-						<var version="1.0" type="MC_List" name="On over voltage" enable="false" visible="true" readonly="false" value="0">
+						<var version="1.0" type="MC_List" name="On over voltage" enable="true" visible="true" readonly="false" value="0">
 							<items>
 								<item tag="0" text="Disable PWM generation" />
 								<item tag="1" text="Switch on brake resistor" />
@@ -464,8 +464,8 @@
 						</var>
 						<var version="1.0" type="MC_Bool" name="On over-voltage, disable over-current protection by HW" enable="false" visible="true" readonly="false" value="false" />
 						<var version="1.0" type="MC_Int" name="Brake resistor switch-off threshold" enable="false" visible="false" readonly="false" value="26" />
-						<var version="1.0" type="MC_Bool" name="Under-voltage" enable="true" visible="true" readonly="false" value="false" />
-						<var version="1.0" type="MC_Bool" name="Set intervention threshold to power stage min rated voltage" enable="false" visible="true" readonly="false" value="true" />
+						<var version="1.0" type="MC_Bool" name="Under-voltage" enable="true" visible="true" readonly="false" value="true" />
+						<var version="1.0" type="MC_Bool" name="Set intervention threshold to power stage min rated voltage" enable="true" visible="true" readonly="false" value="true" />
 						<var version="1.0" type="MC_Int" name="Under-voltage threshold" enable="false" visible="true" readonly="false" value="18" />
 						<var version="1.0" type="MC_Bool" name="speed_feedback_check" enable="true" visible="true" readonly="false" value="false" />
 						<var version="1.0" type="MC_Int" name="Enc - Duration" enable="false" visible="true" readonly="false" value="700" />
@@ -523,7 +523,7 @@
 							<var version="1.0" type="MC_Bool" name="Set intervention threshold to power stage max working temperature" enable="true" visible="true" readonly="false" value="false" />
 							<var version="1.0" type="MC_Int" name="Over-temperature threshold" enable="true" visible="true" readonly="false" value="80" />
 							<var version="1.0" type="MC_Int" name="Hysteresis" enable="true" visible="true" readonly="false" value="10" />
-							<var version="1.0" type="MC_Bool" name="use_temperature_protection" enable="true" visible="true" readonly="false" value="false" />
+							<var version="1.0" type="MC_Bool" name="use_temperature_protection" enable="true" visible="true" readonly="false" value="true" />
 						</vars>
 					</temperature_sensing>
 					<pfc version="1.0">
@@ -1988,13 +1988,13 @@
 			<reg version="1.0" id="5" name="Speed Kp" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="2134" value_previous="2134" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="6" name="Speed Ki" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="20" value_previous="20" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="7" name="Speed Kd" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="0" value_previous="0" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
-			<reg version="1.0" id="8" name="Torque reference (Iq)" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="2" value="0" value_previous="0" minimum="-32768" maximum="32767" period="0" modified="false" visible="true" enable="true" />
-			<reg version="1.0" id="9" name="Torque Kp" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="2182" value_previous="2077" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
-			<reg version="1.0" id="10" name="Torque Ki" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="1144" value_previous="1795" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
+			<reg version="1.0" id="8" name="Torque reference (Iq)" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="2" value="164" value_previous="0" minimum="-32768" maximum="32767" period="0" modified="false" visible="true" enable="true" />
+			<reg version="1.0" id="9" name="Torque Kp" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="2077" value_previous="2077" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
+			<reg version="1.0" id="10" name="Torque Ki" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="1795" value_previous="1795" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="11" name="Torque Kd" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="0" value_previous="0" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="12" name="Flux reference (Id)" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="2" value="0" value_previous="0" minimum="-32768" maximum="32767" period="0" modified="false" visible="true" enable="true" />
-			<reg version="1.0" id="13" name="Flux Kp" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="2182" value_previous="2077" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
-			<reg version="1.0" id="14" name="Flux Ki" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="1144" value_previous="1795" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
+			<reg version="1.0" id="13" name="Flux Kp" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="2077" value_previous="2077" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
+			<reg version="1.0" id="14" name="Flux Ki" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="1795" value_previous="1795" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="15" name="Flux Kd" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="2" value="0" value_previous="0" minimum="0" maximum="65535" period="0" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="16" name="Observer C1" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="2" value="0" value_previous="0" minimum="-32768" maximum="32767" period="0" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="17" name="Observer C2" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="2" value="0" value_previous="0" minimum="-32768" maximum="32767" period="0" modified="false" visible="true" enable="false" />
@@ -2010,7 +2010,7 @@
 			<reg version="1.0" id="27" name="Motor Power" description="$$DESCR_AS_NAME$$" unit="W" type="16" access_mode="0" value="0" value_previous="0" minimum="0" maximum="200" period="500" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="28" name="DAC Out 1" description="$$DESCR_AS_NAME$$" unit="" type="8" access_mode="2" value="0" value_previous="0" minimum="0" maximum="255" period="0" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="29" name="DAC Out 2" description="$$DESCR_AS_NAME$$" unit="" type="8" access_mode="2" value="0" value_previous="0" minimum="0" maximum="255" period="0" modified="false" visible="true" enable="true" />
-			<reg version="1.0" id="30" name="Speed measured" description="$$DESCR_AS_NAME$$" unit="RPM" type="160" access_mode="0" value="0" value_previous="0" minimum="-3000" maximum="3000" period="200" modified="false" visible="true" enable="true" />
+			<reg version="1.0" id="30" name="Speed measured" description="$$DESCR_AS_NAME$$" unit="RPM" type="160" access_mode="0" value="1470" value_previous="1488" minimum="-3000" maximum="3000" period="200" modified="false" visible="true" enable="true" />
 			<reg version="1.0" id="31" name="Torque measured (Iq)" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="0" value="0" value_previous="93" minimum="-32768" maximum="32767" period="200" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="32" name="Flux measured (Id)" description="$$DESCR_AS_NAME$$" unit="" type="144" access_mode="0" value="0" value_previous="-118" minimum="-32768" maximum="32767" period="200" modified="false" visible="true" enable="false" />
 			<reg version="1.0" id="33" name="Flux weakening BUS Voltage allowed percentage measured" description="$$DESCR_AS_NAME$$" unit="" type="16" access_mode="0" value="0" value_previous="0" minimum="0" maximum="65535" period="200" modified="false" visible="true" enable="false" />

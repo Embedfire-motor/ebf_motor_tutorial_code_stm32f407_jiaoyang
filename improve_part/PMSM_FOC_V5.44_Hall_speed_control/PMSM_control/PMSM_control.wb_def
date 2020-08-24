@@ -41,7 +41,7 @@
 		<define key="OVERCURR_PROTECTION_HW_DISABLING" value="DOUT_ACTIVE_HIGH" />
 		<define key="OCP_COMP_THRESHOLD" value="0.50" />
 		<define key="TEMPERATURE_READING" value="ENABLE" />
-		<define key="OV_TEMPERATURE_PROT_ENABLING" value="DISABLE" />
+		<define key="OV_TEMPERATURE_PROT_ENABLING" value="ENABLE" />
 		<define key="OV_TEMPERATURE_THRESHOLD_C" value="80" />
 		<define key="OV_TEMPERATURE_HYSTERESIS_C" value="10" />
 		<define key="V0_V" value="0.290" />
@@ -156,8 +156,8 @@
 		<define key="DEFAULT_TORQUE_COMPONENT" value="0" />
 		<define key="DEFAULT_FLUX_COMPONENT" value="0" />
 		<define key="POSITION_CTRL_ENABLING" value="DISABLE" />
-		<define key="OV_VOLTAGE_PROT_ENABLING" value="DISABLE" />
-		<define key="UV_VOLTAGE_PROT_ENABLING" value="DISABLE" />
+		<define key="OV_VOLTAGE_PROT_ENABLING" value="ENABLE" />
+		<define key="UV_VOLTAGE_PROT_ENABLING" value="ENABLE" />
 		<define key="OV_VOLTAGE_THRESHOLD_V" value="32" />
 		<define key="UD_VOLTAGE_THRESHOLD_V" value="18" />
 		<define key="ON_OVER_VOLTAGE" value="TURN_OFF_PWM" />
