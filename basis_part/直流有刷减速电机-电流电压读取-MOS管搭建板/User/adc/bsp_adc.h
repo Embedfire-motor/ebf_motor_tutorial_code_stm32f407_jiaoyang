@@ -44,7 +44,7 @@
 
 #define VBUS_ADC_CHANNEL                ADC_CHANNEL_8
 
-#define GET_VBUS_VAL(val)               (((float)val-(float)0.5) / (float)8.0 * (float)301.0)      // 电压最大值（测量电压是电源电压的1/500）
+#define GET_VBUS_VAL(val)               (((float)val-(float)1.24) * (float)37.0)      // 电压最大值（测量电压是电源电压的1/37）
 
 extern DMA_HandleTypeDef DMA_Init_Handle;
 extern ADC_HandleTypeDef ADC_Handle;
