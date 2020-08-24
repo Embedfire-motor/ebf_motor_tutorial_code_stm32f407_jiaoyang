@@ -45,12 +45,12 @@
 #define VBUS_ADC_CHANNEL                ADC_CHANNEL_8
 
 #define VBUS_MAX                        14    // 电压最大值
-#define VBUS_MIN                        5    // 电压最小值
+#define VBUS_MIN                        10    // 电压最小值
 
-#define VBUS_HEX_MAX                    ((VBUS_MAX/301.0*8.0+0.5)/VREF*4096)    // 电压最大值（测量电压是电源电压的1/31）31.0
-#define VBUS_HEX_MIN                    ((VBUS_MIN/301.0*8.0+0.5)/VREF*4096)    // 电压最小值（测量电压是电源电压的1/31）31.0
+#define VBUS_HEX_MAX                    ((VBUS_MAX/37.0+1.24)/VREF*65536)    // 电压最大值（测量电压是电源电压的1/37）37.0
+#define VBUS_HEX_MIN                    ((VBUS_MIN/37.0+1.24)/VREF*65536)    // 电压最小值（测量电压是电源电压的1/37）37.0
 
-#define GET_VBUS_VAL(val)               (((float)val-(float)0.5) / (float)8.0 * (float)301.0)      // 电源电压值（测量电压是电源电压的1/301）
+#define GET_VBUS_VAL(val)               (((float)val-(float)1.24) * (float)37.0)      // 电源电压值（测量电压是电源电压的1/37）
 
 extern DMA_HandleTypeDef DMA_Init_Handle;
 extern ADC_HandleTypeDef ADC_Handle;
