@@ -108,8 +108,8 @@ int main(void)
       /* 增大占空比 */
       target_speed += 100;
       
-      if(target_speed > 3500)
-        target_speed = 3500;
+      if(target_speed > 3000)
+        target_speed = 3000;
       
       set_pid_target(target_speed);
       
