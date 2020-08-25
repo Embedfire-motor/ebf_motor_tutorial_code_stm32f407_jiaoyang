@@ -61,7 +61,7 @@ static void MX_TIM1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
-static void sd_gpio_config(void);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -106,7 +106,7 @@ int main(void)
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
-  sd_gpio_config();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -499,9 +499,19 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOG_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(SD_GPIO_Port, SD_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : SD_Pin */
+  GPIO_InitStruct.Pin = SD_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(SD_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : Start_Stop_Pin */
   GPIO_InitStruct.Pin = Start_Stop_Pin;
@@ -512,31 +522,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-/**
-  * @brief SD 控制引脚初始化，并默认使能
-  * @param None
-  * @retval None
-  */
-static void sd_gpio_config(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct;
-  
-  /* 定时器通道功能引脚端口时钟使能 */
-	__HAL_RCC_GPIOG_CLK_ENABLE();
-  
-  /* 引脚IO初始化 */
-	/*设置输出类型*/
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	/*设置引脚速率 */ 
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	/*选择要控制的GPIO引脚*/	
-	GPIO_InitStruct.Pin = M1_SD_Pin;
-  
-	/*调用库函数，使用上面配置的GPIO_InitStructure初始化GPIO*/
-  HAL_GPIO_Init(M1_SD_GPIO_Port, &GPIO_InitStruct);
-  
-  HAL_GPIO_WritePin(M1_SD_GPIO_Port, M1_SD_Pin, GPIO_PIN_SET);      // 高电平打开-高电平使能 
-}
+
 /* USER CODE END 4 */
 
 /**

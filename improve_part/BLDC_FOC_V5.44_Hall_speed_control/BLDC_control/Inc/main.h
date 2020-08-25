@@ -64,6 +64,8 @@ void Error_Handler(void);
 #define UART_RX_GPIO_Port GPIOB
 #define UART_TX_Pin GPIO_PIN_6
 #define UART_TX_GPIO_Port GPIOB
+#define SD_Pin GPIO_PIN_12
+#define SD_GPIO_Port GPIOG
 #define M1_PWM_WH_Pin GPIO_PIN_10
 #define M1_PWM_WH_GPIO_Port GPIOA
 #define M1_PWM_VH_Pin GPIO_PIN_9
@@ -96,8 +98,7 @@ void Error_Handler(void);
 #define M1_PWM_WL_Pin GPIO_PIN_15
 #define M1_PWM_WL_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-#define M1_SD_Pin GPIO_PIN_12
-#define M1_SD_GPIO_Port GPIOG
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
