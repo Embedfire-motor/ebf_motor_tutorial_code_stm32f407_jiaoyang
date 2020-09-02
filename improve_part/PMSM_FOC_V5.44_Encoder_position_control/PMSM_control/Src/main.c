@@ -78,7 +78,7 @@ static void MX_NVIC_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  __IO uint32_t angle = 0;
+  
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -109,7 +109,7 @@ int main(void)
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
-//  MC_ProgramPositionCommandMotor1(angle, 600);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -119,11 +119,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    __IO uint32_t angle = 0;
+
     MC_ProgramPositionCommandMotor1(angle, 1);
     
     angle += 1.570796;
-//    if (angle > 3.1415926 * 2)
-//      angle = 0;
     
     HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
     HAL_Delay(2000);

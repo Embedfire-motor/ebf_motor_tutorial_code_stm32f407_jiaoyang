@@ -10,7 +10,7 @@
 #define ADC_VBUS_IRQ                    ADC_IRQn
 #define ADC_VBUS_IRQHandler             ADC_IRQHandler
 
-#define VREF                            3.3f     // 参考电压，理论上是3.3，可通过实际测量得3.258
+#define VREF                            3.3f     // 参考电压，理论上是3.3
 #define ADC_NUM_MAX                     128      // ADC 转换结果缓冲区最大值
 
 #define GET_ADC_VDC_VAL(val)            ((float)val/4096.0f*VREF)          // 得到电压值

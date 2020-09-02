@@ -34,11 +34,11 @@
 #define MAX_APPLICATION_SPEED_RPM       3000 /*!< rpm, mechanical */
 #define MIN_APPLICATION_SPEED_RPM       0 /*!< rpm, mechanical,
                                                            absolute value */
-#define MEAS_ERRORS_BEFORE_FAULTS       10 /*!< Number of speed
+#define MEAS_ERRORS_BEFORE_FAULTS       100 /*!< Number of speed
                                                              measurement errors before
                                                              main sensor goes in fault */
 /*** Encoder **********************/
-#define ENC_MEAS_ERRORS_BEFORE_FAULTS   10 /*!< Number of failed
+#define ENC_MEAS_ERRORS_BEFORE_FAULTS   100 /*!< Number of failed
                                                         derived class specific speed
                                                         measurements before main sensor
                                                         goes in fault */
@@ -58,7 +58,7 @@
 /**************************    DRIVE SETTINGS SECTION   **********************/
 /* PWM generation and current reading */
 
-#define PWM_FREQUENCY   16000
+#define PWM_FREQUENCY   30000
 #define PWM_FREQ_SCALING 1
 
 #define LOW_SIDE_SIGNALS_ENABLING        LS_PWM_TIMER
@@ -70,33 +70,33 @@
 #define REGULATION_EXECUTION_RATE     1    /*!< FOC execution rate in
                                                            number of PWM cycles */
 /* Gains values for torque and flux control loops */
-#define PID_TORQUE_KP_DEFAULT         2077
-#define PID_TORQUE_KI_DEFAULT         1795
+#define PID_TORQUE_KP_DEFAULT         3661
+#define PID_TORQUE_KI_DEFAULT         441
 #define PID_TORQUE_KD_DEFAULT         100
-#define PID_FLUX_KP_DEFAULT           2077
-#define PID_FLUX_KI_DEFAULT           1795
+#define PID_FLUX_KP_DEFAULT           3661
+#define PID_FLUX_KI_DEFAULT           441
 #define PID_FLUX_KD_DEFAULT           100
 
 /* Torque/Flux control loop gains dividers*/
-#define TF_KPDIV                      2048
+#define TF_KPDIV                      8192
 #define TF_KIDIV                      16384
 #define TF_KDDIV                      8192
-#define TF_KPDIV_LOG                  LOG2(2048)
+#define TF_KPDIV_LOG                  LOG2(8192)
 #define TF_KIDIV_LOG                  LOG2(16384)
 #define TF_KDDIV_LOG                  LOG2(8192)
 #define TFDIFFERENTIAL_TERM_ENABLING  DISABLE
 
-#define POSITION_LOOP_FREQUENCY_HZ    500 /*!<Execution rate of position control regulation loop (Hz) */
+#define POSITION_LOOP_FREQUENCY_HZ    2000 /*!<Execution rate of position control regulation loop (Hz) */
 
-#define PID_SPEED_KP_DEFAULT          100/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
-#define PID_SPEED_KI_DEFAULT          50/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
+#define PID_SPEED_KP_DEFAULT          2190/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
+#define PID_SPEED_KI_DEFAULT          730/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
 #define PID_SPEED_KD_DEFAULT          0/(SPEED_UNIT/10) /* Workbench compute the gain for 01Hz unit*/
 /* Speed PID parameter dividers */
-#define SP_KPDIV                      16
-#define SP_KIDIV                      256
+#define SP_KPDIV                      256
+#define SP_KIDIV                      16384
 #define SP_KDDIV                      16
-#define SP_KPDIV_LOG                  LOG2(16)
-#define SP_KIDIV_LOG                  LOG2(256)
+#define SP_KPDIV_LOG                  LOG2(256)
+#define SP_KIDIV_LOG                  LOG2(16384)
 #define SP_KDDIV_LOG                  LOG2(16)
 
 /* USER CODE BEGIN PID_SPEED_INTEGRAL_INIT_DIV */
@@ -114,9 +114,9 @@
 #define DEFAULT_TORQUE_COMPONENT       0
 #define DEFAULT_FLUX_COMPONENT         0
 
-#define PID_POSITION_KP_GAIN			100
-#define PID_POSITION_KI_GAIN			7
-#define PID_POSITION_KD_GAIN			0
+#define PID_POSITION_KP_GAIN			10000
+#define PID_POSITION_KI_GAIN			1000
+#define PID_POSITION_KD_GAIN			1000
 #define PID_POSITION_KPDIV				1024
 #define PID_POSITION_KIDIV				32768
 #define PID_POSITION_KDDIV				16
