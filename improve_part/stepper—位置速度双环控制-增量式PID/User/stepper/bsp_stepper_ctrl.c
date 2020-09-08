@@ -18,6 +18,7 @@
 
 #include "./stepper/bsp_stepper_ctrl.h"
 #include "./pid/bsp_pid.h"
+#include "./protocol/protocol.h"
 
 extern _pid speed_pid,move_pid;
 extern __IO uint16_t OC_Pulse_num;     //比较输出的计数值
@@ -120,7 +121,7 @@ void Stepper_Ctrl(void)
 			
 #if defined(PID_ASSISTANT_EN)
 			int32_t temp = cont_val;
-			set_computer_value(SEED_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
+			set_computer_value(SEND_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
 #endif
 			/* 设定速度的目标值 */
 			set_pid_target(&speed_pid, cont_val);    
@@ -139,8 +140,8 @@ void Stepper_Ctrl(void)
 #if PID_ASSISTANT_EN
      int Temp_ch2 = capture_per_unit;    // 上位机需要整数参数，转换一下
 		 int Temp_ch1 = capture_count;
-     set_computer_value(SEED_FACT_CMD, CURVES_CH2, &Temp_ch2, 1);  // 给通道 1 发送实际值     // 给通道 2 发送实际值
-     set_computer_value(SEED_FACT_CMD, CURVES_CH1, &Temp_ch1, 1);     // 给通道 1 发送实际值
+     set_computer_value(SEND_FACT_CMD, CURVES_CH2, &Temp_ch2, 1);  // 给通道 1 发送实际值     // 给通道 2 发送实际值
+     set_computer_value(SEND_FACT_CMD, CURVES_CH1, &Temp_ch1, 1);     // 给通道 1 发送实际值
 
 #else
      printf("实际值：%d，目标值：%.0f\r\n", capture_per_unit, pid.target_val);// 打印实际值和目标值 

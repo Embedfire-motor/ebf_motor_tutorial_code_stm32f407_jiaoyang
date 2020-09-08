@@ -18,6 +18,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "./pid/bsp_pid.h"
 #include "math.h"
+#include "./protocol/protocol.h"
 
 /* 定义全局变量 */
 _pid speed_pid,move_pid;
@@ -43,7 +44,7 @@ void PID_param_init()
 		
   #if PID_ASSISTANT_EN
     float move_pid_temp[3] = {move_pid.Kp, move_pid.Ki, move_pid.Kd};
-    set_computer_value(SEED_P_I_D_CMD, CURVES_CH1, move_pid_temp, 3);// 给通道 1 发送 P I D 值
+    set_computer_value(SEND_P_I_D_CMD, CURVES_CH1, move_pid_temp, 3);// 给通道 1 发送 P I D 值
   #endif
 	HAL_Delay(10);
 	/* 初始化速度环PID参数 */
@@ -58,7 +59,7 @@ void PID_param_init()
 
   #if PID_ASSISTANT_EN
     float speed_pid_temp[3] = {speed_pid.Kp, speed_pid.Ki, speed_pid.Kd};
-    set_computer_value(SEED_P_I_D_CMD, CURVES_CH2, speed_pid_temp, 3);// 给通道 1 发送 P I D 值
+    set_computer_value(SEND_P_I_D_CMD, CURVES_CH2, speed_pid_temp, 3);// 给通道 1 发送 P I D 值
   #endif
 }
 

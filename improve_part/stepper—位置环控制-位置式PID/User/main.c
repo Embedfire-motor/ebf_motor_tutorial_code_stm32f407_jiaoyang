@@ -27,6 +27,7 @@
 #include "./pid/bsp_pid.h"
 #include "./tim/bsp_basic_tim.h"
 #include "./stepper/bsp_stepper_ctrl.h"
+#include "./protocol/protocol.h"
 
 extern _pid pid;
 extern int pid_status;
@@ -40,6 +41,8 @@ int main(void)
 {
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
+  /* 协议初始化 */
+  protocol_init();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
 	DEBUG_USART_Config();
 	printf("欢迎使用野火 电机开发板 步进电机 位置闭环控制 例程\r\n");
@@ -67,18 +70,21 @@ int main(void)
     
 #if PID_ASSISTANT_EN
   int Temp = pid.target_val;    // 上位机需要整数参数，转换一下
-  set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
-  set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &Temp, 1);// 给通道 1 发送目标值
+  set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
+  set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &Temp, 1);// 给通道 1 发送目标值
 #endif
 
 	while(1)
 	{
+    /* 接收数据处理 */
+    receiving_process();
+    
     /* 扫描KEY1，启动电机 */
     if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
 		{
     #if PID_ASSISTANT_EN
       Set_Stepper_Start();
-      set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
+      set_computer_value(SEND_START_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
     #else
       Set_Stepper_Start();
     #endif
@@ -88,7 +94,7 @@ int main(void)
 		{
     #if PID_ASSISTANT_EN
       Set_Stepper_Stop();
-      set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
+      set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
     #else
       Set_Stepper_Stop();     
     #endif
@@ -101,7 +107,7 @@ int main(void)
       
     #if PID_ASSISTANT_EN
       int temp = pid.target_val;
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送目标值
     #endif
 		}
     /* 扫描KEY4，减小目标位置 */
@@ -112,7 +118,7 @@ int main(void)
       
     #if PID_ASSISTANT_EN
       int temp = pid.target_val;
-      set_computer_value(SEED_TARGET_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送目标值
+      set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &temp, 1);// 给通道 1 发送目标值
     #endif
 		}
 	}

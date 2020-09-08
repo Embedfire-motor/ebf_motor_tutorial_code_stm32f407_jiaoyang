@@ -17,6 +17,7 @@
   
 #include "./tim/bsp_basic_tim.h"
 #include "./usart/bsp_debug_usart.h"
+#include "./protocol/protocol.h"
 
 TIM_HandleTypeDef TIM_PIDHandle;
  /**
@@ -82,7 +83,7 @@ void TIMx_Configuration(void)
   
 #if PID_ASSISTANT_EN
   uint32_t temp = GET_BASIC_TIM_PERIOD();     // 计算周期，单位ms 
-  set_computer_value(SEED_PERIOD_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
+  set_computer_value(SEND_PERIOD_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
 #endif
 
 }
