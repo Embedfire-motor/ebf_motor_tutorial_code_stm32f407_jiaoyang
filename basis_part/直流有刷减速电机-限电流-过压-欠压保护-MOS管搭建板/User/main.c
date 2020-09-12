@@ -26,7 +26,7 @@
 #include "./adc/bsp_adc.h"
 
 /* 宏定义 */
-#define CURR_MAX    200    // 最大电流（单位mA）
+#define CURR_MAX    500    // 最大电流（单位mA）
 
 /**
   * @brief  主函数

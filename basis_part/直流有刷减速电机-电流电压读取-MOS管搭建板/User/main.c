@@ -45,7 +45,7 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t ChannelPulse = PWM_MAX_PERIOD_COUNT*0.5;
+  __IO uint16_t ChannelPulse = PWM_MAX_PERIOD_COUNT*0.1;
   uint8_t i = 0;
   uint8_t flag = 0;
 
@@ -110,7 +110,7 @@ int main(void)
       else
         ChannelPulse -= PWM_MAX_PERIOD_COUNT/10;
       
-      set_motor_speed(ChannelPulse);
+      set_motor_speed(PWM_MAX_PERIOD_COUNT);
     }
     
     /* 扫描KEY5 */

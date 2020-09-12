@@ -7,8 +7,8 @@ __IO uint16_t ADC_ConvertedValue;
 DMA_HandleTypeDef DMA_Init_Handle;
 ADC_HandleTypeDef ADC_Handle;
 
-static int16_t adc_buff[ADC_NUM_MAX];
-static int16_t vbus_adc_mean = 0;    // 电源电压 ACD 采样结果平均值
+static uint16_t adc_buff[ADC_NUM_MAX];
+static uint16_t vbus_adc_mean = 0;    // 电源电压 ACD 采样结果平均值
 static uint32_t adc_mean_sum = 0;        // 平均值累加
 static uint32_t adc_mean_count = 0;      // 累加计数
 
@@ -174,14 +174,14 @@ static uint16_t flag_num = 0;
   */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-  int32_t adc_mean = 0;
+  uint32_t adc_mean = 0;
   
   HAL_ADC_Stop_DMA(hadc);       // 停止 ADC 采样，处理完一次数据在继续采样
   
   /* 计算电流通道采样的平均值 */
   for(uint32_t count = 0; count < ADC_NUM_MAX; count+=2)
   {
-    adc_mean += (int32_t)adc_buff[count];
+    adc_mean += (uint32_t)adc_buff[count];
   }
   
   adc_mean_sum += adc_mean / (ADC_NUM_MAX / 2);    // 累加电压
@@ -194,7 +194,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
   /* 计算电压通道采样的平均值 */
   for(uint32_t count = 1; count < ADC_NUM_MAX; count+=2)
   {
-    adc_mean += (int32_t)adc_buff[count];
+    adc_mean += (uint32_t)adc_buff[count];
   }
   
   vbus_adc_mean = adc_mean / (ADC_NUM_MAX / 2);    // 保存平均值
