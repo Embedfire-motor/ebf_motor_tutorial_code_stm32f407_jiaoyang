@@ -44,8 +44,6 @@
   #define ENCODER_TOTAL_RESOLUTION             (ENCODER_RESOLUTION * 4)  /* 4倍频后的总分辨率 */
 #endif
 
-/* 减速电机减速比 */
-#define REDUCTION_RATIO                        34
 
 extern __IO int16_t Encoder_Overflow_Count;
 extern TIM_HandleTypeDef TIM_EncoderHandle;

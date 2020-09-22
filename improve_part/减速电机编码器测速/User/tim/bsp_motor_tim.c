@@ -75,10 +75,10 @@ static void TIM_PWMOUTPUT_Config(void)
 	
   TIM_TimeBaseStructure.Instance = PWM_TIM;
   /* 累计 TIM_Period个后产生一个更新或者中断*/		
-  //当定时器从0计数到PWM_PERIOD_COUNT，即为PWM_PERIOD_COUNT+1次，为一个定时周期
+  //当定时器从0计数到PWM_PERIOD_COUNT-1，即为PWM_PERIOD_COUNT次，为一个定时周期
 	TIM_TimeBaseStructure.Init.Period = PWM_PERIOD_COUNT - 1;
-	// 通用控制定时器时钟源TIMxCLK = HCLK/2=84MHz 
-	// 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1)
+	// 高级定时器时钟源TIMxCLK = HCLK=168MHz 
+	// 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT)
   TIM_TimeBaseStructure.Init.Prescaler = PWM_PRESCALER_COUNT - 1;	
 	
 	/*计数方式*/

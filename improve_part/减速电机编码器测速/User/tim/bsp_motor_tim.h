@@ -12,11 +12,11 @@
 #define PWM_CHANNEL_2                   TIM_CHANNEL_2
 
 /* 累计 TIM_Period个后产生一个更新或者中断*/		
-/* 当定时器从0计数到PWM_PERIOD_COUNT，即为PWM_PERIOD_COUNT+1次，为一个定时周期 */
+/* 当定时器从0计数到PWM_PERIOD_COUNT-1，即为PWM_PERIOD_COUNT次，为一个定时周期 */
 #define PWM_PERIOD_COUNT     (1000)
 
 /* 通用控制定时器时钟源TIMxCLK = HCLK=168MHz */
-/* 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT+1) */
+/* 设定定时器频率为=TIMxCLK/(PWM_PRESCALER_COUNT) */
 #define PWM_PRESCALER_COUNT     (9)
 
 /* 最大比较值 */
