@@ -91,7 +91,7 @@ static void TIM_PWMOUTPUT_Config(void)
   /* 累计 TIM_Period个后产生一个更新或者中断*/    
   //当定时器从0计数到10000，即为10000次，为一个定时周期
   TIM_TimeBaseStructure.Init.Period = tim_per;
-  // 通用控制定时器时钟源TIMxCLK = HCLK/2=84MHz 
+  // 高级定时器时钟源TIMxCLK = HCLK=168MHz 
   // 设定定时器频率为=TIMxCLK/(TIM_Prescaler+1)=1MHz
   TIM_TimeBaseStructure.Init.Prescaler = 168-1; 
 

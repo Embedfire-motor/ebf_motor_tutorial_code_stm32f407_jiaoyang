@@ -21,8 +21,8 @@
   * @brief  步进电机旋转
   * @param  tim         方波周期 单位MS 周期越短频率越高，转速越快 细分为1时最少10ms
   * @param  angle       需要转动的角度值
-  * @param  dir       选择正反转(取值范围：0,1) 
   * @param  subdivide   细分值
+  * @param  dir         选择正反转(取值范围：0,1) 
   * @note   无
   * @retval 无
   */

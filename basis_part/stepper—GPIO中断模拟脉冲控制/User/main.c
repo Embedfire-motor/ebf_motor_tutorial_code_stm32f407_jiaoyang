@@ -62,8 +62,8 @@ int main(void)
     }
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
     {
-      // LED1 取反    
-      LED1_TOGGLE;
+      // LED3 取反    
+      LED3_TOGGLE;
 
       /*改变使能*/
       en_val=(++j % 2) ? CW : CCW;
