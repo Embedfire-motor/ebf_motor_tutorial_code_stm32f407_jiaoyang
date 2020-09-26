@@ -3,8 +3,8 @@
   * @file    main.c
   * @author  fire
   * @version V1.0
-  * @date    2019-xx-xx
-  * @brief   PWM控制角度
+  * @date    2020-xx-xx
+  * @brief   stepper-速度环控制实现-增量式PID
   ******************************************************************************
   * @attention
   *
@@ -42,8 +42,8 @@ int main(void)
 	SystemClock_Config();
 	/*初始化USART 配置模式为 115200 8-N-1，中断接收*/
 	DEBUG_USART_Config();
-	printf("欢迎使用野火 电机开发板 步进电机 速度闭环控制 例程\r\n");
-	printf("按下按键3启动和停止电机\r\n");	
+	printf("欢迎使用野火 电机开发板 步进电机速度闭环控制 例程\r\n");
+	printf("按下按键1启动电机、按键2停止、按键3增加目标值、按键4减少目标值\r\n");	
   /* 初始化时间戳 */
   HAL_InitTick(5);
 	/*按键中断初始化*/
@@ -60,7 +60,6 @@ int main(void)
   Set_Stepper_Stop();
   /* PID算法参数初始化 */
   PID_param_init();
-//  MOTOR_DIR(CW);
 
   /* 目标速度转换为编码器的脉冲数作为pid目标值 */
   pid.target_val = TARGET_SPEED * ENCODER_TOTAL_RESOLUTION / SAMPLING_PERIOD;
@@ -76,21 +75,17 @@ int main(void)
     /* 扫描KEY1，启动电机 */
     if( Key_Scan(KEY1_GPIO_PORT,KEY1_PIN) == KEY_ON  )
 		{
+      Set_Stepper_Start();			
     #if PID_ASSISTANT_EN
-      Set_Stepper_Start();
       set_computer_value(SEED_START_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
-    #else
-      Set_Stepper_Start();
     #endif
 		}
     /* 扫描KEY2，停止电机 */
     if( Key_Scan(KEY2_GPIO_PORT,KEY2_PIN) == KEY_ON  )
 		{
+      Set_Stepper_Stop();			
     #if PID_ASSISTANT_EN
-      Set_Stepper_Stop();
-      set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态
-    #else
-      Set_Stepper_Stop();     
+      set_computer_value(SEED_STOP_CMD, CURVES_CH1, NULL, 0);// 同步上位机的启动按钮状态   
     #endif
 		}
     /* 扫描KEY3，增大目标速度 */
@@ -141,6 +136,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       encoder_overflow_count++;
   }
 }
+
 
 /**
   * @brief  System Clock Configuration

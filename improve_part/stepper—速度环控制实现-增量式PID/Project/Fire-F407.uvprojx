@@ -55,7 +55,7 @@
           <CreateLib>0</CreateLib>
           <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
-          <BrowseInformation>0</BrowseInformation>
+          <BrowseInformation>1</BrowseInformation>
           <ListingPath>..\Listings\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
@@ -755,6 +755,16 @@
               <FilePath>..\User\stm32f4xx_it.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\key\bsp_key.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\led\bsp_led.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_debug_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\usart\bsp_debug_usart.c</FilePath>
@@ -763,16 +773,6 @@
               <FileName>bsp_stepper_init.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\stepper\bsp_stepper_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_stepper_ctrl.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\stepper\bsp_stepper_ctrl.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\led\bsp_led.c</FilePath>
             </File>
             <File>
               <FileName>bsp_encoder.c</FileName>
@@ -785,19 +785,14 @@
               <FilePath>..\User\pid\bsp_pid.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_stepper_ctrl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\stepper\bsp_stepper_ctrl.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_basic_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\tim\bsp_basic_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_general_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\tim\bsp_general_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\key\bsp_key.c</FilePath>
             </File>
           </Files>
         </Group>

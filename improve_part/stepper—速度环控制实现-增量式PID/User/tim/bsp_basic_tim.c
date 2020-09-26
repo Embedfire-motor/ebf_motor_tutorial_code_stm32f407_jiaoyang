@@ -52,24 +52,23 @@ static void TIM_Mode_Config(void)
 	/* 累计 TIM_Period个后产生一个更新或者中断*/		
 	//当定时器从0计数到BASIC_PERIOD_COUNT，即为BASIC_PERIOD_COUNT+1次，为一个定时周期
 	TIM_PIDHandle.Init.Period = BASIC_PERIOD_COUNT - 1;
-
 	//定时器时钟源TIMxCLK = 2 * PCLK1  
-	//				PCLK1 = HCLK / 4 
-	//				=> TIMxCLK=HCLK/2=SystemCoreClock/2=84MHz
-	// 设定定时器频率为=TIMxCLK/(Prescaler+1)=10000Hz
-	TIM_PIDHandle.Init.Prescaler = BASIC_PRESCALER_COUNT - 1;	
-  TIM_PIDHandle.Init.CounterMode = TIM_COUNTERMODE_UP;           // 向上计数
-  TIM_PIDHandle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;     // 时钟分频
-
+	//				      PCLK1 = HCLK/4 
+	//	  => TIMxCLK=HCLK/2=SystemCoreClock/2=84MHz
+	// 设定定时器频率为=TIMxCLK/(Prescaler+1)=10KHz
+	TIM_PIDHandle.Init.Prescaler = BASIC_PRESCALER_COUNT - 1;
+	// 向上计数
+  TIM_PIDHandle.Init.CounterMode = TIM_COUNTERMODE_UP;          
+	// 时钟分频
+  TIM_PIDHandle.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;     
 	// 初始化定时器TIMx, x[2,3,4,5]
 	HAL_TIM_Base_Init(&TIM_PIDHandle);
-
 	// 开启定时器更新中断
 	HAL_TIM_Base_Start_IT(&TIM_PIDHandle);	
 }
 
 /**
-  * @brief  初始化基本定时器定时，1ms产生一次中断
+  * @brief  初始化基本定时器定时，20ms产生一次中断
   * @param  无
   * @retval 无
   */
@@ -80,8 +79,8 @@ void TIMx_Configuration(void)
 	TIM_Mode_Config();
 
 #if PID_ASSISTANT_EN
-  uint32_t temp = GET_BASIC_TIM_PERIOD();     // 计算周期，单位ms 
-  set_computer_value(SEED_PERIOD_CMD, CURVES_CH1, &temp, 1);     // 给通道 1 发送目标值
+  uint32_t temp = GET_BASIC_TIM_PERIOD();     //计算周期，单位ms 
+  set_computer_value(SEED_PERIOD_CMD, CURVES_CH1, &temp, 1);     //给通道1发送目标值
 #endif
 
 }
