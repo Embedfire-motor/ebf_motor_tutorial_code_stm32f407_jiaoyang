@@ -41,6 +41,10 @@
 #include "./led/bsp_led.h"
 #include "./tim/bsp_motor_tim.h"
 #include "./usart/bsp_debug_usart.h"
+
+//接收数组指针
+extern unsigned char UART_RxPtr;
+
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
@@ -175,16 +179,68 @@ void SysTick_Handler(void)
 {
 }*/
 
-void MOTOR1_HALL_TIM_IRQHandler(void)
+// 串口中断服务函数
+
+void DEBUG_USART_IRQHandler(void)
 {
-  HAL_TIM_IRQHandler(&motor1_htimx_hall);
+  __IO uint8_t data;
+  
+  if(__HAL_UART_GET_IT_SOURCE(&UartHandle, UART_IT_RXNE) != RESET)
+	{
+    data = UartHandle.Instance->DR;
+    
+    //如果为退格键
+    if(data == '\b')
+    {
+      //如果指针不在数组的开始位置
+      if(UART_RxPtr)
+      {
+        Usart_SendByte('\b');
+        Usart_SendByte(' ');
+        Usart_SendByte('\b');
+        UART_RxPtr--;
+        UART_RxBuffer[UART_RxPtr]=0x00;
+      }
+    }
+    //如果不是退格键
+    else
+    {
+      //将数据填入数组UART_RxBuffer
+      //并且将后面的一个元素清零如果数组满了则写入最后一个元素为止
+      if(UART_RxPtr < (UART_RX_BUFFER_SIZE - 1))
+      {
+        UART_RxBuffer[UART_RxPtr] = data;
+        UART_RxBuffer[UART_RxPtr + 1]=0x00;
+        UART_RxPtr++;
+      }
+      else
+      {
+        UART_RxBuffer[UART_RxPtr - 1] = data;
+        Usart_SendByte('\b');
+      }
+      //如果为回车键，则开始处理串口数据
+      if(data == 13 || data == 10)
+      {
+        receive_cmd = 1;
+      }
+      else
+      {
+        Usart_SendByte(data);
+      }
+    }
+    
+    __HAL_UART_CLEAR_FLAG(&UartHandle, UART_IT_RXNE);
+  }
+  
+//  HAL_UART_Receive_IT(&UartHandle, &data, sizeof(data));
+  
+  HAL_UART_IRQHandler(&UartHandle);
 }
 
-void MOTOR2_HALL_TIM_IRQHandler(void)
+void HALL_TIM_IRQHandler(void)
 {
-  HAL_TIM_IRQHandler(&motor2_htimx_hall);
+  HAL_TIM_IRQHandler(&htimx_hall);
 }
-
 
 /**
   * @}

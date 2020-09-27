@@ -4,7 +4,7 @@
   * @author  fire
   * @version V1.0
   * @date    2020-xx-xx
-  * @brief   直流无刷电机控制
+  * @brief   直流无刷电机-串口控制
   ******************************************************************************
   * @attention
   *
@@ -23,6 +23,13 @@
 #include ".\bldcm_control\bsp_bldcm_control.h"
 #include "./usart/bsp_debug_usart.h"
 
+int pulse_num=0;
+	
+void Delay(__IO uint32_t nCount)	 //简单的延时函数
+{
+	for(; nCount != 0; nCount--);
+}	
+	
 /**
   * @brief  主函数
   * @param  无
@@ -30,8 +37,7 @@
   */
 int main(void) 
 {
-  __IO uint16_t ChannelPulse = PWM_MAX_PERIOD_COUNT/10;
-  uint8_t i = 0;
+  __IO uint16_t ChannelPulse = PWM_PERIOD_COUNT/10;
   
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();
@@ -52,50 +58,8 @@ int main(void)
 	
 	while(1)
 	{
-    /* 扫描KEY1 */
-    if( Key_Scan(KEY1_GPIO_PORT, KEY1_PIN) == KEY_ON)
-    {
-      /* 使能电机 */
-      set_bldcm_speed(ChannelPulse);
-      set_bldcm_enable();
-    }
-    
-    /* 扫描KEY2 */
-    if( Key_Scan(KEY2_GPIO_PORT, KEY2_PIN) == KEY_ON)
-    {
-      /* 停止电机 */
-      set_bldcm_disable();
-    }
-    
-    /* 扫描KEY3 */
-    if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
-    {
-      /* 增大占空比 */
-      ChannelPulse += PWM_MAX_PERIOD_COUNT/10;
-      
-      if(ChannelPulse > PWM_MAX_PERIOD_COUNT)
-        ChannelPulse = PWM_MAX_PERIOD_COUNT;
-      
-      set_bldcm_speed(ChannelPulse);
-    }
-    
-    /* 扫描KEY4 */
-    if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
-    {
-      if(ChannelPulse < PWM_MAX_PERIOD_COUNT/10)
-        ChannelPulse = 0;
-      else
-        ChannelPulse -= PWM_MAX_PERIOD_COUNT/10;
-
-      set_bldcm_speed(ChannelPulse);
-    }
-    
-    /* 扫描KEY5 */
-    if( Key_Scan(KEY5_GPIO_PORT, KEY5_PIN) == KEY_ON)
-    {
-      /* 转换方向 */
-      set_bldcm_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);
-    }
+    /* 处理数据 */
+    deal_serial_data();
 	}
 }
 
