@@ -98,7 +98,9 @@ float PID_realize(float temp_val)
   pid.err=pid.target_val-pid.actual_val;
 
 	/*PID算法实现*/
-	float increment_val = pid.Kp*(pid.err - pid.err_next) + pid.Ki*pid.err + pid.Kd*(pid.err - 2 * pid.err_next + pid.err_last);
+	float increment_val = pid.Kp*(pid.err - pid.err_next) 
+		                  + pid.Ki*pid.err 
+	                    + pid.Kd*(pid.err - 2 * pid.err_next + pid.err_last);
 	/*传递误差*/
 	pid.err_last = pid.err_next;
 	pid.err_next = pid.err;

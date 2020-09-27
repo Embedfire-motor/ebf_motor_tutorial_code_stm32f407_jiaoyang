@@ -87,27 +87,32 @@ void Stepper_Speed_Ctrl(void)
   /* 经过pid计算后的期望值 */
   static __IO float cont_val = 0.0f;
   
-  __IO float timer_delay = 0.0f;
+  __IO float abs_cont_val = 0.0f;
   
   /* 当电机运动时才启动pid计算 */
   if((sys_status.MSD_ENA == 1) && (sys_status.stepper_running == 1))
   {
-    /* 计算单个采样时间内的编码器脉冲数 */
+    /* 第一步 --> 计算单个采样时间内的编码器脉冲数 */
+		// 当前脉冲总计数值 = 当前定时器的计数值 + （定时器的溢出次数 * 定时器的重装载值）
     capture_count =__HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (encoder_overflow_count * ENCODER_TIM_PERIOD);
-    capture_per_unit = capture_count - last_count;
-    last_count = capture_count;
+		// 单位时间的脉冲数 = 当前的脉冲总计数值 - 上一次的脉冲总计数值    
+		capture_per_unit = capture_count - last_count;
+		// 将当前当前的脉冲总计数值 赋值给 上一次的脉冲总计数值这个变量    
+		last_count = capture_count;
     
-    /* 单位时间内的编码器脉冲数作为实际值传入pid控制器 */
+    /* 第二步 --> 将单位时间的脉冲数作为实际值传入pid控制器
+                  并将输出值与历史期望值进行累加得到当前期望值	*/
     cont_val += PID_realize((float)capture_per_unit);// 进行 PID 计算
     
-    /* 判断速度方向 */
+    /* 第三步 --> 用当前期望值期望值来调节步进电机 */
+		// 判断当前期望值的速度方向
     cont_val > 0 ? (MOTOR_DIR(CW)) : (MOTOR_DIR(CCW));
     
-    /* 计算得出的期望值取绝对值 */
-    timer_delay = fabsf(cont_val);
+    // 由于比较计数器的增量不能为负值，对当前期望值取绝对值 */
+    abs_cont_val = fabsf(cont_val);
     
-    /* 计算比较计数器的值 */
-    OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (timer_delay * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
+    // 比较计数器的增量 =  (比较计时器的频率/(当前期望值的绝对值 * 步进电机与编码器的脉冲比 * PID采样频率)) / 2
+    OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (abs_cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
     
     #if PID_ASSISTANT_EN
      int Temp = capture_per_unit;    // 上位机需要整数参数，转换一下
@@ -119,7 +124,6 @@ void Stepper_Speed_Ctrl(void)
   else
   {
     /*停机状态所有参数清零*/
-//    OC_Pulse_num = 0xFFFF;
     last_count = 0;
     cont_val = 0;
     pid.actual_val = 0;
