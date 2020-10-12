@@ -105,22 +105,21 @@ void Stepper_Speed_Ctrl(void)
   /* 当电机运动时才启动pid计算 */
   if((sys_status.MSD_ENA == 1) && (sys_status.stepper_running == 1))
   {
-    /* 计算单个采样时间内的编码器脉冲数 */
+    /* 第一步 --> 计算当前编码器脉冲总数 */
+		// 当前脉冲总计数值 = 当前定时器的计数值 + （定时器的溢出次数 * 定时器的重装载值）
     capture_count =__HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (encoder_overflow_count * ENCODER_TIM_PERIOD);
     
-    /* 单位时间内的编码器脉冲数作为实际值传入pid控制器 */
-    cont_val += PID_realize((float)capture_count);// 进行 PID 计算
+    /* 第二步 --> 将当前编码器脉冲总数作为实际值传入pid控制器 */		
+    cont_val += PID_realize((float)capture_count);
     
-    /* 判断速度方向 */
+    /* 第三步 --> 用PID控制器的输出值(期望值)来调节步进电机 */
+		// 判断PID控制器输出值的方向
     cont_val > 0 ? (MOTOR_DIR(CW)) : (MOTOR_DIR(CCW));
-    
-    /* 计算得出的期望值取绝对值 */
+    // 由于比较计数器的增量不能为负值，对计算得出的期望值取绝对值 */
     timer_delay = fabsf(cont_val);
-    
-		 /* 限制最大启动速度 */
+    /* 限制最大启动速度 ，防止堵转*/
     timer_delay >= SPEED_LIMIT ? (timer_delay = SPEED_LIMIT) : timer_delay;
-    
-    /* 计算比较计数器的值 */
+    // 比较计数器的增量 =  (比较计时器的频率/(期望值的绝对值 * 步进电机与编码器的脉冲比 )) / 2
     OC_Pulse_num = ((uint16_t)(T1_FREQ / ((float)timer_delay * PULSE_RATIO))) >> 1;
  
     #if PID_ASSISTANT_EN
