@@ -754,9 +754,24 @@
               <FilePath>..\User\stm32f4xx_it.c</FilePath>
             </File>
             <File>
+              <FileName>bsp_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\key\bsp_key.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\led\bsp_led.c</FilePath>
+            </File>
+            <File>
               <FileName>bsp_debug_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\usart\bsp_debug_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\protocol\protocol.c</FilePath>
             </File>
             <File>
               <FileName>bsp_stepper_init.c</FileName>
@@ -767,11 +782,6 @@
               <FileName>bsp_stepper_ctrl.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\stepper\bsp_stepper_ctrl.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\led\bsp_led.c</FilePath>
             </File>
             <File>
               <FileName>bsp_encoder.c</FileName>
@@ -787,16 +797,6 @@
               <FileName>bsp_basic_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\tim\bsp_basic_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_key.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\key\bsp_key.c</FilePath>
-            </File>
-            <File>
-              <FileName>protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\User\protocol\protocol.c</FilePath>
             </File>
           </Files>
         </Group>

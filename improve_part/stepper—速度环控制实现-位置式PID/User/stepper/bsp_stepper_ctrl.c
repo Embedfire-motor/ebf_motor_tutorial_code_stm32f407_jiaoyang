@@ -68,7 +68,7 @@ void Set_Stepper_Start(void)
   MSD_ENA(ON);
   /*使能比较通道输出*/
 	TIM_CCxChannelCmd(MOTOR_PUL_TIM,MOTOR_PUL_CHANNEL_x,TIM_CCx_ENABLE);
-//  sys_status.MSD_ENA = 1;
+  sys_status.MSD_ENA = 1;
   sys_status.stepper_running = 1;
 }
 
