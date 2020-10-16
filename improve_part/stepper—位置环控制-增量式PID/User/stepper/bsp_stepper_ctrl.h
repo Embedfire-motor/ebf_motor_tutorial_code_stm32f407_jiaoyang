@@ -17,7 +17,7 @@
 
 #define PULSE_RATIO       ((float)(SPR/ENCODER_TOTAL_RESOLUTION))//步进电机单圈脉冲数与编码器单圈脉冲的比值
 #define TARGET_DISP      2                   //步进电机运动时的目标圈数，单位：转
-#define SPEED_LIMIT      5000                //运行速度限制
+#define SPEED_LIMIT      10000                //运行速度限制
 #define SAMPLING_PERIOD  50                  //采样频率，单位Hz
 
 typedef struct {

@@ -91,8 +91,8 @@ int main(void)
     /* 扫描KEY3，增大目标速度 */
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
 		{
-      /* 目标速度增加48，对应电机转速增加1 */
-      pid.target_val += 48;
+      /* 目标速度增加80，对应电机转速增加1转/秒 */
+      pid.target_val += 80;
       
     #if PID_ASSISTANT_EN
       int temp = pid.target_val;
@@ -102,8 +102,8 @@ int main(void)
     /* 扫描KEY4，减小目标速度 */
     if( Key_Scan(KEY4_GPIO_PORT,KEY4_PIN) == KEY_ON  )
 		{
-      /* 目标速度减小48，对应电机转速减少1 */
-      pid.target_val -= 48;
+      /* 目标速度减小80，对应电机转速减少1转/秒 */
+      pid.target_val -= 80;
       
     #if PID_ASSISTANT_EN
       int temp = pid.target_val;

@@ -31,11 +31,11 @@
 #define ENCODER_MODE                           TIM_ENCODERMODE_TI12
 
 /* 编码器接口输入捕获通道相位设置 */
-#define ENCODER_IC1_POLARITY                   TIM_ICPOLARITY_RISING
+#define ENCODER_IC1_POLARITY                   TIM_ICPOLARITY_FALLING
 #define ENCODER_IC2_POLARITY                   TIM_ICPOLARITY_RISING
 
 /* 编码器物理分辨率 */
-#define ENCODER_RESOLUTION                     600
+#define ENCODER_RESOLUTION                     1000
 
 /* 经过倍频之后的总分辨率 */
 #if ((ENCODER_MODE == TIM_ENCODERMODE_TI1) || (ENCODER_MODE == TIM_ENCODERMODE_TI2))

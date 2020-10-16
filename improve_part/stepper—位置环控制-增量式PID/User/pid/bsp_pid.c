@@ -38,7 +38,7 @@ void PID_param_init()
 	pid.err = 0.0;
 	pid.err_last = 0.0;
 	pid.err_next = 0.0;
-  pid.Kp = 1.2;
+  pid.Kp = 1.5;
   pid.Ki = 0;
   pid.Kd = 0;
 
