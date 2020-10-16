@@ -37,7 +37,8 @@ void Delay(__IO uint32_t nCount)	 //简单的延时函数
   */
 int main(void) 
 {
-  __IO uint16_t ChannelPulse = PWM_PERIOD_COUNT/10;
+  __IO uint16_t MOTOR1_ChannelPulse = MOTOR1_PWM_MAX_PERIOD_COUNT/10;
+	__IO uint16_t MOTOR2_ChannelPulse = MOTOR2_PWM_MAX_PERIOD_COUNT/10;
   
 	/* 初始化系统时钟为168MHz */
 	SystemClock_Config();

@@ -531,6 +531,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 2 配置为 0
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM2_GPIO_PORT, MOTOR1_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 				
+					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR1_OCNPWM3_GPIO_PORT, MOTOR1_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_3, motor1_bldcm_pulse);                  // 通道 3 配置的占空比
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM1_GPIO_PORT, MOTOR1_OCNPWM1_PIN, GPIO_PIN_SET);      // 开启下桥臂
 					break;
@@ -539,6 +542,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 3 配置为 0
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM3_GPIO_PORT, MOTOR1_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 				
+					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR1_OCNPWM1_GPIO_PORT, MOTOR1_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂		
+				
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_1, motor1_bldcm_pulse);                  // 通道 1 配置的占空比
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM2_GPIO_PORT, MOTOR1_OCNPWM2_PIN, GPIO_PIN_SET);      // 开启下桥臂
 					break;
@@ -546,7 +552,10 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 				case 3:    /* W+ V- */
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM1_GPIO_PORT, MOTOR1_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
-		 
+
+					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR1_OCNPWM3_GPIO_PORT, MOTOR1_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_3, motor1_bldcm_pulse);                  // 通道 3 配置的占空比
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM2_GPIO_PORT, MOTOR1_OCNPWM2_PIN, GPIO_PIN_SET);      // 开启下桥臂
 					break;
@@ -554,6 +563,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 				case 4:    /* V+ W- */
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM1_GPIO_PORT, MOTOR1_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
+					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR1_OCNPWM2_GPIO_PORT, MOTOR1_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 					
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_2, motor1_bldcm_pulse);                  // 通道 2 配置的占空比
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM3_GPIO_PORT, MOTOR1_OCNPWM3_PIN, GPIO_PIN_SET);      // 开启下桥臂
@@ -563,6 +575,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 3 配置为 0
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM3_GPIO_PORT, MOTOR1_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 
+					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR1_OCNPWM2_GPIO_PORT, MOTOR1_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_2, motor1_bldcm_pulse);                  // 通道 2 配置的占空比
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM1_GPIO_PORT, MOTOR1_OCNPWM1_PIN, GPIO_PIN_SET);      // 开启下桥臂
 					break;
@@ -570,6 +585,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 				case 6:    /* U+ W- */
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 2 配置为 0
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM2_GPIO_PORT, MOTOR1_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
+					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR1_OCNPWM1_GPIO_PORT, MOTOR1_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 
 					__HAL_TIM_SET_COMPARE(&motor1_htimx_bldcm, TIM_CHANNEL_1, motor1_bldcm_pulse);                  // 通道 1 配置的占空比
 					HAL_GPIO_WritePin(MOTOR1_OCNPWM3_GPIO_PORT, MOTOR1_OCNPWM3_PIN, GPIO_PIN_SET);      // 开启下桥臂
@@ -594,6 +612,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 2 配置为 0
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM2_GPIO_PORT, MOTOR2_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 				
+					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR2_OCNPWM3_GPIO_PORT, MOTOR2_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_3, motor2_bldcm_pulse);                  // 通道 3 配置的占空比
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM1_GPIO_PORT, MOTOR2_OCNPWM1_PIN, GPIO_PIN_SET);      // 开启下桥臂
 					break;
@@ -602,6 +623,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 3 配置为 0
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM3_GPIO_PORT, MOTOR2_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 				
+					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR2_OCNPWM1_GPIO_PORT, MOTOR2_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂		
+				
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_1, motor2_bldcm_pulse);                  // 通道 1 配置的占空比
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM2_GPIO_PORT, MOTOR2_OCNPWM2_PIN, GPIO_PIN_SET);      // 开启下桥臂
 					break;
@@ -609,7 +633,10 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 				case 3:    /* W+ V- */
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM1_GPIO_PORT, MOTOR2_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
-		 
+
+					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR2_OCNPWM3_GPIO_PORT, MOTOR2_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_3, motor2_bldcm_pulse);                  // 通道 3 配置的占空比
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM2_GPIO_PORT, MOTOR2_OCNPWM2_PIN, GPIO_PIN_SET);      // 开启下桥臂
 					break;
@@ -617,6 +644,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 				case 4:    /* V+ W- */
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM1_GPIO_PORT, MOTOR2_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
+					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR2_OCNPWM2_GPIO_PORT, MOTOR2_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 					
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_2, motor2_bldcm_pulse);                  // 通道 2 配置的占空比
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM3_GPIO_PORT, MOTOR2_OCNPWM3_PIN, GPIO_PIN_SET);      // 开启下桥臂
@@ -626,6 +656,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 3 配置为 0
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM3_GPIO_PORT, MOTOR2_OCNPWM3_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 
+					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_1, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR2_OCNPWM2_GPIO_PORT, MOTOR2_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_2, motor2_bldcm_pulse);                  // 通道 2 配置的占空比
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM1_GPIO_PORT, MOTOR2_OCNPWM1_PIN, GPIO_PIN_SET);      // 开启下桥臂
 					break;
@@ -633,6 +666,9 @@ void HAL_TIM_TriggerCallback(TIM_HandleTypeDef *htim)
 				case 6:    /* U+ W- */
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_2, 0);                            // 通道 2 配置为 0
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM2_GPIO_PORT, MOTOR2_OCNPWM2_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
+				
+					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_3, 0);                            // 通道 1 配置为 0
+					HAL_GPIO_WritePin(MOTOR2_OCNPWM1_GPIO_PORT, MOTOR2_OCNPWM1_PIN, GPIO_PIN_RESET);    // 关闭下桥臂
 
 					__HAL_TIM_SET_COMPARE(&motor2_htimx_bldcm, TIM_CHANNEL_1, motor2_bldcm_pulse);                  // 通道 1 配置的占空比
 					HAL_GPIO_WritePin(MOTOR2_OCNPWM3_GPIO_PORT, MOTOR2_OCNPWM3_PIN, GPIO_PIN_SET);      // 开启下桥臂

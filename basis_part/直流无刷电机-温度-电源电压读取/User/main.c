@@ -98,7 +98,7 @@ int main(void)
       set_bldcm_speed(ChannelPulse);
     }
     
-    /* É¨ÃèKEY4 */
+    /* É¨ÃèKEY5 */
     if( Key_Scan(KEY5_GPIO_PORT, KEY5_PIN) == KEY_ON)
     {
       /* ×ª»»·½Ïò */

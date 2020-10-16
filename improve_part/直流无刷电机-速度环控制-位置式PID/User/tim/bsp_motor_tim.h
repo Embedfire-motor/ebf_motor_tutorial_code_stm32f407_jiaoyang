@@ -6,7 +6,7 @@
 
 /* 电机控旋转实现结构体 */
 
-#define SPEED_FILTER_NUM      30    // 速度滤波次数
+#define SPEED_FILTER_NUM      10    // 速度滤波次数
 
 typedef struct
 {
