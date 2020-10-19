@@ -93,23 +93,27 @@ void Stepper_Ctrl(void)
   /* 当电机运动时才启动pid计算 */
   if((sys_status.MSD_ENA == 1) && (sys_status.stepper_running == 1))
   {
-    /* 计算编码器脉冲数 */
+		/* 第一步 --> 计算当前编码器脉冲总数和单位时间内产生的脉冲数 */
+		// 当前脉冲总计数值 = 当前定时器的计数值 + （定时器的溢出次数 * 定时器的重装载值）
     capture_count = (int)__HAL_TIM_GET_COUNTER(&TIM_EncoderHandle) + (encoder_overflow_count * ENCODER_TIM_PERIOD);
-		/* 计算速度环的传入值 */
+		// 单位时间的脉冲数 = 当前的脉冲总计数值 - 上一次的脉冲总计数值    
 		capture_per_unit = capture_count - last_count;
+		// 将当前当前的脉冲总计数值 赋值给 上一次的脉冲总计数值这个变量   
     last_count = capture_count;
-		
-		/* 编码器脉冲累计值作为实际值传入位置环pid控制器 */
-    move_cont_val = PID_realize(&move_pid, (float)capture_count);// 进行 PID 计算
-    /* 判断运动方向 */
+
+    /* 第二步 --> 将当前脉冲总计数值作为实际值传入PID控制器，
+		              进行位置环的计算，得到当前位置环期望值	*/
+    move_cont_val = PID_realize(&move_pid, (float)capture_count);
+
+    /* 第三步 --> 使用位置环期望值判断运动方向 */
     move_cont_val > 0 ? (MOTOR_DIR(CW)) : (MOTOR_DIR(CCW));
 		/* 判断是否启用速度环 */
 		if (fabsf(move_cont_val) >= MOVE_CTRL) 
 		{
-			/* 传递位置环计算值，便于计算*/
+			/* 第四步 --> 速度环计算前的数据处理 */
+			// 传递位置环计算的期望值给另一个变量，便于计算
 			cont_val = move_cont_val;
-			
-			/* 目标速度上限处理 */
+			// 目标速度上限处理 
 			if (cont_val > TARGET_SPEED_MAX)
 			{
 				cont_val = TARGET_SPEED_MAX;
@@ -123,18 +127,22 @@ void Stepper_Ctrl(void)
 			int32_t temp = cont_val;
 			set_computer_value(SEND_TARGET_CMD, CURVES_CH2, &temp, 1);     // 给通道 2 发送目标值
 #endif
-			/* 设定速度的目标值 */
+			/* 第五步 --> 将位置环求得的期望值作为目标值，
+										将单位时间的脉冲数作为实际值传入PID控制器，
+		                进行速度环的计算，得到当前速度环期望值	*/
+			// 设定速度环的目标值 
 			set_pid_target(&speed_pid, cont_val);    
-			/* 单位时间内的编码器脉冲数作为实际值传入速度环pid控制器 */
-			speed_cont_val = PID_realize(&speed_pid, (float)capture_per_unit);// 进行 PID 计算
-			/* 由于OC_Pulse_num为uint16_t变量，取速度环输出值的绝对值进行后续计算*/
+			// 单位时间内的编码器脉冲数作为实际值传入速度环pid控制器
+			speed_cont_val = PID_realize(&speed_pid, (float)capture_per_unit);
+			/* 第六步 --> 使用速度环求得的期望值控制步进电机 */
+			// 由于OC_Pulse_num为uint16_t变量，取速度环输出值的绝对值进行后续计算
 			cont_val = fabsf(speed_cont_val);	
-			/* 计算比较计数器的值 */
+			// 计算比较计数器的增量值 
 			OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / (cont_val * PULSE_RATIO * SAMPLING_PERIOD))) >> 1;
 		} 
 		else
 		{
-			/* 计算比较计数器的值 */
+			/* 直接使用位置环控制步进电机，计算比较计数器的增量值 */
 			OC_Pulse_num = ((uint16_t)(TIM_STEP_FREQ / ((float)move_cont_val * PULSE_RATIO))) >> 1;
 		}
 #if PID_ASSISTANT_EN
