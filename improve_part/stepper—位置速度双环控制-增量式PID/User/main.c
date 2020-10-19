@@ -4,7 +4,7 @@
   * @author  fire
   * @version V1.0
   * @date    2019-xx-xx
-  * @brief   PWM控制角度
+  * @brief   stepper-位置速度双环控制实现-增量式PID
   ******************************************************************************
   * @attention
   *
@@ -64,12 +64,13 @@ int main(void)
   Set_Stepper_Stop();
   /* PID算法参数初始化 */
   PID_param_init();
-//  MOTOR_DIR(CW);
 
   /* 目标速度转换为编码器的脉冲数作为pid目标值 */
   move_pid.target_val = TARGET_DISP * ENCODER_TOTAL_RESOLUTION;
-	int32_t Temp = TARGET_DISP * ENCODER_TOTAL_RESOLUTION;
+	
+
 #if PID_ASSISTANT_EN
+	int32_t Temp = TARGET_DISP * ENCODER_TOTAL_RESOLUTION;
   set_computer_value(SEND_STOP_CMD, CURVES_CH1, NULL, 0);    // 同步上位机的启动按钮状态
   set_computer_value(SEND_TARGET_CMD, CURVES_CH1, &Temp, 1);// 给通道 1 发送目标值
 #endif
@@ -102,8 +103,8 @@ int main(void)
     /* 扫描KEY3，增大目标位置*/
     if( Key_Scan(KEY3_GPIO_PORT,KEY3_PIN) == KEY_ON  )
 		{
-      /* 目标位置增加80000，对应电机位置增加20圈 */
-      move_pid.target_val += 80000;
+      /* 目标位置增加60000，对应电机位置增加15圈 */
+      move_pid.target_val += 60000;
       
     #if PID_ASSISTANT_EN
       int temp = move_pid.target_val;
@@ -113,8 +114,8 @@ int main(void)
     /* 扫描KEY4，减小目标位置 */
     if( Key_Scan(KEY4_GPIO_PORT,KEY4_PIN) == KEY_ON  )
 		{
-      /* 目标位置减小80000，对应电机位置减少20圈 */
-      move_pid.target_val -= 80000;
+      /* 目标位置减小60000，对应电机位置减少15圈 */
+      move_pid.target_val -= 60000;
       
     #if PID_ASSISTANT_EN
       int temp = move_pid.target_val;

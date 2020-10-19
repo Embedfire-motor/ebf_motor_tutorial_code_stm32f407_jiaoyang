@@ -116,7 +116,7 @@
 /*频率相关参数*/
 //定时器实际时钟频率为：168MHz/TIM_PRESCALER
 //其中 高级定时器的 频率为168MHz,其他定时器为84MHz
-//168/TIM_PRESCALER = 28MHz
+//168/21 = 8MHz
 //具体需要的频率可以自己计算
 #define TIM_PRESCALER                21
 // 定义定时器周期，输出比较模式周期设置为0xFFFF

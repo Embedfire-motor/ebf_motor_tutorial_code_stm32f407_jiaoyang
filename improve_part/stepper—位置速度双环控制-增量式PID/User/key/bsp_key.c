@@ -1,49 +1,26 @@
 /**
-
   ******************************************************************************
-
   * @file    bsp_key.c
-
   * @author  fire
-
   * @version V1.0
-
   * @date    2015-xx-xx
-
   * @brief   按键应用bsp（扫描模式）
-
   ******************************************************************************
-
   * @attention
-
   *
-
   * 实验平台:野火  STM32 F407 开发板 
-
   * 论坛    :http://www.firebbs.cn
-
   * 淘宝    :http://firestm32.taobao.com
-
   *
-
   ******************************************************************************
-
   */ 
-
   
-
 #include ".\key\bsp_key.h" 
-
 /**
-
   * @brief  配置按键用到的I/O口
-
   * @param  无
-
   * @retval 无
-
   */
-
 void Key_GPIO_Config(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -87,23 +64,14 @@ void Key_GPIO_Config(void)
 
 
 /**
-
   * @brief   检测是否有按键按下
-
   * @param   具体的端口和端口位
-
   *		@arg GPIOx: x可以是（A...G） 
-
   *		@arg GPIO_PIN 可以是GPIO_PIN_x（x可以是1...16）
-
   * @retval  按键的状态
-
   *		@arg KEY_ON:按键按下
-
   *		@arg KEY_OFF:按键没按下
-
   */
-
 uint8_t Key_Scan(GPIO_TypeDef* GPIOx,uint16_t GPIO_Pin)
 {			
 	/*检测是否有按键按下 */

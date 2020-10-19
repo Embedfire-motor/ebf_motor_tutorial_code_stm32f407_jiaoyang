@@ -97,7 +97,7 @@ static void TIM_PWMOUTPUT_Config(void)
 	TIM_StepperHandle.Instance = MOTOR_PUL_TIM;    
 	/* 累计 TIM_Period个后产生一个更新或者中断*/		
 	//当定时器从0计数到TIM_PERIOD，即为TIM_PERIOD次，为一个定时周期
-	TIM_StepperHandle.Init.Period = TIM_PERIOD; 
+	TIM_StepperHandle.Init.Period = TIM_PERIOD-1; 
 	// 高级控制定时器时钟源TIMxCLK = HCLK=168MHz 
 	// 设定定时器频率为=TIMxCLK/TIM_PRESCALER
 	TIM_StepperHandle.Init.Prescaler = TIM_PRESCALER-1;
