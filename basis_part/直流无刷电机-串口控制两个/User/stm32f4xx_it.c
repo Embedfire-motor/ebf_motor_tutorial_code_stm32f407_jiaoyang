@@ -237,11 +237,15 @@ void DEBUG_USART_IRQHandler(void)
   HAL_UART_IRQHandler(&UartHandle);
 }
 
-void HALL_TIM_IRQHandler(void)
+void MOTOR1_HALL_TIM_IRQHandler(void)
 {
-  HAL_TIM_IRQHandler(&htimx_hall);
+  HAL_TIM_IRQHandler(&motor1_htimx_hall);
 }
 
+void MOTOR2_HALL_TIM_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&motor2_htimx_hall);
+}
 /**
   * @}
   */ 

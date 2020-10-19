@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 //串口接收缓冲数组大小
-#define UART_RX_BUFFER_SIZE 256 
+#define UART_RX_BUFFER_SIZE 512
 
 extern unsigned char UART_RxBuffer[UART_RX_BUFFER_SIZE];
 extern uint8_t receive_cmd;
@@ -41,4 +41,5 @@ void Usart_SendString(uint8_t *str);
 void DEBUG_USART_Config(void);
 //int fputc(int ch, FILE *f);
 extern UART_HandleTypeDef UartHandle;
+void deal_serial_data(void);
 #endif /* __USART1_H */

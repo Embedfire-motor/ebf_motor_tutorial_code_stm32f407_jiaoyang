@@ -108,8 +108,8 @@ int main(void)
       /* 增大占空比 */
       target_speed += 100;
       
-      if(target_speed > 3500)
-        target_speed = 3500;
+      if(target_speed > 3000)
+        target_speed = 3000;
       
       set_pid_target(target_speed);
       
@@ -123,8 +123,8 @@ int main(void)
     {
       target_speed -= 100;
 
-      if(target_speed < 300)
-        target_speed = 300;
+      if(target_speed < -3000)
+        target_speed = -3000;
       
       set_pid_target(target_speed);
       
@@ -136,8 +136,8 @@ int main(void)
     /* 扫描KEY5 */
     if( Key_Scan(KEY5_GPIO_PORT,KEY5_PIN) == KEY_ON  )
     {
-      /* 转换方向 */
-      set_bldcm_direction( (++i % 2) ? MOTOR_FWD : MOTOR_REV);
+			target_speed = -target_speed;
+			set_pid_target(target_speed);
     }
 	}
 }

@@ -70,8 +70,8 @@ static void sd_gpio_config(void)
   */
 void set_bldcm_speed(uint16_t v)
 {
-  bldcm_data.dutyfactor = v;
-  
+	bldcm_data.dutyfactor = v;
+	
   set_pwm_pulse(v);     // 设置速度
 }
 
@@ -135,13 +135,20 @@ void bldcm_pid_control(void)
   {
     float cont_val = 0;    // 当前控制值
 
-    cont_val = PID_realize(abs(speed_actual));
-    if (cont_val < 0)
-    {
-      cont_val = 0;
-    }
+    cont_val = PID_realize(speed_actual);
 
-    cont_val = cont_val > PWM_MAX_PERIOD_COUNT ? PWM_MAX_PERIOD_COUNT : cont_val;
+		if (cont_val < 0)
+		{
+				cont_val = -cont_val;
+				bldcm_data.direction = MOTOR_REV;
+		}
+		else 
+		{
+				bldcm_data.direction = MOTOR_FWD;
+		}
+	
+		cont_val = (cont_val > PWM_PERIOD_COUNT) ? PWM_PERIOD_COUNT : cont_val;  // 上限处理
+
     set_bldcm_speed(cont_val);
     
   #ifdef PID_ASSISTANT_EN

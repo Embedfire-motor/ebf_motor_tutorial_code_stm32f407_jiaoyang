@@ -36,15 +36,15 @@ void PID_param_init()
   */
 void set_pid_target(float temp_val)
 {
-  if (temp_val < 0)
-  {
-    temp_val = -temp_val;
-    set_bldcm_direction(MOTOR_REV);
-  }
-  else
-  {
-    set_bldcm_direction(MOTOR_FWD);
-  }
+//  if (temp_val < 0)
+//  {
+//    temp_val = -temp_val;
+//    set_bldcm_direction(MOTOR_REV);
+//  }
+//  else
+//  {
+//    set_bldcm_direction(MOTOR_FWD);
+//  }
     
   pid.target_val = temp_val;    // 设置当前的目标值
 }
