@@ -105,12 +105,13 @@ int main(void)
     /* …®√ËKEY4 */
     if( Key_Scan(KEY4_GPIO_PORT, KEY4_PIN) == KEY_ON)
     {
+			/* ºı–°’ºø’±» */
       if(ChannelPulse < PWM_MAX_PERIOD_COUNT/10)
         ChannelPulse = 0;
       else
         ChannelPulse -= PWM_MAX_PERIOD_COUNT/10;
       
-      set_motor_speed(PWM_MAX_PERIOD_COUNT);
+      set_motor_speed(ChannelPulse);
     }
     
     /* …®√ËKEY5 */
