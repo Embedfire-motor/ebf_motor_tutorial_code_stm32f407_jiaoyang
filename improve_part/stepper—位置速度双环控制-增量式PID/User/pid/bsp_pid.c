@@ -38,7 +38,7 @@ void PID_param_init()
 	move_pid.err = 0.0;
 	move_pid.err_last = 0.0;
 	move_pid.err_next = 0.0;
-  move_pid.Kp = 0.0035;
+  move_pid.Kp = 0.007;
   move_pid.Ki = 0.0;
   move_pid.Kd = 0.0;		
 		
@@ -53,7 +53,7 @@ void PID_param_init()
 	speed_pid.err = 0.0;
 	speed_pid.err_last = 0.0;
 	speed_pid.err_next = 0.0;
-  speed_pid.Kp = 0.05;
+  speed_pid.Kp = 0.07;
   speed_pid.Ki = 0.01;
   speed_pid.Kd = 0.15;
 
