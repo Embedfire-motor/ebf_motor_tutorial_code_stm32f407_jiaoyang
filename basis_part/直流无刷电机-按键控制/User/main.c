@@ -49,7 +49,7 @@ int main(void)
 
   /* 电机初始化 */
   bldcm_init();
-	
+	printf("%d", sizeof(MOTOR_FWD));
 	while(1)
 	{
     /* 扫描KEY1 */
