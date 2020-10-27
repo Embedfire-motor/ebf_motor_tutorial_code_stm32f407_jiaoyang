@@ -49,7 +49,7 @@ int main(void)
 
   /* 电机初始化 */
   bldcm_init();
-	
+	printf("%d", sizeof(MOTOR_FWD));
 	while(1)
 	{
     /* 扫描KEY1 */
@@ -70,7 +70,8 @@ int main(void)
     /* 扫描KEY3 */
     if( Key_Scan(KEY3_GPIO_PORT, KEY3_PIN) == KEY_ON)
     {
-      /* 增大占空比 */
+      /* 增大占空
+			比 */
       ChannelPulse += PWM_MAX_PERIOD_COUNT/10;
       
       if(ChannelPulse > PWM_MAX_PERIOD_COUNT)

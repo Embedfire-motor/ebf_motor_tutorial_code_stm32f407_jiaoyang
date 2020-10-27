@@ -4,7 +4,7 @@
   * @author  fire
   * @version V1.0
   * @date    2020-xx-xx
-  * @brief   直流无刷电机控制
+  * @brief   直流无刷电机编码器测速
   ******************************************************************************
   * @attention
   *
@@ -47,7 +47,7 @@ int main(void)
   /* 调试串口初始化 */
   DEBUG_USART_Config();
   
-  printf("野火直流无刷电机按键控制例程\r\n");
+  printf("野火直流无刷电机编码器测速例程(霍尔传感器)\r\n");
 	
 	/* 周期控制定时器 50ms */
   TIMx_Configuration();
@@ -104,7 +104,7 @@ int main(void)
       set_bldcm_speed(target_speed);
     }
     
-   
+    printf("当前转速：%d r/min\r\n",target_speed);
 	}
 }
 
