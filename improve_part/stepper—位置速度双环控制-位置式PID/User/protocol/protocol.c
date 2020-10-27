@@ -314,6 +314,8 @@ int8_t receiving_process(void)
         uint32_t temp0 = COMPOUND_32BIT(&frame_data[13]);
         uint32_t temp1 = COMPOUND_32BIT(&frame_data[17]);
         uint32_t temp2 = COMPOUND_32BIT(&frame_data[21]);
+
+        packet.ch = frame_data[CHX_INDEX_VAL];
         
         float p_temp, i_temp, d_temp;
         
